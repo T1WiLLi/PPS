@@ -2,20 +2,21 @@ package pewpew.smash.game.overlay;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.Stack;
-
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.function.Consumer;
 import pewpew.smash.engine.Canvas;
 
 public class OverlayManager {
-    private Stack<Overlay> overlays;
+    private Deque<Overlay> overlays;
 
     public OverlayManager() {
-        overlays = new Stack<Overlay>();
+        overlays = new ArrayDeque<>();
     }
 
     public void push(Overlay overlay) {
         if (!overlays.contains(overlay)) {
-            overlay.toggleDisplay();
+            overlay.activate();
             overlays.push(overlay);
         }
     }
@@ -23,7 +24,7 @@ public class OverlayManager {
     public void pop() {
         if (!overlays.isEmpty()) {
             Overlay overlay = overlays.pop();
-            overlay.toggleDisplay();
+            overlay.deactivate();
         }
     }
 
@@ -44,43 +45,32 @@ public class OverlayManager {
     }
 
     public boolean handleMousePress(MouseEvent e) {
-        if (!overlays.isEmpty()) {
-            overlays.peek().handleMousePress(e);
-        }
-        return !overlays.isEmpty();
+        return handleEvent(overlay -> overlay.handleMousePress(e));
     }
 
     public boolean handleMouseRelease(MouseEvent e) {
-        if (!overlays.isEmpty()) {
-            overlays.peek().handleMouseRelease(e);
-        }
-        return !overlays.isEmpty();
+        return handleEvent(overlay -> overlay.handleMouseRelease(e));
     }
 
     public boolean handleMouseMove(MouseEvent e) {
-        if (!overlays.isEmpty()) {
-            overlays.peek().handleMouseMove(e);
-        }
-        return !overlays.isEmpty();
+        return handleEvent(overlay -> overlay.handleMouseMove(e));
     }
 
     public boolean handleMouseDrag(MouseEvent e) {
-        if (!overlays.isEmpty()) {
-            overlays.peek().handleMouseDrag(e);
-        }
-        return !overlays.isEmpty();
+        return handleEvent(overlay -> overlay.handleMouseDrag(e));
     }
 
     public boolean handleKeyPress(KeyEvent e) {
-        if (!overlays.isEmpty()) {
-            overlays.peek().handleKeyPress(e);
-        }
-        return !overlays.isEmpty();
+        return handleEvent(overlay -> overlay.handleKeyPress(e));
     }
 
     public boolean handleKeyRelease(KeyEvent e) {
+        return handleEvent(overlay -> overlay.handleKeyRelease(e));
+    }
+
+    private boolean handleEvent(Consumer<Overlay> eventHandler) {
         if (!overlays.isEmpty()) {
-            overlays.peek().handleKeyRelease(e);
+            eventHandler.accept(overlays.peek());
         }
         return !overlays.isEmpty();
     }

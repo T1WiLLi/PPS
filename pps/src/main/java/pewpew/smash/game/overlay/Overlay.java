@@ -1,10 +1,13 @@
 package pewpew.smash.game.overlay;
 
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.engine.controls.MouseController;
+import pewpew.smash.game.utils.HelpMethods;
 
 public abstract class Overlay {
 
@@ -43,11 +46,23 @@ public abstract class Overlay {
         isDisplaying = !isDisplaying;
     }
 
+    public void activate() {
+        isDisplaying = true;
+    }
+
+    public void deactivate() {
+        isDisplaying = false;
+    }
+
     public boolean isDisplaying() {
         return isDisplaying;
     }
 
-    protected void close() {
+    protected final void close() {
         overlayManager.pop();
+    }
+
+    protected boolean isMouseInside(Rectangle bounds) {
+        return HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), bounds);
     }
 }

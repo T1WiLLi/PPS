@@ -20,8 +20,6 @@ import pewpew.smash.game.utils.ResourcesLoader;
 
 public class ConnectionOverlay extends Overlay {
 
-    // REFACTOR THIS
-
     private Button backButton;
     private Button loginButton;
     private TextField usernameField;
