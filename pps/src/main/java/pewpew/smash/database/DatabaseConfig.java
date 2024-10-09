@@ -1,4 +1,4 @@
-package pewpew.smash.database.configuration;
+package pewpew.smash.database;
 
 import java.io.IOException;
 
