@@ -31,7 +31,7 @@ public class SettingsManager {
         if (!this.settings.equals(temp)) {
             updateGameSettings();
             try {
-                ConfigReader.writeConfig(new File("game/src/main/resources/pewpew/smash/config/settings.json"),
+                ConfigReader.writeConfig(new File("pps/src/main/resources/pewpew/smash/config/settings.json"),
                         settings);
             } catch (IOException e) {
                 e.printStackTrace();
