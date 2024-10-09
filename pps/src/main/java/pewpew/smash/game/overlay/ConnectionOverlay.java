@@ -10,12 +10,10 @@ import pewpew.smash.database.models.Player;
 import pewpew.smash.database.services.AuthService;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.GameTime;
-import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.ui.TextField;
-import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class ConnectionOverlay extends Overlay {
@@ -38,32 +36,18 @@ public class ConnectionOverlay extends Overlay {
 
     @Override
     public void update() {
-        backButton.update();
-        loginButton.update();
-        usernameField.update();
-        passwordField.update();
-
-        if (!errorMessage.isEmpty() && (GameTime.getElapsedTime() - errorMessageTimestamp) >= 1500) {
-            errorMessage = "";
-        }
+        updateButtons();
+        updateTextFields();
+        clearErrorMessageIfExpired();
     }
 
     @Override
     public void render(Canvas canvas) {
-        canvas.renderImage(background, x, y, width, height);
-        canvas.renderImage(loginPanel, width / 2 - 150, height / 2 - 200, 300, 400);
-        backButton.render(canvas);
-        loginButton.render(canvas);
-        usernameField.render(canvas);
-        passwordField.render(canvas);
-
-        if (!errorMessage.isEmpty()) {
-            canvas.renderRectangle(270, 500, 265, 50, Color.WHITE);
-            canvas.renderRectangleBorder(270, 500, 265, 50, 2, Color.BLACK);
-            canvas.setFont(new Font("Impact", Font.TRUETYPE_FONT, 18));
-            canvas.renderString(errorMessage, 280, 533, Color.RED);
-            canvas.resetFont();
-        }
+        renderBackground(canvas);
+        renderLoginPanel(canvas);
+        renderButtons(canvas);
+        renderTextFields(canvas);
+        renderErrorMessage(canvas);
     }
 
     @Override
@@ -76,71 +60,127 @@ public class ConnectionOverlay extends Overlay {
         handleMouseInput(false);
     }
 
-    private void handleMouseInput(boolean isPressed) {
-        if (isPressed) {
-            handleButtonPress(backButton, isPressed);
-            handleButtonPress(loginButton, isPressed);
-            handleTextFieldFocus();
+    @Override
+    public void handleMouseMove(MouseEvent e) {
+        updateMouseOverState();
+    }
+
+    @Override
+    public void handleMouseDrag(MouseEvent e) {
+    }
+
+    @Override
+    public void handleKeyPress(KeyEvent e) {
+        handleKeyInput(e);
+    }
+
+    @Override
+    public void handleKeyRelease(KeyEvent e) {
+    }
+
+    private void updateButtons() {
+        backButton.update();
+        loginButton.update();
+    }
+
+    private void updateTextFields() {
+        usernameField.update();
+        passwordField.update();
+    }
+
+    private void clearErrorMessageIfExpired() {
+        if (!errorMessage.isEmpty() && (GameTime.getElapsedTime() - errorMessageTimestamp) >= 1500) {
+            errorMessage = "";
         }
     }
 
-    private void handleButtonPress(Button button, boolean isPressed) {
-        if (HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), button.getBounds())) {
-            button.setMousePressed(true);
+    private void renderBackground(Canvas canvas) {
+        canvas.renderImage(background, x, y, width, height);
+    }
+
+    private void renderLoginPanel(Canvas canvas) {
+        canvas.renderImage(loginPanel, width / 2 - 150, height / 2 - 200, 300, 400);
+    }
+
+    private void renderButtons(Canvas canvas) {
+        backButton.render(canvas);
+        loginButton.render(canvas);
+    }
+
+    private void renderTextFields(Canvas canvas) {
+        usernameField.render(canvas);
+        passwordField.render(canvas);
+    }
+
+    private void renderErrorMessage(Canvas canvas) {
+        if (!errorMessage.isEmpty()) {
+            canvas.renderRectangle(270, 500, 265, 50, Color.WHITE);
+            canvas.renderRectangleBorder(270, 500, 265, 50, 2, Color.BLACK);
+            canvas.setFont(new Font("Impact", Font.TRUETYPE_FONT, 18));
+            canvas.renderString(errorMessage, 280, 533, Color.RED);
+            canvas.resetFont();
+        }
+    }
+
+    private void handleMouseInput(boolean isPressed) {
+        if (isPressed) {
+            pressButton(backButton, isPressed);
+            pressButton(loginButton, isPressed);
+            updateTextFieldFocus();
+        }
+    }
+
+    private void pressButton(Button button, boolean isPressed) {
+        if (isMouseInside(button.getBounds())) {
+            button.setMousePressed(isPressed);
         } else {
             button.setMousePressed(false);
         }
     }
 
-    private void handleTextFieldFocus() {
-        boolean usernameFocused = HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(),
-                usernameField.getBounds());
-        boolean passwordFocused = HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(),
-                passwordField.getBounds());
+    private void updateTextFieldFocus() {
+        boolean usernameFocused = isMouseInside(usernameField.getBounds());
+        boolean passwordFocused = isMouseInside(passwordField.getBounds());
 
         usernameField.setFocused(usernameFocused);
         passwordField.setFocused(passwordFocused);
     }
 
-    @Override
-    public void handleMouseMove(MouseEvent e) {
+    private void updateMouseOverState() {
         backButton.setMouseOver(
-                HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), backButton.getBounds()));
+                isMouseInside(backButton.getBounds()));
         loginButton.setMouseOver(
-                HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), loginButton.getBounds()));
+                isMouseInside(loginButton.getBounds()));
     }
 
-    @Override
-    public void handleMouseDrag(MouseEvent e) {
-
-    }
-
-    @Override
-    public void handleKeyPress(KeyEvent e) {
+    private void handleKeyInput(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_TAB) {
-            if (usernameField.isFocused()) {
-                usernameField.setFocused(false);
-                passwordField.setFocused(true);
-            } else if (passwordField.isFocused()) {
-                passwordField.setFocused(false);
-                usernameField.setFocused(true);
-            }
+            toggleTextFieldFocus();
         } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             if (passwordField.isFocused()) {
                 loginButton.getOnClick().run();
             }
         } else {
-            if (usernameField.isFocused()) {
-                usernameField.keyPressed(e);
-            } else if (passwordField.isFocused()) {
-                passwordField.keyPressed(e);
-            }
+            handleTextFieldKeyPress(e);
         }
     }
 
-    @Override
-    public void handleKeyRelease(KeyEvent e) {
+    private void toggleTextFieldFocus() {
+        if (usernameField.isFocused()) {
+            usernameField.setFocused(false);
+            passwordField.setFocused(true);
+        } else if (passwordField.isFocused()) {
+            passwordField.setFocused(false);
+            usernameField.setFocused(true);
+        }
+    }
 
+    private void handleTextFieldKeyPress(KeyEvent e) {
+        if (usernameField.isFocused()) {
+            usernameField.keyPressed(e);
+        } else if (passwordField.isFocused()) {
+            passwordField.keyPressed(e);
+        }
     }
 
     private void loadButtons() {
@@ -154,7 +194,7 @@ public class ConnectionOverlay extends Overlay {
                 300,
                 425,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/loginButton"),
-                this::login);
+                this::attemptLogin);
     }
 
     private void loadBackground() {
@@ -167,7 +207,7 @@ public class ConnectionOverlay extends Overlay {
         this.passwordField = new TextField(297, 360, 210, 48);
     }
 
-    private void login() {
+    private void attemptLogin() {
         if (!usernameField.getText().trim().isEmpty() && !passwordField.getText().trim().isEmpty()) {
             errorMessage = "";
 
@@ -178,12 +218,15 @@ public class ConnectionOverlay extends Overlay {
                 User.getInstance().setConnected(true);
                 close();
             } else {
-                errorMessage = "Invalid username or password.";
-                errorMessageTimestamp = GameTime.getElapsedTime();
+                setErrorMessage("Invalid username or password.");
             }
         } else {
-            errorMessage = "Both fields must be filled to log in.";
-            errorMessageTimestamp = GameTime.getElapsedTime();
+            setErrorMessage("Both fields must be filled to log in.");
         }
+    }
+
+    private void setErrorMessage(String message) {
+        errorMessage = message;
+        errorMessageTimestamp = GameTime.getElapsedTime();
     }
 }

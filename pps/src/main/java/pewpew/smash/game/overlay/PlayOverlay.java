@@ -4,12 +4,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import pewpew.smash.engine.Canvas;
-import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.ui.ButtonImage;
 import pewpew.smash.game.utils.FontFactory;
-import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class PlayOverlay extends Overlay {
@@ -25,76 +23,92 @@ public class PlayOverlay extends Overlay {
 
     @Override
     public void update() {
-        for (ButtonImage buttonImage : buttons) {
-            buttonImage.update();
-        }
-        this.backButton.update();
+        updateButtons();
     }
 
     @Override
     public void render(Canvas canvas) {
-        canvas.renderImage(background, x, y, width, height);
-        for (ButtonImage buttonImage : buttons) {
-            buttonImage.render(canvas);
-        }
-        this.backButton.render(canvas);
-        FontFactory.IMPACT_X_LARGE.applyFont(canvas);
-        canvas.renderString("Choose you're gamemode !",
-                800 / 2 - FontFactory.IMPACT_X_LARGE.getFontWidth("Choose you're gamemode", canvas) / 2, 500);
+        renderBackground(canvas);
+        renderButtons(canvas);
+        renderTitle(canvas);
         FontFactory.resetFont(canvas);
     }
 
     @Override
     public void handleMousePress(MouseEvent e) {
-        for (Button button : buttons) {
-            handleMouseInput(true, button);
-        }
-        handleMouseInput(true, backButton);
+        handleMouseInput(true);
     }
 
     @Override
     public void handleMouseRelease(MouseEvent e) {
-        for (Button button : buttons) {
-            handleMouseInput(false, button);
-        }
-        handleMouseInput(false, backButton);
+        handleMouseInput(false);
     }
 
     @Override
     public void handleMouseMove(MouseEvent e) {
-        for (Button button : buttons) {
-            button.setMouseOver(false);
-        }
-        backButton.setMouseOver(false);
-
-        for (Button button : buttons) {
-            if (HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), button.getBounds())) {
-                button.setMouseOver(true);
-            }
-        }
-
-        if (HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), backButton.getBounds())) {
-            backButton.setMouseOver(true);
-        }
+        resetButtonHoverStates();
+        updateButtonHoverStates();
     }
 
     @Override
     public void handleMouseDrag(MouseEvent e) {
-
     }
 
     @Override
     public void handleKeyPress(KeyEvent e) {
-
     }
 
     @Override
     public void handleKeyRelease(KeyEvent e) {
-
     }
 
-    private void handleMouseInput(boolean isPressed, Button button) {
-        if (HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), button.getBounds())) {
+    private void updateButtons() {
+        for (ButtonImage buttonImage : buttons) {
+            buttonImage.update();
+        }
+        backButton.update();
+    }
+
+    private void renderBackground(Canvas canvas) {
+        canvas.renderImage(background, x, y, width, height);
+    }
+
+    private void renderButtons(Canvas canvas) {
+        for (ButtonImage buttonImage : buttons) {
+            buttonImage.render(canvas);
+        }
+        backButton.render(canvas);
+    }
+
+    private void renderTitle(Canvas canvas) {
+        FontFactory.IMPACT_X_LARGE.applyFont(canvas);
+        canvas.renderString("Choose your gamemode!",
+                width / 2 - FontFactory.IMPACT_X_LARGE.getFontWidth("Choose your gamemode!", canvas) / 2, 500);
+    }
+
+    private void handleMouseInput(boolean isPressed) {
+        for (Button button : buttons) {
+            setButtonPressedState(button, isPressed);
+        }
+        setButtonPressedState(backButton, isPressed);
+    }
+
+    private void resetButtonHoverStates() {
+        for (Button button : buttons) {
+            button.setMouseOver(false);
+        }
+        backButton.setMouseOver(false);
+    }
+
+    private void updateButtonHoverStates() {
+        for (Button button : buttons) {
+            button.setMouseOver(isMouseInside(button.getBounds()));
+        }
+        backButton.setMouseOver(isMouseInside(backButton.getBounds()));
+    }
+
+    private void setButtonPressedState(Button button, boolean isPressed) {
+        if (isMouseInside(button.getBounds())) {
             button.setMousePressed(isPressed);
         }
     }
@@ -117,6 +131,6 @@ public class PlayOverlay extends Overlay {
                 Constants.LEFT_PADDING,
                 Constants.TOP_PADDING,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/backButton"),
-                () -> close());
+                this::close);
     }
 }

@@ -1,7 +1,6 @@
 package pewpew.smash.game.overlay;
 
 import pewpew.smash.engine.Canvas;
-import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.audio.AudioPlayer.SoundType;
 import pewpew.smash.game.constants.Constants;
@@ -11,7 +10,6 @@ import pewpew.smash.game.ui.Checkbox;
 import pewpew.smash.game.ui.Cycler;
 import pewpew.smash.game.ui.Slider;
 import pewpew.smash.game.utils.FontFactory;
-import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 import java.awt.Color;
@@ -23,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class OptionsOverlay extends Overlay {
 
@@ -33,7 +32,7 @@ public class OptionsOverlay extends Overlay {
     private String awaitingKeyBind = null;
 
     private Slider generalVolumeSlider, sfxVolumeSlider;
-    private boolean isDragginGeneralVolumeSlider;
+    private boolean isDraggingGeneralVolumeSlider;
     private boolean isDraggingSfxVolumeSlider;
 
     public OptionsOverlay(OverlayManager overlayManager, int x, int y, int width, int height) {
@@ -101,15 +100,17 @@ public class OptionsOverlay extends Overlay {
         handleButtonPress();
         handleCheckboxPress(e);
         handleCyclerPress(e);
+        handleSliderPress();
+    }
 
-        if (HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(),
-                generalVolumeSlider.getBounds())) {
+    private void handleSliderPress() {
+        if (isMouseInside(generalVolumeSlider.getBounds())) {
             generalVolumeSlider.setMousePressed(true);
             generalVolumeSlider.setMouseOver(true);
-            isDragginGeneralVolumeSlider = true;
+            isDraggingGeneralVolumeSlider = true;
         }
 
-        if (HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), sfxVolumeSlider.getBounds())) {
+        if (isMouseInside(sfxVolumeSlider.getBounds())) {
             sfxVolumeSlider.setMousePressed(true);
             sfxVolumeSlider.setMouseOver(true);
             isDraggingSfxVolumeSlider = true;
@@ -122,9 +123,9 @@ public class OptionsOverlay extends Overlay {
         saveButton.setMousePressed(false);
         keyBindButtons.forEach(button -> button.setMousePressed(false));
 
-        if (isDragginGeneralVolumeSlider) {
+        if (isDraggingGeneralVolumeSlider) {
             generalVolumeSlider.setMousePressed(false);
-            isDragginGeneralVolumeSlider = false;
+            isDraggingGeneralVolumeSlider = false;
         }
 
         if (isDraggingSfxVolumeSlider) {
@@ -137,16 +138,12 @@ public class OptionsOverlay extends Overlay {
     public void handleMouseMove(MouseEvent e) {
         handleButtonHover();
 
-        if (!isDragginGeneralVolumeSlider) {
-            boolean isOverSlider = HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(),
-                    generalVolumeSlider.getBounds());
-            generalVolumeSlider.setMouseOver(isOverSlider);
+        if (!isDraggingGeneralVolumeSlider) {
+            generalVolumeSlider.setMouseOver(isMouseInside(generalVolumeSlider.getBounds()));
         }
 
         if (!isDraggingSfxVolumeSlider) {
-            boolean isOverSlider = HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(),
-                    sfxVolumeSlider.getBounds());
-            sfxVolumeSlider.setMouseOver(isOverSlider);
+            sfxVolumeSlider.setMouseOver(isMouseInside(sfxVolumeSlider.getBounds()));
         }
     }
 
@@ -174,7 +171,6 @@ public class OptionsOverlay extends Overlay {
     }
 
     private void renderKeyBindings(Canvas canvas, int x, int currentY) {
-
         for (KeyBindButton button : keyBindButtons) {
             canvas.renderString(button.getAction(), x, currentY);
             canvas.renderString(button.getCurrentKey(), x + 120, currentY);
@@ -190,7 +186,6 @@ public class OptionsOverlay extends Overlay {
     }
 
     private void renderVideoSettings(Canvas canvas, int x, int currentY) {
-
         canvas.renderString("Video Settings :", x, currentY);
 
         canvas.renderString("FPS:", x, currentY + 30);
@@ -242,57 +237,54 @@ public class OptionsOverlay extends Overlay {
     }
 
     private void handleButtonPress() {
-        if (HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), backButton.getBounds())) {
+        if (isMouseInside(backButton.getBounds())) {
             backButton.setMousePressed(true);
         }
-        if (HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), saveButton.getBounds())) {
+        if (isMouseInside(saveButton.getBounds())) {
             saveButton.setMousePressed(true);
         }
         for (KeyBindButton button : keyBindButtons) {
-            if (HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), button.getBounds())) {
+            if (isMouseInside(button.getBounds())) {
                 button.setMousePressed(true);
             }
         }
     }
 
     private void handleCheckboxPress(MouseEvent e) {
-        if (HelpMethods.isIn(e.getX(), e.getY(), antiAliasingCheckbox.getBounds())) {
-            antiAliasingCheckbox.setChecked(!antiAliasingCheckbox.isChecked());
-            SettingsManager.getInstance().getSettings().getVideo().setAntiAliasing(antiAliasingCheckbox.isChecked());
-            AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "checked"), 0.95f,
-                    false, SoundType.UI);
+        if (isMouseInside(antiAliasingCheckbox.getBounds())) {
+            handleCheckboxClick(antiAliasingCheckbox,
+                    isChecked -> SettingsManager.getInstance().getSettings().getVideo().setAntiAliasing(isChecked));
         }
-        if (HelpMethods.isIn(e.getX(), e.getY(), textAliasingCheckbox.getBounds())) {
-            textAliasingCheckbox.setChecked(!textAliasingCheckbox.isChecked());
-            SettingsManager.getInstance().getSettings().getVideo().setTextAliasing(textAliasingCheckbox.isChecked());
-            AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "checked"), 0.95f,
-                    false, SoundType.UI);
+        if (isMouseInside(textAliasingCheckbox.getBounds())) {
+            handleCheckboxClick(textAliasingCheckbox,
+                    isChecked -> SettingsManager.getInstance().getSettings().getVideo().setTextAliasing(isChecked));
         }
 
-        if (HelpMethods.isIn(e.getX(), e.getY(), musicCheckbox.getBounds())) {
-            musicCheckbox.setChecked(!musicCheckbox.isChecked());
-            SettingsManager.getInstance().getSettings().getAudio().setMusic(musicCheckbox.isChecked());
-            AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "checked"), 0.95f,
-                    false, SoundType.UI);
+        if (isMouseInside(musicCheckbox.getBounds())) {
+            handleCheckboxClick(musicCheckbox,
+                    isChecked -> SettingsManager.getInstance().getSettings().getAudio().setMusic(isChecked));
         }
 
-        if (HelpMethods.isIn(e.getX(), e.getY(), sfxCheckbox.getBounds())) {
-            sfxCheckbox.setChecked(!sfxCheckbox.isChecked());
-            SettingsManager.getInstance().getSettings().getAudio().setSfx(sfxCheckbox.isChecked());
-            AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "checked"), 0.95f,
-                    false, SoundType.UI);
+        if (isMouseInside(sfxCheckbox.getBounds())) {
+            handleCheckboxClick(sfxCheckbox,
+                    isChecked -> SettingsManager.getInstance().getSettings().getAudio().setSfx(isChecked));
         }
 
-        if (HelpMethods.isIn(e.getX(), e.getY(), uiCheckbox.getBounds())) {
-            uiCheckbox.setChecked(!uiCheckbox.isChecked());
-            SettingsManager.getInstance().getSettings().getAudio().setUi(uiCheckbox.isChecked());
-            AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "checked"), 0.95f,
-                    false, SoundType.UI);
+        if (isMouseInside(uiCheckbox.getBounds())) {
+            handleCheckboxClick(uiCheckbox,
+                    isChecked -> SettingsManager.getInstance().getSettings().getAudio().setUi(isChecked));
         }
     }
 
+    private void handleCheckboxClick(Checkbox checkbox, Consumer<Boolean> setter) {
+        checkbox.setChecked(!checkbox.isChecked());
+        setter.accept(checkbox.isChecked());
+        AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "checked"), 0.95f,
+                false, SoundType.UI);
+    }
+
     private void handleCyclerPress(MouseEvent e) {
-        if (HelpMethods.isIn(e.getX(), e.getY(), fpsCycler.getBounds())) {
+        if (isMouseInside(fpsCycler.getBounds())) {
             fpsCycler.nextCycle();
             SettingsManager.getInstance().getSettings().getVideo()
                     .setFps(Integer.parseInt(fpsCycler.getCurrentCycle()));
@@ -300,7 +292,7 @@ public class OptionsOverlay extends Overlay {
                     false, SoundType.UI);
 
         }
-        if (HelpMethods.isIn(e.getX(), e.getY(), renderQualityCycler.getBounds())) {
+        if (isMouseInside(renderQualityCycler.getBounds())) {
             renderQualityCycler.nextCycle();
             SettingsManager.getInstance().getSettings().getVideo()
                     .setRenderQuality(renderQualityCycler.getCurrentCycle().toLowerCase());
@@ -315,14 +307,11 @@ public class OptionsOverlay extends Overlay {
     }
 
     private void handleButtonHover() {
-        backButton.setMouseOver(
-                HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), backButton.getBounds()));
-        saveButton.setMouseOver(
-                HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), saveButton.getBounds()));
+        backButton.setMouseOver(isMouseInside(backButton.getBounds()));
+        saveButton.setMouseOver(isMouseInside(saveButton.getBounds()));
 
         for (KeyBindButton button : keyBindButtons) {
-            button.setMouseOver(
-                    HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), button.getBounds()));
+            button.setMouseOver(isMouseInside(button.getBounds()));
         }
     }
 

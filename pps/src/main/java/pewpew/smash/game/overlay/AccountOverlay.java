@@ -5,12 +5,10 @@ import java.awt.event.MouseEvent;
 import java.awt.Color;
 
 import pewpew.smash.engine.Canvas;
-import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.utils.FontFactory;
-import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class AccountOverlay extends Overlay {
@@ -66,7 +64,7 @@ public class AccountOverlay extends Overlay {
         }
 
         for (Button button : buttons) {
-            if (HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), button.getBounds())) {
+            if (isMouseInside(button.getBounds())) {
                 button.setMouseOver(true);
             }
         }
@@ -84,9 +82,8 @@ public class AccountOverlay extends Overlay {
     public void handleKeyRelease(KeyEvent e) {
     }
 
-    // Private methods moved to the bottom for better organization
     private void handleMouseInput(boolean isPressed, Button button) {
-        if (HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), button.getBounds())) {
+        if (isMouseInside(button.getBounds())) {
             button.setMousePressed(isPressed);
         }
     }
