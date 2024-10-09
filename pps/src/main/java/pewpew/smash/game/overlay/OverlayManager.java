@@ -1,11 +1,14 @@
 package pewpew.smash.game.overlay;
 
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.function.Consumer;
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.engine.controls.MouseController;
+import pewpew.smash.game.utils.HelpMethods;
 
 public class OverlayManager {
     private Deque<Overlay> overlays;
@@ -45,19 +48,19 @@ public class OverlayManager {
     }
 
     public boolean handleMousePress(MouseEvent e) {
-        return handleEvent(overlay -> overlay.handleMousePress(e));
+        return handleEvent(overlay -> handleMouseEvent(e, overlay));
     }
 
     public boolean handleMouseRelease(MouseEvent e) {
-        return handleEvent(overlay -> overlay.handleMouseRelease(e));
+        return handleEvent(overlay -> handleMouseEvent(e, overlay));
     }
 
     public boolean handleMouseMove(MouseEvent e) {
-        return handleEvent(overlay -> overlay.handleMouseMove(e));
+        return handleEvent(overlay -> handleMouseEvent(e, overlay));
     }
 
     public boolean handleMouseDrag(MouseEvent e) {
-        return handleEvent(overlay -> overlay.handleMouseDrag(e));
+        return handleEvent(overlay -> handleMouseEvent(e, overlay));
     }
 
     public boolean handleKeyPress(KeyEvent e) {
@@ -73,5 +76,23 @@ public class OverlayManager {
             eventHandler.accept(overlays.peek());
         }
         return !overlays.isEmpty();
+    }
+
+    private void handleMouseEvent(MouseEvent e, Overlay overlay) {
+        int mouseX = MouseController.getMouseX();
+        int mouseY = MouseController.getMouseY();
+        Rectangle bounds = new Rectangle(overlay.x, overlay.y, overlay.width, overlay.height);
+
+        if (HelpMethods.isIn(mouseX, mouseY, bounds)) {
+            if (e.getID() == MouseEvent.MOUSE_PRESSED) {
+                overlay.handleMousePress(e);
+            } else if (e.getID() == MouseEvent.MOUSE_RELEASED) {
+                overlay.handleMouseRelease(e);
+            } else if (e.getID() == MouseEvent.MOUSE_MOVED) {
+                overlay.handleMouseMove(e);
+            } else if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
+                overlay.handleMouseDrag(e);
+            }
+        }
     }
 }

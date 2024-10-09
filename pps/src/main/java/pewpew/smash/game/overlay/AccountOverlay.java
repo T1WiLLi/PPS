@@ -38,25 +38,10 @@ public class AccountOverlay extends Overlay {
 
     @Override
     public void render(Canvas canvas) {
-        canvas.renderImage(background, x, y, width, height);
-        for (Button button : buttons) {
-            button.render(canvas);
-        }
-
-        canvas.renderImage(User.getInstance().getRank().getImage(), Constants.LEFT_PADDING, 75, 300, 350);
-
-        FontFactory.IMPACT_LARGE.applyFont(canvas);
-        canvas.renderString(User.getInstance().getUsername(), 350, 200);
-        FontFactory.IMPACT_SMALL.applyFont(canvas);
-        canvas.renderString(User.getInstance().getRank().getCurrentXp() + "XP", 350, 235);
-        FontFactory.IMPACT_MEDIUM.applyFont(canvas);
-        canvas.renderString(User.getInstance().getRank().getName(),
-                190 - 50, 450, Color.WHITE);
-        FontFactory.IMPACT_SMALL.applyFont(canvas);
-        canvas.renderString(User.getInstance().getRank().getDescription(),
-                190 - 100, 470);
+        renderBackground(canvas);
+        renderButtons(canvas);
+        renderUserDetails(canvas);
         renderXPBar(canvas);
-
         FontFactory.resetFont(canvas);
     }
 
@@ -89,19 +74,17 @@ public class AccountOverlay extends Overlay {
 
     @Override
     public void handleMouseDrag(MouseEvent e) {
-
     }
 
     @Override
     public void handleKeyPress(KeyEvent e) {
-
     }
 
     @Override
     public void handleKeyRelease(KeyEvent e) {
-
     }
 
+    // Private methods moved to the bottom for better organization
     private void handleMouseInput(boolean isPressed, Button button) {
         if (HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), button.getBounds())) {
             button.setMousePressed(isPressed);
@@ -142,5 +125,28 @@ public class AccountOverlay extends Overlay {
                 500,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/backButton"),
                 () -> System.out.println("Disconnected"));
+    }
+
+    private void renderBackground(Canvas canvas) {
+        canvas.renderImage(background, x, y, width, height);
+    }
+
+    private void renderButtons(Canvas canvas) {
+        for (Button button : buttons) {
+            button.render(canvas);
+        }
+    }
+
+    private void renderUserDetails(Canvas canvas) {
+        canvas.renderImage(User.getInstance().getRank().getImage(), Constants.LEFT_PADDING, 75, 300, 350);
+
+        FontFactory.IMPACT_LARGE.applyFont(canvas);
+        canvas.renderString(User.getInstance().getUsername(), 350, 200);
+        FontFactory.IMPACT_SMALL.applyFont(canvas);
+        canvas.renderString(User.getInstance().getRank().getCurrentXp() + "XP", 350, 235);
+        FontFactory.IMPACT_MEDIUM.applyFont(canvas);
+        canvas.renderString(User.getInstance().getRank().getName(), 190 - 50, 450, Color.WHITE);
+        FontFactory.IMPACT_SMALL.applyFont(canvas);
+        canvas.renderString(User.getInstance().getRank().getDescription(), 190 - 100, 470);
     }
 }
