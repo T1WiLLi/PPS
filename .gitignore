@@ -1,5 +1,3 @@
-game/target
-
 # Compiled class file
 *.class
 
@@ -27,3 +25,38 @@ replay_pid*
 
 # Mac
 *.DS_Store
+
+# VSCode
+.vscode/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# Gradle
+.gradle/
+build/
+
+# Maven
+target/
+*.jar
+*.war
+*.ear
+*.logs
+*.iml
+.idea/
+
+# Other
+*.swp
+*.swo
+Thumbs.db
+.DS_Store
+*.tmp
+*.bak
+*.old
