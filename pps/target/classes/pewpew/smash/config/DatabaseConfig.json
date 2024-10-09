@@ -1,7 +1,0 @@
-{
-    "database": {
-        "host": "jdbc:postgresql://206.167.241.233:5432/wbeaudin?currentSchema=pewpewsmash",
-        "user": "wbeaudin",
-        "password": "2248299"
-    }
-}
