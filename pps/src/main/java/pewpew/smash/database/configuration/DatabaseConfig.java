@@ -19,7 +19,7 @@ public final class DatabaseConfig {
     @Getter
     private String PASSWORD;
 
-    public static DatabaseConfig getInstance() {
+    protected static DatabaseConfig getInstance() {
         return INSTANCE;
     }
 
