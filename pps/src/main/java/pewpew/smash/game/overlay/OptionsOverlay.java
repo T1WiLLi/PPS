@@ -199,7 +199,7 @@ public class OptionsOverlay extends Overlay {
         textAliasingCheckbox.render(canvas);
 
         canvas.renderString("Render Quality:", x, currentY + 130);
-        canvas.renderString(renderQualityCycler.getCurrentCycle(), x + 155, currentY + 130);
+        canvas.renderString(renderQualityCycler.getCurrentCycle(), x + 165, currentY + 130);
         renderQualityCycler.render(canvas);
 
         canvas.renderLine(width / 2, currentY + 144, width, currentY + 144, 1, Color.WHITE);
@@ -379,7 +379,7 @@ public class OptionsOverlay extends Overlay {
     private void loadCyclers() {
         fpsCycler = new Cycler(width / 2 + 125, 248, 25, 25, new String[] { "30", "60", "144" },
                 String.valueOf(SettingsManager.getInstance().getSettings().getVideo().getFps()).trim());
-        renderQualityCycler = new Cycler(width / 2 + 255, 350, 25, 25, new String[] { "Quality", "Fast" },
+        renderQualityCycler = new Cycler(width / 2 + 270, 350, 25, 25, new String[] { "Quality", "Fast" },
                 SettingsManager.getInstance().getSettings().getVideo().getRenderQuality().trim());
     }
 

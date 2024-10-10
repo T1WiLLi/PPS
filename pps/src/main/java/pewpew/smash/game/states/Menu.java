@@ -14,22 +14,16 @@ import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.audio.AudioPlayer.SoundType;
 import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.network.User;
-import pewpew.smash.game.overlay.AboutOverlay;
-import pewpew.smash.game.overlay.AccountOverlay;
-import pewpew.smash.game.overlay.ConnectionOverlay;
-import pewpew.smash.game.overlay.OptionsOverlay;
-import pewpew.smash.game.overlay.OverlayManager;
-import pewpew.smash.game.overlay.PlayOverlay;
+import pewpew.smash.game.overlay.*;
 import pewpew.smash.game.ui.Button;
-
 import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class Menu extends GameState {
 
     private OverlayManager overlayManager;
-    private Button[] buttons = new Button[6];
-    private BufferedImage background = ResourcesLoader.getImage(ResourcesLoader.BACKGROUND_PATH, "menu");
+    private Button[] buttons;
+    private BufferedImage background;
     private Button connectButton;
     private Button accountButton;
 
@@ -98,15 +92,15 @@ public class Menu extends GameState {
 
     @Override
     public void handleKeyRelease(KeyEvent e) {
-        if (!overlayManager.handleKeyRelease(e)) {
-            // Do somethings in the menu
-        }
+        overlayManager.handleKeyRelease(e);
     }
 
     private void init() {
-        this.overlayManager = new OverlayManager();
-        AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "MainTheme"), 0.75f,
-                true, SoundType.MUSIC);
+        overlayManager = new OverlayManager();
+        buttons = new Button[6];
+        background = ResourcesLoader.getImage(ResourcesLoader.BACKGROUND_PATH, "menu");
+        AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "MainTheme"), 0.75f, true,
+                SoundType.MUSIC);
         loadButtons();
     }
 
@@ -117,42 +111,23 @@ public class Menu extends GameState {
         AccountOverlay accountOverlay = new AccountOverlay(overlayManager, 0, 0, 800, 600);
         PlayOverlay playOverlay = new PlayOverlay(overlayManager, 0, 0, 800, 600);
 
-        this.buttons[0] = new Button(
-                Constants.LEFT_PADDING,
-                Constants.PLAY_BUTTON_Y,
-                ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/playButton"),
+        buttons[0] = createButton(Constants.LEFT_PADDING, Constants.PLAY_BUTTON_Y, "playButton",
                 () -> overlayManager.push(playOverlay));
-
-        this.connectButton = new Button(
-                Constants.LEFT_PADDING,
-                Constants.CONNECT_BUTTON_Y,
-                ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/connectButton"),
+        connectButton = createButton(Constants.LEFT_PADDING, Constants.CONNECT_BUTTON_Y, "connectButton",
                 () -> overlayManager.push(connectionOverlay));
-        this.buttons[1] = this.connectButton;
-
-        this.accountButton = new Button(
-                Constants.LEFT_PADDING,
-                Constants.CONNECT_BUTTON_Y,
-                ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/accountButton"),
+        buttons[1] = connectButton;
+        accountButton = createButton(Constants.LEFT_PADDING, Constants.CONNECT_BUTTON_Y, "accountButton",
                 () -> overlayManager.push(accountOverlay));
-
-        this.buttons[2] = new Button(
-                Constants.LEFT_PADDING,
-                Constants.SETTINGS_BUTTON_Y,
-                ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/optionsButton"),
+        buttons[2] = createButton(Constants.LEFT_PADDING, Constants.SETTINGS_BUTTON_Y, "optionsButton",
                 () -> overlayManager.push(optionsOverlay));
-
-        this.buttons[3] = new Button(
-                Constants.LEFT_PADDING,
-                Constants.CREDITS_BUTTON_Y,
-                ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/aboutButton"),
+        buttons[3] = createButton(Constants.LEFT_PADDING, Constants.CREDITS_BUTTON_Y, "aboutButton",
                 () -> overlayManager.push(aboutOverlay));
-
-        this.buttons[4] = new Button(
-                Constants.LEFT_PADDING,
-                Constants.QUIT_BUTTON_Y,
-                ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/quitButton"),
+        buttons[4] = createButton(Constants.LEFT_PADDING, Constants.QUIT_BUTTON_Y, "quitButton",
                 () -> pewPewSmash.conclude());
+    }
+
+    private Button createButton(int x, int y, String imageName, Runnable onClick) {
+        return new Button(x, y, ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/" + imageName), onClick);
     }
 
     private void updateButtons() {
@@ -174,10 +149,8 @@ public class Menu extends GameState {
     private void updateMouseOverButtons() {
         for (Button button : buttons) {
             if (button != null) {
-                button.setMouseOver(false);
-                if (HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), button.getBounds())) {
-                    button.setMouseOver(true);
-                }
+                button.setMouseOver(
+                        HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), button.getBounds()));
             }
         }
     }
@@ -222,8 +195,7 @@ public class Menu extends GameState {
 
     private void renderBannerContent(Canvas canvas, int x, int y, int bannerWidth, int bannerHeight) {
         canvas.setFont(new Font("Impact", Font.PLAIN, 22));
-        canvas.renderImage(User.getInstance().getRank().getImage(), x,
-                y + bannerHeight / 2 - 25, 50, 50);
+        canvas.renderImage(User.getInstance().getRank().getImage(), x, y + bannerHeight / 2 - 25, 50, 50);
         canvas.renderString(User.getInstance().getUsername(), x + 60, y + bannerHeight / 2 + 7, Color.WHITE);
         canvas.resetFont();
     }
@@ -232,18 +204,14 @@ public class Menu extends GameState {
         boolean isUserCurrentlyConnected = User.getInstance().isConnected();
         if (isUserCurrentlyConnected != isUserConnected) {
             isUserConnected = isUserCurrentlyConnected;
-            if (isUserCurrentlyConnected) {
-                buttons[1] = accountButton;
-            } else {
-                buttons[1] = connectButton;
-            }
+            buttons[1] = isUserCurrentlyConnected ? accountButton : connectButton;
         }
     }
 
     private void handleMouseInput(boolean isPressed) {
         for (Button button : buttons) {
-            if (button != null
-                    && HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), button.getBounds())) {
+            if (button != null && HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(),
+                    button.getBounds())) {
                 button.setMousePressed(isPressed);
                 break;
             }
