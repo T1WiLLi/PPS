@@ -32,19 +32,7 @@ public class Cycler extends UiElement {
 
     @Override
     protected void loadSprites(BufferedImage spriteSheet) {
-        BufferedImage coloredSprite = new BufferedImage(
-                spriteSheet.getWidth(),
-                spriteSheet.getHeight(),
-                BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g2d = coloredSprite.createGraphics();
-        g2d.drawImage(spriteSheet, 0, 0, null);
-        g2d.setComposite(AlphaComposite.SrcAtop);
-        g2d.setColor(Color.WHITE);
-        g2d.fillRect(0, 0, spriteSheet.getWidth(), spriteSheet.getHeight());
-        g2d.dispose();
-
-        this.swapSprite = coloredSprite;
+        this.swapSprite = createColoredSprite(spriteSheet, Color.WHITE);
     }
 
     @Override
@@ -58,25 +46,8 @@ public class Cycler extends UiElement {
         AffineTransform originalTransform = g2d.getTransform();
 
         try {
-            int centerX = xPos + width / 2;
-            int centerY = yPos + height / 2;
-
-            if (isAnimating) {
-                long currentTime = System.currentTimeMillis();
-                long elapsedTime = currentTime - animationStartTime;
-
-                if (elapsedTime >= ANIMATION_DURATION) {
-                    isAnimating = false;
-                } else {
-                    float progress = (float) elapsedTime / ANIMATION_DURATION;
-                    float currentRotation = progress * TOTAL_ROTATION;
-
-                    g2d.rotate(Math.toRadians(currentRotation), centerX, centerY);
-                }
-            }
-
+            applyAnimationTransform(g2d);
             canvas.renderImage(swapSprite, xPos, yPos, width, height);
-
         } finally {
             g2d.setTransform(originalTransform);
         }
@@ -95,7 +66,7 @@ public class Cycler extends UiElement {
 
     public void setValue(String value) {
         if (!isAnimating) {
-            int newIndex = findInitialIndex(value);
+            int newIndex = findCycleIndex(value);
             if (newIndex >= 0 && newIndex != currentIndex) {
                 currentIndex = newIndex;
                 startAnimation();
@@ -109,11 +80,50 @@ public class Cycler extends UiElement {
     }
 
     private int findInitialIndex(String initialValue) {
+        int index = findCycleIndex(initialValue);
+        return index >= 0 ? index : 0;
+    }
+
+    private int findCycleIndex(String value) {
         for (int i = 0; i < cycles.length; i++) {
-            if (cycles[i].equalsIgnoreCase(initialValue)) {
+            if (cycles[i].equalsIgnoreCase(value)) {
                 return i;
             }
         }
-        return 0;
+        return -1;
+    }
+
+    private BufferedImage createColoredSprite(BufferedImage spriteSheet, Color color) {
+        BufferedImage coloredSprite = new BufferedImage(
+                spriteSheet.getWidth(),
+                spriteSheet.getHeight(),
+                BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g2d = coloredSprite.createGraphics();
+        try {
+            g2d.drawImage(spriteSheet, 0, 0, null);
+            g2d.setComposite(AlphaComposite.SrcAtop);
+            g2d.setColor(color);
+            g2d.fillRect(0, 0, spriteSheet.getWidth(), spriteSheet.getHeight());
+        } finally {
+            g2d.dispose();
+        }
+        return coloredSprite;
+    }
+
+    private void applyAnimationTransform(Graphics2D g2d) {
+        int centerX = xPos + width / 2;
+        int centerY = yPos + height / 2;
+
+        if (isAnimating) {
+            long elapsedTime = System.currentTimeMillis() - animationStartTime;
+            if (elapsedTime >= ANIMATION_DURATION) {
+                isAnimating = false;
+            } else {
+                float progress = (float) elapsedTime / ANIMATION_DURATION;
+                float currentRotation = progress * TOTAL_ROTATION;
+                g2d.rotate(Math.toRadians(currentRotation), centerX, centerY);
+            }
+        }
     }
 }
