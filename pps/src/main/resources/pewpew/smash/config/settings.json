@@ -30,6 +30,6 @@
     "sfxVolume" : 0.20624999701976776,
     "music" : false,
     "sfx" : true,
-    "ui" : false
+    "ui" : true
   }
 }

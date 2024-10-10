@@ -14,6 +14,7 @@ import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.ui.ButtonImage;
 import pewpew.smash.game.utils.FontFactory;
+import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class PlayOverlay extends Overlay {
@@ -117,17 +118,17 @@ public class PlayOverlay extends Overlay {
     private void updateButtonHoverStates() {
         hoveredButton = null;
         for (ButtonImage button : buttons) {
-            boolean isHovered = isMouseInside(button.getBounds());
+            boolean isHovered = HelpMethods.isIn(button.getBounds());
             button.setMouseOver(isHovered);
             if (isHovered) {
                 hoveredButton = button;
             }
         }
-        backButton.setMouseOver(isMouseInside(backButton.getBounds()));
+        backButton.setMouseOver(HelpMethods.isIn(backButton.getBounds()));
     }
 
     private void setButtonPressedState(Button button, boolean isPressed) {
-        if (isMouseInside(button.getBounds())) {
+        if (HelpMethods.isIn(button.getBounds())) {
             button.setMousePressed(isPressed);
         }
     }

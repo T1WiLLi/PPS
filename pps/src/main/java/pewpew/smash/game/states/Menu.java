@@ -8,7 +8,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 import pewpew.smash.engine.Canvas;
-import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.PewPewSmash;
 import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.audio.AudioPlayer;
@@ -151,7 +150,7 @@ public class Menu extends GameState {
         for (Button button : buttons) {
             if (button != null) {
                 button.setMouseOver(
-                        HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(), button.getBounds()));
+                        HelpMethods.isIn(button.getBounds()));
             }
         }
     }
@@ -211,8 +210,7 @@ public class Menu extends GameState {
 
     private void handleMouseInput(boolean isPressed) {
         for (Button button : buttons) {
-            if (button != null && HelpMethods.isIn(MouseController.getMouseX(), MouseController.getMouseY(),
-                    button.getBounds())) {
+            if (button != null && HelpMethods.isIn(button.getBounds())) {
                 button.setMousePressed(isPressed);
                 break;
             }
