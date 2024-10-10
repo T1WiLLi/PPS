@@ -17,7 +17,7 @@ public class AudioTrack {
         this.isLooping = isLooping;
         this.baseVolume = volume;
         this.soundType = soundType;
-        setVolume(volume); // Ensure the initial volume is set
+        setVolume(volume);
     }
 
     public int getID() {
@@ -49,24 +49,6 @@ public class AudioTrack {
         }
     }
 
-    public void setLooping(boolean loop) {
-        this.isLooping = loop;
-        if (this.clip != null) {
-            if (this.isLooping) {
-                clip.loop(Clip.LOOP_CONTINUOUSLY);
-            } else {
-                clip.loop(0);
-            }
-        }
-    }
-
-    public void close() {
-        if (this.clip != null) {
-            this.clip.close();
-            this.clip = null;
-        }
-    }
-
     public void setVolume(float volume) {
         if (this.clip != null) {
             try {
@@ -85,6 +67,13 @@ public class AudioTrack {
             } catch (IllegalArgumentException e) {
                 System.err.println("Volume control not supported for this clip.");
             }
+        }
+    }
+
+    public void close() {
+        if (this.clip != null) {
+            this.clip.close();
+            this.clip = null;
         }
     }
 }

@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.PewPewSmash;
+import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.audio.AudioPlayer.SoundType;
 import pewpew.smash.game.constants.Constants;
@@ -99,7 +100,7 @@ public class Menu extends GameState {
         overlayManager = new OverlayManager();
         buttons = new Button[6];
         background = ResourcesLoader.getImage(ResourcesLoader.BACKGROUND_PATH, "menu");
-        AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "MainTheme"), 0.75f, true,
+        AudioPlayer.getInstance().play(AudioClip.MAIN_THEME, 0.75f, true,
                 SoundType.MUSIC);
         loadButtons();
     }

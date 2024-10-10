@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
-
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+
+import pewpew.smash.game.audio.AudioData;
 
 public class ResourcesLoader {
 
@@ -54,14 +56,18 @@ public class ResourcesLoader {
         return null;
     }
 
-    public static Clip getAudio(String basePath, String filename) {
+    public static AudioData getAudioData(String basePath, String filename) {
         String path = basePath + "/" + filename + ".wav";
-        try {
-            InputStream is = ResourcesLoader.class.getResourceAsStream(path);
+        try (InputStream is = ResourcesLoader.class.getResourceAsStream(path)) {
+            if (is == null) {
+                System.err.println("Audio file not found: " + path);
+                return null;
+            }
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(is);
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioStream);
-            return clip;
+            AudioFormat format = audioStream.getFormat();
+            byte[] audioData = audioStream.readAllBytes();
+            audioStream.close();
+            return new AudioData(format, audioData);
         } catch (Exception e) {
             e.printStackTrace();
         }

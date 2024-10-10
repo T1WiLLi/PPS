@@ -3,7 +3,10 @@ package pewpew.smash.game.audio;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.sound.sampled.Clip;
+import javax.sound.sampled.*;
+
+import pewpew.smash.game.config.SettingsConfig.AudioSettings;
+import pewpew.smash.game.utils.ResourcesLoader;
 import pewpew.smash.game.settings.SettingsManager;
 
 public class AudioPlayer {
@@ -16,51 +19,91 @@ public class AudioPlayer {
     private final Map<SoundType, Boolean> soundTypeStatus;
     private final Map<SoundType, Float> soundTypeVolumes;
 
-    private float generalVolume = (float) SettingsManager.getInstance().getSettings().getAudio().getGeneralVolume();
-    private float sfxVolume = (float) SettingsManager.getInstance().getSettings().getAudio().getSfxVolume();
+    private float generalVolume = 1.0f; // Default value
+    private float sfxVolume = 1.0f; // Default value
 
     private AudioTrack currentMusicTrack;
 
+    private final Map<AudioClip, AudioData> preloadedAudioData;
+
     private AudioPlayer() {
         this.activeTracks = new ConcurrentHashMap<>();
+        this.soundTypeStatus = new HashMap<>();
+        this.soundTypeVolumes = new HashMap<>();
+        this.preloadedAudioData = new HashMap<>();
 
-        soundTypeStatus = new HashMap<>();
-        soundTypeStatus.put(SoundType.MUSIC, SettingsManager.getInstance().getSettings().getAudio().isMusic());
-        soundTypeStatus.put(SoundType.SFX, SettingsManager.getInstance().getSettings().getAudio().isSfx());
-        soundTypeStatus.put(SoundType.UI, SettingsManager.getInstance().getSettings().getAudio().isUi());
+        initAudioSettings(SettingsManager.getInstance().getSettings().getAudio());
+        preloadAudioData();
+    }
 
-        soundTypeVolumes = new HashMap<>();
+    public static AudioPlayer getInstance() {
+        if (instance == null) {
+            synchronized (AudioPlayer.class) {
+                if (instance == null) {
+                    instance = new AudioPlayer();
+                }
+            }
+        }
+        return instance;
+    }
+
+    private void initAudioSettings(AudioSettings settings) {
+        this.generalVolume = (float) settings.getGeneralVolume();
+        this.sfxVolume = (float) settings.getSfxVolume();
+
+        soundTypeStatus.put(SoundType.MUSIC, settings.isMusic());
+        soundTypeStatus.put(SoundType.SFX, settings.isSfx());
+        soundTypeStatus.put(SoundType.UI, settings.isUi());
+
         soundTypeVolumes.put(SoundType.MUSIC, generalVolume);
         soundTypeVolumes.put(SoundType.SFX, sfxVolume);
         soundTypeVolumes.put(SoundType.UI, generalVolume);
     }
 
-    public static AudioPlayer getInstance() {
-        if (instance == null) {
-            instance = new AudioPlayer();
+    private void preloadAudioData() {
+        for (AudioClip clipEnum : AudioClip.values()) {
+            AudioData audioData = ResourcesLoader.getAudioData(ResourcesLoader.AUDIO_PATH, clipEnum.getFileName());
+            if (audioData != null) {
+                preloadedAudioData.put(clipEnum, audioData);
+            } else {
+                System.err.println("Failed to preload audio data: " + clipEnum.getFileName());
+            }
         }
-        return instance;
     }
 
-    public int play(Clip clip, float volume, boolean loop, SoundType type) {
-        if (!soundTypeStatus.getOrDefault(type, false)) {
+    public int play(AudioClip audioClip, float volume, boolean loop, SoundType type) {
+        if (!soundTypeStatus.getOrDefault(type, true)) {
             return -1;
         }
 
-        int id = generateId();
-        float adjustedVolume = adjustVolume(volume, type);
-        AudioTrack track = new AudioTrack(id, clip, adjustedVolume, loop, type);
-
-        if (type == SoundType.MUSIC) {
-            if (currentMusicTrack != null) {
-                currentMusicTrack.stop();
-            }
-            currentMusicTrack = track;
+        AudioData audioData = preloadedAudioData.get(audioClip);
+        if (audioData == null) {
+            System.err.println("Audio data not found: " + audioClip.getFileName());
+            return -1;
         }
 
-        activeTracks.put(id, track);
-        track.play();
-        return id;
+        try {
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioData.getFormat(), audioData.getData(), 0, audioData.getData().length);
+
+            int id = generateId();
+            float adjustedVolume = adjustVolume(volume, type);
+            AudioTrack track = new AudioTrack(id, clip, adjustedVolume, loop, type);
+
+            if (type == SoundType.MUSIC) {
+                if (currentMusicTrack != null) {
+                    currentMusicTrack.stop();
+                }
+                currentMusicTrack = track;
+            }
+
+            activeTracks.put(id, track);
+            track.play();
+            return id;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     public void stop(int trackId) {
@@ -83,15 +126,15 @@ public class AudioPlayer {
         currentMusicTrack = null;
     }
 
-    public void shutdown() {
-        stopAll();
-    }
-
     public void setMusicOn(boolean musicOn) {
         soundTypeStatus.put(SoundType.MUSIC, musicOn);
 
-        if (musicOn && currentMusicTrack != null) {
-            currentMusicTrack.play();
+        if (musicOn) {
+            if (currentMusicTrack != null) {
+                currentMusicTrack.play();
+            } else {
+                play(AudioClip.MAIN_THEME, 1.0f, true, SoundType.MUSIC);
+            }
         } else if (!musicOn && currentMusicTrack != null) {
             currentMusicTrack.stop();
         }
@@ -109,23 +152,19 @@ public class AudioPlayer {
         this.generalVolume = volume;
         soundTypeVolumes.put(SoundType.MUSIC, generalVolume);
         soundTypeVolumes.put(SoundType.UI, generalVolume);
-
-        for (AudioTrack track : activeTracks.values()) {
-            if (track.getSoundType() == SoundType.MUSIC || track.getSoundType() == SoundType.UI) {
-                track.setVolume(adjustVolume(track.getBaseVolume(), track.getSoundType()));
-            }
-        }
+        updateTracksVolume(SoundType.MUSIC);
+        updateTracksVolume(SoundType.UI);
     }
 
     public void setSfxVolume(float volume) {
         this.sfxVolume = volume;
         soundTypeVolumes.put(SoundType.SFX, sfxVolume);
+        updateTracksVolume(SoundType.SFX);
+    }
 
-        for (AudioTrack track : activeTracks.values()) {
-            if (track.getSoundType() == SoundType.SFX) {
-                track.setVolume(adjustVolume(track.getBaseVolume(), track.getSoundType()));
-            }
-        }
+    public void shutdown() {
+        stopAll();
+        preloadedAudioData.clear();
     }
 
     private synchronized int generateId() {
@@ -133,7 +172,16 @@ public class AudioPlayer {
     }
 
     private float adjustVolume(float volume, SoundType type) {
-        return soundTypeVolumes.getOrDefault(type, 1.0f);
+        return volume * soundTypeVolumes.getOrDefault(type, 1.0f);
+    }
+
+    private void updateTracksVolume(SoundType type) {
+        for (AudioTrack track : activeTracks.values()) {
+            if (track.getSoundType() == type) {
+                float adjustedVolume = adjustVolume(track.getBaseVolume(), type);
+                track.setVolume(adjustedVolume);
+            }
+        }
     }
 
     public enum SoundType {
