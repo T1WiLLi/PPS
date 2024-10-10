@@ -8,6 +8,7 @@ import pewpew.smash.engine.RenderingEngine;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.config.ConfigReader;
 import pewpew.smash.game.config.SettingsConfig;
+import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class SettingsManager {
@@ -78,6 +79,6 @@ public class SettingsManager {
         AudioPlayer.getInstance().setUiOn(this.settings.getAudio().isUi());
 
         // Keys
-
+        GamePad.getInstance().updateBindings(this.settings.getKey().getMovement(), this.settings.getKey().getMisc());
     }
 }
