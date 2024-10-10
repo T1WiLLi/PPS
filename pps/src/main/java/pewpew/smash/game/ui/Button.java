@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.audio.AudioPlayer.SoundType;
 import pewpew.smash.game.constants.Constants;
@@ -65,12 +66,12 @@ public class Button extends UiElement {
     }
 
     private void playButtonHoveredSound() {
-        AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "buttonHovered"), 0.80f,
+        AudioPlayer.getInstance().play(AudioClip.BUTTON_HOVERED, 0.80f,
                 false, SoundType.UI);
     }
 
     private void playButtonPressedSound() {
-        AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "buttonPressed"), 0.80f,
+        AudioPlayer.getInstance().play(AudioClip.BUTTON_PRESSED, 0.80f,
                 false, SoundType.UI);
     }
 

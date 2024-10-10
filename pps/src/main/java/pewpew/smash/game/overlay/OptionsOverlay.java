@@ -1,6 +1,7 @@
 package pewpew.smash.game.overlay;
 
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.audio.AudioPlayer.SoundType;
 import pewpew.smash.game.constants.Constants;
@@ -279,8 +280,7 @@ public class OptionsOverlay extends Overlay {
     private void handleCheckboxClick(Checkbox checkbox, Consumer<Boolean> setter) {
         checkbox.setChecked(!checkbox.isChecked());
         setter.accept(checkbox.isChecked());
-        AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "checked"), 0.95f,
-                false, SoundType.UI);
+        AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
     }
 
     private void handleCyclerPress(MouseEvent e) {
@@ -288,16 +288,14 @@ public class OptionsOverlay extends Overlay {
             fpsCycler.nextCycle();
             SettingsManager.getInstance().getSettings().getVideo()
                     .setFps(Integer.parseInt(fpsCycler.getCurrentCycle()));
-            AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "swapped"), 0.95f,
-                    false, SoundType.UI);
+            AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
 
         }
         if (isMouseInside(renderQualityCycler.getBounds())) {
             renderQualityCycler.nextCycle();
             SettingsManager.getInstance().getSettings().getVideo()
                     .setRenderQuality(renderQualityCycler.getCurrentCycle().toLowerCase());
-            AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "swapped"), 0.95f,
-                    false, SoundType.UI);
+            AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
 
         }
     }
