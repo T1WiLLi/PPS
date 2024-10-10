@@ -36,7 +36,7 @@ public class TextField extends UiElement {
 
     @Override
     protected void loadSprites(BufferedImage spriteSheet) {
-
+        // No sprites to load for TextField
     }
 
     @Override
@@ -62,10 +62,15 @@ public class TextField extends UiElement {
     private void renderText(Canvas canvas) {
         canvas.setFont(font);
         textOffset = calculateTextOffset();
-        canvas.getGraphics2D().setClip(xPos, yPos, width, height);
-        canvas.renderString(text, xPos + 5 - textOffset, yPos + height / 2 + 10, Color.BLACK);
-        canvas.getGraphics2D().setClip(null);
+        clipAndRenderText(canvas);
         canvas.resetFont();
+    }
+
+    private void clipAndRenderText(Canvas canvas) {
+        Graphics2D g2d = canvas.getGraphics2D();
+        g2d.setClip(xPos, yPos, width, height);
+        canvas.renderString(text, xPos + 5 - textOffset, yPos + height / 2 + 10, Color.BLACK);
+        g2d.setClip(null);
     }
 
     private void renderCursor(Canvas canvas) {
@@ -108,22 +113,28 @@ public class TextField extends UiElement {
     }
 
     private void handleKeyEvent(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-            handleBackspace();
-        } else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-            handleDelete();
-        } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            moveCursorLeft();
-        } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            moveCursorRight();
-        } else {
-            handleCharacterInput(e);
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_BACK_SPACE:
+                handleBackspace();
+                break;
+            case KeyEvent.VK_DELETE:
+                handleDelete();
+                break;
+            case KeyEvent.VK_LEFT:
+                moveCursorLeft();
+                break;
+            case KeyEvent.VK_RIGHT:
+                moveCursorRight();
+                break;
+            default:
+                handleCharacterInput(e);
+                break;
         }
     }
 
     private void handleBackspace() {
         if (cursorPosition > 0) {
-            text = text.substring(0, cursorPosition - 1) + text.substring(cursorPosition);
+            text = removeCharacterAt(cursorPosition - 1);
             cursorPosition--;
             adjustTextOffsetAfterCursorMovement();
         }
@@ -131,7 +142,7 @@ public class TextField extends UiElement {
 
     private void handleDelete() {
         if (cursorPosition < text.length()) {
-            text = text.substring(0, cursorPosition) + text.substring(cursorPosition + 1);
+            text = removeCharacterAt(cursorPosition);
         }
     }
 
@@ -151,22 +162,35 @@ public class TextField extends UiElement {
 
     private void handleCharacterInput(KeyEvent e) {
         char c = e.getKeyChar();
-        if (Character.isLetterOrDigit(c) || Character.isWhitespace(c) || isSpecialCharacter(c)) {
-            text = text.substring(0, cursorPosition) + c + text.substring(cursorPosition);
-            cursorPosition++;
+        if (isValidCharacter(c)) {
+            insertCharacterAtCursor(c);
             adjustTextOffsetAfterCursorMovement();
         }
     }
 
+    private boolean isValidCharacter(char c) {
+        return Character.isLetterOrDigit(c) || Character.isWhitespace(c) || isSpecialCharacter(c);
+    }
+
     private boolean isSpecialCharacter(char c) {
-        String specialCharacters = "!@#$%?&*()_+";
+        String specialCharacters = "!@#$%?&*()_+-=<>[]{}|;:'\",./`~";
         return specialCharacters.indexOf(c) >= 0;
+    }
+
+    private void insertCharacterAtCursor(char c) {
+        text = text.substring(0, cursorPosition) + c + text.substring(cursorPosition);
+        cursorPosition++;
+    }
+
+    private String removeCharacterAt(int index) {
+        return text.substring(0, index) + text.substring(index + 1);
     }
 
     private void adjustTextOffsetAfterCursorMovement() {
         int cursorX = fontMetrics.stringWidth(text.substring(0, cursorPosition));
-        if (cursorX - textOffset > width - 10) {
-            textOffset = cursorX - (width - 10);
+        int visibleWidth = width - 10;
+        if (cursorX - textOffset > visibleWidth) {
+            textOffset = cursorX - visibleWidth;
         } else if (cursorX < textOffset) {
             textOffset = cursorX;
         }
