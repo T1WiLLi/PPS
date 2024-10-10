@@ -11,6 +11,7 @@ import pewpew.smash.game.ui.Checkbox;
 import pewpew.smash.game.ui.Cycler;
 import pewpew.smash.game.ui.Slider;
 import pewpew.smash.game.utils.FontFactory;
+import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 import java.awt.Color;
@@ -105,13 +106,13 @@ public class OptionsOverlay extends Overlay {
     }
 
     private void handleSliderPress() {
-        if (isMouseInside(generalVolumeSlider.getBounds())) {
+        if (HelpMethods.isIn(generalVolumeSlider.getBounds())) {
             generalVolumeSlider.setMousePressed(true);
             generalVolumeSlider.setMouseOver(true);
             isDraggingGeneralVolumeSlider = true;
         }
 
-        if (isMouseInside(sfxVolumeSlider.getBounds())) {
+        if (HelpMethods.isIn(sfxVolumeSlider.getBounds())) {
             sfxVolumeSlider.setMousePressed(true);
             sfxVolumeSlider.setMouseOver(true);
             isDraggingSfxVolumeSlider = true;
@@ -140,11 +141,11 @@ public class OptionsOverlay extends Overlay {
         handleButtonHover();
 
         if (!isDraggingGeneralVolumeSlider) {
-            generalVolumeSlider.setMouseOver(isMouseInside(generalVolumeSlider.getBounds()));
+            generalVolumeSlider.setMouseOver(HelpMethods.isIn(generalVolumeSlider.getBounds()));
         }
 
         if (!isDraggingSfxVolumeSlider) {
-            sfxVolumeSlider.setMouseOver(isMouseInside(sfxVolumeSlider.getBounds()));
+            sfxVolumeSlider.setMouseOver(HelpMethods.isIn(sfxVolumeSlider.getBounds()));
         }
     }
 
@@ -238,40 +239,40 @@ public class OptionsOverlay extends Overlay {
     }
 
     private void handleButtonPress() {
-        if (isMouseInside(backButton.getBounds())) {
+        if (HelpMethods.isIn(backButton.getBounds())) {
             backButton.setMousePressed(true);
         }
-        if (isMouseInside(saveButton.getBounds())) {
+        if (HelpMethods.isIn(saveButton.getBounds())) {
             saveButton.setMousePressed(true);
         }
         for (KeyBindButton button : keyBindButtons) {
-            if (isMouseInside(button.getBounds())) {
+            if (HelpMethods.isIn(button.getBounds())) {
                 button.setMousePressed(true);
             }
         }
     }
 
     private void handleCheckboxPress(MouseEvent e) {
-        if (isMouseInside(antiAliasingCheckbox.getBounds())) {
+        if (HelpMethods.isIn(antiAliasingCheckbox.getBounds())) {
             handleCheckboxClick(antiAliasingCheckbox,
                     isChecked -> SettingsManager.getInstance().getSettings().getVideo().setAntiAliasing(isChecked));
         }
-        if (isMouseInside(textAliasingCheckbox.getBounds())) {
+        if (HelpMethods.isIn(textAliasingCheckbox.getBounds())) {
             handleCheckboxClick(textAliasingCheckbox,
                     isChecked -> SettingsManager.getInstance().getSettings().getVideo().setTextAliasing(isChecked));
         }
 
-        if (isMouseInside(musicCheckbox.getBounds())) {
+        if (HelpMethods.isIn(musicCheckbox.getBounds())) {
             handleCheckboxClick(musicCheckbox,
                     isChecked -> SettingsManager.getInstance().getSettings().getAudio().setMusic(isChecked));
         }
 
-        if (isMouseInside(sfxCheckbox.getBounds())) {
+        if (HelpMethods.isIn(sfxCheckbox.getBounds())) {
             handleCheckboxClick(sfxCheckbox,
                     isChecked -> SettingsManager.getInstance().getSettings().getAudio().setSfx(isChecked));
         }
 
-        if (isMouseInside(uiCheckbox.getBounds())) {
+        if (HelpMethods.isIn(uiCheckbox.getBounds())) {
             handleCheckboxClick(uiCheckbox,
                     isChecked -> SettingsManager.getInstance().getSettings().getAudio().setUi(isChecked));
         }
@@ -284,14 +285,14 @@ public class OptionsOverlay extends Overlay {
     }
 
     private void handleCyclerPress(MouseEvent e) {
-        if (isMouseInside(fpsCycler.getBounds())) {
+        if (HelpMethods.isIn(fpsCycler.getBounds())) {
             fpsCycler.nextCycle();
             SettingsManager.getInstance().getSettings().getVideo()
                     .setFps(Integer.parseInt(fpsCycler.getCurrentCycle()));
             AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
 
         }
-        if (isMouseInside(renderQualityCycler.getBounds())) {
+        if (HelpMethods.isIn(renderQualityCycler.getBounds())) {
             renderQualityCycler.nextCycle();
             SettingsManager.getInstance().getSettings().getVideo()
                     .setRenderQuality(renderQualityCycler.getCurrentCycle().toLowerCase());
@@ -305,11 +306,11 @@ public class OptionsOverlay extends Overlay {
     }
 
     private void handleButtonHover() {
-        backButton.setMouseOver(isMouseInside(backButton.getBounds()));
-        saveButton.setMouseOver(isMouseInside(saveButton.getBounds()));
+        backButton.setMouseOver(HelpMethods.isIn(backButton.getBounds()));
+        saveButton.setMouseOver(HelpMethods.isIn(saveButton.getBounds()));
 
         for (KeyBindButton button : keyBindButtons) {
-            button.setMouseOver(isMouseInside(button.getBounds()));
+            button.setMouseOver(HelpMethods.isIn(button.getBounds()));
         }
     }
 

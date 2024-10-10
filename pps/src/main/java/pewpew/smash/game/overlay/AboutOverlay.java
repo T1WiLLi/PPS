@@ -9,6 +9,7 @@ import pewpew.smash.game.config.ConfigReader;
 import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.utils.FontFactory;
+import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class AboutOverlay extends Overlay {
@@ -51,7 +52,7 @@ public class AboutOverlay extends Overlay {
 
     @Override
     public void handleMouseMove(MouseEvent e) {
-        this.backButton.setMouseOver(isMouseInside(backButton.getBounds()));
+        this.backButton.setMouseOver(HelpMethods.isIn(backButton.getBounds()));
     }
 
     @Override
@@ -67,8 +68,8 @@ public class AboutOverlay extends Overlay {
     }
 
     @Override
-    public void toggleDisplay() {
-        super.toggleDisplay();
+    public void activate() {
+        super.activate();
         if (isDisplaying()) {
             scrollPosition = this.height;
         }
@@ -96,7 +97,7 @@ public class AboutOverlay extends Overlay {
     }
 
     private void handleMouseInput(MouseEvent e, boolean isPressed) {
-        if (isMouseInside(backButton.getBounds())) {
+        if (HelpMethods.isIn(backButton.getBounds())) {
             this.backButton.setMousePressed(isPressed);
         }
     }

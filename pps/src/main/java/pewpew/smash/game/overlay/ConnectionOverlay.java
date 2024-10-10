@@ -14,6 +14,7 @@ import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.ui.TextField;
+import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class ConnectionOverlay extends Overlay {
@@ -131,7 +132,7 @@ public class ConnectionOverlay extends Overlay {
     }
 
     private void pressButton(Button button, boolean isPressed) {
-        if (isMouseInside(button.getBounds())) {
+        if (HelpMethods.isIn(button.getBounds())) {
             button.setMousePressed(isPressed);
         } else {
             button.setMousePressed(false);
@@ -139,8 +140,8 @@ public class ConnectionOverlay extends Overlay {
     }
 
     private void updateTextFieldFocus() {
-        boolean usernameFocused = isMouseInside(usernameField.getBounds());
-        boolean passwordFocused = isMouseInside(passwordField.getBounds());
+        boolean usernameFocused = HelpMethods.isIn(usernameField.getBounds());
+        boolean passwordFocused = HelpMethods.isIn(passwordField.getBounds());
 
         usernameField.setFocused(usernameFocused);
         passwordField.setFocused(passwordFocused);
@@ -148,9 +149,9 @@ public class ConnectionOverlay extends Overlay {
 
     private void updateMouseOverState() {
         backButton.setMouseOver(
-                isMouseInside(backButton.getBounds()));
+                HelpMethods.isIn(backButton.getBounds()));
         loginButton.setMouseOver(
-                isMouseInside(loginButton.getBounds()));
+                HelpMethods.isIn(loginButton.getBounds()));
     }
 
     private void handleKeyInput(KeyEvent e) {
