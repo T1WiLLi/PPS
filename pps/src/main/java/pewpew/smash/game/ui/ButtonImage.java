@@ -4,11 +4,14 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 
+import lombok.Getter;
 import pewpew.smash.engine.Canvas;
 
 public class ButtonImage extends Button {
 
-    private BufferedImage normalSprite, grayscaleSprite;
+    @Getter
+    private BufferedImage normalSprite;
+    private BufferedImage grayscaleSprite;
     private double scaleFactor = 1.0;
 
     public ButtonImage(int x, int y, int width, int height, BufferedImage spriteSheet, Runnable onClick) {

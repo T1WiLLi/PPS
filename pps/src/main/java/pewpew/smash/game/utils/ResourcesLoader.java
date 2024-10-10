@@ -9,15 +9,12 @@ import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 
 import pewpew.smash.game.audio.AudioData;
 
 public class ResourcesLoader {
 
     private static final String BASE_PATH = "/pewpew/smash/";
-    // game\src\main\resources\pewpew\smash\misc\RifleScopeCursor.png
-
     // Image
     public static final String SPRITE_PATH = BASE_PATH + "assets/sprite";
     public static final String BACKGROUND_PATH = BASE_PATH + "assets/background";

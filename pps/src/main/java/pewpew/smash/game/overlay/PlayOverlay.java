@@ -2,6 +2,12 @@ package pewpew.smash.game.overlay;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
+import java.util.HashMap;
+import java.util.Map;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.constants.Constants;
@@ -14,11 +20,14 @@ public class PlayOverlay extends Overlay {
 
     private ButtonImage[] buttons = new ButtonImage[3];
     private Button backButton;
+    private ButtonImage hoveredButton = null;
+    private Map<ButtonImage, BufferedImage> blurredBackgrounds = new HashMap<>();
 
     public PlayOverlay(OverlayManager overlayManager, int x, int y, int width, int height) {
         super(overlayManager, x, y, width, height);
         loadBackground();
         loadButtons();
+        generateBlurredBackgrounds();
     }
 
     @Override
@@ -70,7 +79,11 @@ public class PlayOverlay extends Overlay {
     }
 
     private void renderBackground(Canvas canvas) {
-        canvas.renderImage(background, x, y, width, height);
+        if (hoveredButton != null && blurredBackgrounds.containsKey(hoveredButton)) {
+            canvas.renderImage(blurredBackgrounds.get(hoveredButton), x, y, width, height);
+        } else {
+            canvas.renderImage(background, x, y, width, height);
+        }
     }
 
     private void renderButtons(Canvas canvas) {
@@ -82,8 +95,9 @@ public class PlayOverlay extends Overlay {
 
     private void renderTitle(Canvas canvas) {
         FontFactory.IMPACT_X_LARGE.applyFont(canvas);
-        canvas.renderString("Choose your gamemode!",
-                width / 2 - FontFactory.IMPACT_X_LARGE.getFontWidth("Choose your gamemode!", canvas) / 2, 500);
+        String title = "Choose Your Game Mode!";
+        int titleWidth = FontFactory.IMPACT_X_LARGE.getFontWidth(title, canvas);
+        canvas.renderString(title, (width - titleWidth) / 2, 180);
     }
 
     private void handleMouseInput(boolean isPressed) {
@@ -101,8 +115,13 @@ public class PlayOverlay extends Overlay {
     }
 
     private void updateButtonHoverStates() {
-        for (Button button : buttons) {
-            button.setMouseOver(isMouseInside(button.getBounds()));
+        hoveredButton = null;
+        for (ButtonImage button : buttons) {
+            boolean isHovered = isMouseInside(button.getBounds());
+            button.setMouseOver(isHovered);
+            if (isHovered) {
+                hoveredButton = button;
+            }
         }
         backButton.setMouseOver(isMouseInside(backButton.getBounds()));
     }
@@ -133,4 +152,24 @@ public class PlayOverlay extends Overlay {
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/backButton"),
                 this::close);
     }
+
+    private void generateBlurredBackgrounds() {
+        for (ButtonImage buttonImage : buttons) {
+            blurredBackgrounds.put(buttonImage, applyBlurFilter(buttonImage.getNormalSprite()));
+        }
+    }
+
+    private BufferedImage applyBlurFilter(BufferedImage image) {
+        int kernelSize = 15;
+        float[] matrix = new float[kernelSize * kernelSize];
+        float value = 1.0f / (kernelSize * kernelSize);
+
+        for (int i = 0; i < matrix.length; i++) {
+            matrix[i] = value;
+        }
+
+        BufferedImageOp op = new ConvolveOp(new Kernel(kernelSize, kernelSize, matrix), ConvolveOp.EDGE_NO_OP, null);
+        return op.filter(image, null);
+    }
+
 }
