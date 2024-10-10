@@ -4,8 +4,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.sound.sampled.Clip;
-
-import pewpew.smash.game.config.SettingsConfig.AudioSettings;
+import pewpew.smash.game.settings.SettingsManager;
 
 public class AudioPlayer {
 
@@ -14,11 +13,11 @@ public class AudioPlayer {
     private final Map<Integer, AudioTrack> activeTracks;
     private int currentID = 0;
 
-    private Map<SoundType, Boolean> soundTypeStatus;
-    private Map<SoundType, Float> soundTypeVolumes;
+    private final Map<SoundType, Boolean> soundTypeStatus;
+    private final Map<SoundType, Float> soundTypeVolumes;
 
-    private float generalVolume = 1.0f; // Default value
-    private float sfxVolume = 1.0f; // Default value
+    private float generalVolume = (float) SettingsManager.getInstance().getSettings().getAudio().getGeneralVolume();
+    private float sfxVolume = (float) SettingsManager.getInstance().getSettings().getAudio().getSfxVolume();
 
     private AudioTrack currentMusicTrack;
 
@@ -26,9 +25,9 @@ public class AudioPlayer {
         this.activeTracks = new ConcurrentHashMap<>();
 
         soundTypeStatus = new HashMap<>();
-        soundTypeStatus.put(SoundType.MUSIC, true);
-        soundTypeStatus.put(SoundType.SFX, true);
-        soundTypeStatus.put(SoundType.UI, true);
+        soundTypeStatus.put(SoundType.MUSIC, SettingsManager.getInstance().getSettings().getAudio().isMusic());
+        soundTypeStatus.put(SoundType.SFX, SettingsManager.getInstance().getSettings().getAudio().isSfx());
+        soundTypeStatus.put(SoundType.UI, SettingsManager.getInstance().getSettings().getAudio().isUi());
 
         soundTypeVolumes = new HashMap<>();
         soundTypeVolumes.put(SoundType.MUSIC, generalVolume);
@@ -38,32 +37,13 @@ public class AudioPlayer {
 
     public static AudioPlayer getInstance() {
         if (instance == null) {
-            synchronized (AudioPlayer.class) {
-                if (instance == null) {
-                    instance = new AudioPlayer();
-                }
-            }
+            instance = new AudioPlayer();
         }
         return instance;
     }
 
-    public void initAudioSettings(AudioSettings settings) {
-        this.generalVolume = (float) settings.getGeneralVolume();
-        this.sfxVolume = (float) settings.getSfxVolume();
-
-        soundTypeStatus.put(SoundType.MUSIC, settings.isMusic());
-        soundTypeStatus.put(SoundType.SFX, settings.isSfx());
-        soundTypeStatus.put(SoundType.UI, settings.isUi());
-
-        soundTypeVolumes.put(SoundType.MUSIC, generalVolume);
-        soundTypeVolumes.put(SoundType.SFX, sfxVolume);
-        soundTypeVolumes.put(SoundType.UI, generalVolume);
-
-        updateAllTrackVolumes();
-    }
-
     public int play(Clip clip, float volume, boolean loop, SoundType type) {
-        if (!soundTypeStatus.getOrDefault(type, true)) {
+        if (!soundTypeStatus.getOrDefault(type, false)) {
             return -1;
         }
 
@@ -130,15 +110,22 @@ public class AudioPlayer {
         soundTypeVolumes.put(SoundType.MUSIC, generalVolume);
         soundTypeVolumes.put(SoundType.UI, generalVolume);
 
-        updateTracksVolume(SoundType.MUSIC);
-        updateTracksVolume(SoundType.UI);
+        for (AudioTrack track : activeTracks.values()) {
+            if (track.getSoundType() == SoundType.MUSIC || track.getSoundType() == SoundType.UI) {
+                track.setVolume(adjustVolume(track.getBaseVolume(), track.getSoundType()));
+            }
+        }
     }
 
     public void setSfxVolume(float volume) {
         this.sfxVolume = volume;
         soundTypeVolumes.put(SoundType.SFX, sfxVolume);
 
-        updateTracksVolume(SoundType.SFX);
+        for (AudioTrack track : activeTracks.values()) {
+            if (track.getSoundType() == SoundType.SFX) {
+                track.setVolume(adjustVolume(track.getBaseVolume(), track.getSoundType()));
+            }
+        }
     }
 
     private synchronized int generateId() {
@@ -146,23 +133,7 @@ public class AudioPlayer {
     }
 
     private float adjustVolume(float volume, SoundType type) {
-        return volume * soundTypeVolumes.getOrDefault(type, 1.0f);
-    }
-
-    private void updateAllTrackVolumes() {
-        for (AudioTrack track : activeTracks.values()) {
-            float adjustedVolume = adjustVolume(track.getBaseVolume(), track.getSoundType());
-            track.setVolume(adjustedVolume);
-        }
-    }
-
-    private void updateTracksVolume(SoundType type) {
-        for (AudioTrack track : activeTracks.values()) {
-            if (track.getSoundType() == type) {
-                float adjustedVolume = adjustVolume(track.getBaseVolume(), type);
-                track.setVolume(adjustedVolume);
-            }
-        }
+        return soundTypeVolumes.getOrDefault(type, 1.0f);
     }
 
     public enum SoundType {
