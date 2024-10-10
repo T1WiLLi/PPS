@@ -72,11 +72,7 @@ public class SettingsManager {
                 .setRenderingQuality(this.settings.getVideo().getRenderQuality().equalsIgnoreCase("quality"));
 
         // Audio
-        AudioPlayer.getInstance().setGeneralVolume((float) this.settings.getAudio().getGeneralVolume());
-        AudioPlayer.getInstance().setSfxVolume((float) this.settings.getAudio().getSfxVolume());
-        AudioPlayer.getInstance().setMusicOn(this.settings.getAudio().isMusic());
-        AudioPlayer.getInstance().setSfxOn(this.settings.getAudio().isSfx());
-        AudioPlayer.getInstance().setUiOn(this.settings.getAudio().isUi());
+        AudioPlayer.getInstance().initAudioSettings(this.settings.getAudio());
 
         // Keys
         GamePad.getInstance().updateBindings(this.settings.getKey().getMovement(), this.settings.getKey().getMisc());
