@@ -8,8 +8,7 @@ import pewpew.smash.engine.Canvas;
 
 public class ButtonImage extends Button {
 
-    private BufferedImage normalSprite;
-    private BufferedImage grayscaleSprite;
+    private BufferedImage normalSprite, grayscaleSprite;
     private double scaleFactor = 1.0;
 
     public ButtonImage(int x, int y, int width, int height, BufferedImage spriteSheet, Runnable onClick) {
