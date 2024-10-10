@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.audio.AudioPlayer.SoundType;
@@ -37,11 +36,10 @@ public class Button extends UiElement {
 
     public void update() {
         index = 0;
-        statesUpdate();
+        updateState();
         if (mouseOver && mousePressed) {
-            AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "ButtonPressed"), 0.90f,
-                    false, SoundType.UI);
-            this.onClick.run();
+            playButtonPressedSound();
+            onClick.run();
             resetState();
         }
         updateScaledBounds();
@@ -51,14 +49,12 @@ public class Button extends UiElement {
         canvas.renderImage(sprites[index], xPos, yPos, width, height);
     }
 
-    private void statesUpdate() {
+    private void updateState() {
         if (mouseOver) {
             index = 1;
             if (!hasSFXPlayed) {
-                AudioPlayer.getInstance().play(
-                        ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "ButtonHovered"), 0.80f,
-                        false, SoundType.UI);
-                this.hasSFXPlayed = true;
+                playButtonHoveredSound();
+                hasSFXPlayed = true;
             }
         } else {
             hasSFXPlayed = false;
@@ -68,6 +64,16 @@ public class Button extends UiElement {
         }
     }
 
+    private void playButtonHoveredSound() {
+        AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "buttonHovered"), 0.80f,
+                false, SoundType.UI);
+    }
+
+    private void playButtonPressedSound() {
+        AudioPlayer.getInstance().play(ResourcesLoader.getAudio(ResourcesLoader.AUDIO_PATH, "buttonPressed"), 0.80f,
+                false, SoundType.UI);
+    }
+
     protected void resetState() {
         this.mouseOver = false;
         this.mousePressed = false;
@@ -75,12 +81,16 @@ public class Button extends UiElement {
 
     @Override
     protected void loadSprites(BufferedImage spriteSheet) {
-        this.sprites = new BufferedImage[3];
-        for (int i = 0; i < 3; i++) {
-            int startX = Constants.X_OFFSET + i * (Constants.SPRITE_WIDTH + Constants.SPRITE_SPACER);
-            int startY = Constants.Y_OFFSET;
-            this.sprites[i] = spriteSheet.getSubimage(startX, startY, Constants.SPRITE_WIDTH,
-                    Constants.SPRITE_HEIGHT);
+        final int spriteCount = 3;
+        sprites = new BufferedImage[spriteCount];
+        for (int i = 0; i < spriteCount; i++) {
+            sprites[i] = extractSprite(spriteSheet, i);
         }
+    }
+
+    private BufferedImage extractSprite(BufferedImage spriteSheet, int index) {
+        int startX = Constants.X_OFFSET + index * (Constants.SPRITE_WIDTH + Constants.SPRITE_SPACER);
+        int startY = Constants.Y_OFFSET;
+        return spriteSheet.getSubimage(startX, startY, Constants.SPRITE_WIDTH, Constants.SPRITE_HEIGHT);
     }
 }
