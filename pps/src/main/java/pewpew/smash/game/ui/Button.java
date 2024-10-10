@@ -10,7 +10,6 @@ import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.audio.AudioPlayer.SoundType;
 import pewpew.smash.game.constants.Constants;
-import pewpew.smash.game.utils.ResourcesLoader;
 
 @ToString
 public class Button extends UiElement {
