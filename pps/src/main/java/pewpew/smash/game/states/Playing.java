@@ -4,12 +4,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import pewpew.smash.engine.Canvas;
-import pewpew.smash.game.PewPewSmash;
 
 public class Playing extends GameState {
 
-    public Playing(PewPewSmash pewPewSmash) {
-        super(pewPewSmash);
+    public Playing() {
     }
 
     @Override

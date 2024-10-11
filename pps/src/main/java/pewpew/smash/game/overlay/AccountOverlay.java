@@ -23,8 +23,8 @@ public class AccountOverlay extends Overlay {
     private int xpBarX = 350;
     private int xpBarY = 240;
 
-    public AccountOverlay(OverlayManager overlayManager, int x, int y, int width, int height) {
-        super(overlayManager, x, y, width, height);
+    public AccountOverlay(int x, int y, int width, int height) {
+        super(x, y, width, height);
         init();
     }
 

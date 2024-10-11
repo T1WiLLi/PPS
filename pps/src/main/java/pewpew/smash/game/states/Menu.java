@@ -8,7 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 import pewpew.smash.engine.Canvas;
-import pewpew.smash.game.PewPewSmash;
+import pewpew.smash.game.GameManager;
 import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.audio.AudioPlayer.SoundType;
@@ -29,8 +29,7 @@ public class Menu extends GameState {
 
     private boolean isUserConnected = false;
 
-    public Menu(PewPewSmash pewPewSmash) {
-        super(pewPewSmash);
+    public Menu() {
         init();
     }
 
@@ -85,7 +84,7 @@ public class Menu extends GameState {
     public void handleKeyPress(KeyEvent e) {
         if (!overlayManager.handleKeyPress(e)) {
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                pewPewSmash.stop();
+                GameManager.getInstance().conclude();
             }
         }
     }
@@ -96,7 +95,7 @@ public class Menu extends GameState {
     }
 
     private void init() {
-        overlayManager = new OverlayManager();
+        overlayManager = OverlayManager.getInstance();
         buttons = new Button[6];
         background = ResourcesLoader.getImage(ResourcesLoader.BACKGROUND_PATH, "menu");
         AudioPlayer.getInstance().play(AudioClip.MAIN_THEME, 0.75f, true,
@@ -105,25 +104,19 @@ public class Menu extends GameState {
     }
 
     private void loadButtons() {
-        AboutOverlay aboutOverlay = new AboutOverlay(overlayManager, 0, 0, 800, 600);
-        OptionsOverlay optionsOverlay = new OptionsOverlay(overlayManager, 0, 0, 800, 600);
-        ConnectionOverlay connectionOverlay = new ConnectionOverlay(overlayManager, 0, 0, 800, 600);
-        AccountOverlay accountOverlay = new AccountOverlay(overlayManager, 0, 0, 800, 600);
-        PlayOverlay playOverlay = new PlayOverlay(overlayManager, 0, 0, 800, 600);
-
         buttons[0] = createButton(Constants.LEFT_PADDING, Constants.PLAY_BUTTON_Y, "playButton",
-                () -> overlayManager.push(playOverlay));
+                () -> overlayManager.push(OverlayFactory.getOverlay(OverlayType.PLAY)));
         connectButton = createButton(Constants.LEFT_PADDING, Constants.CONNECT_BUTTON_Y, "connectButton",
-                () -> overlayManager.push(connectionOverlay));
+                () -> overlayManager.push(OverlayFactory.getOverlay(OverlayType.CONNECTION)));
         buttons[1] = connectButton;
         accountButton = createButton(Constants.LEFT_PADDING, Constants.CONNECT_BUTTON_Y, "accountButton",
-                () -> overlayManager.push(accountOverlay));
+                () -> overlayManager.push(OverlayFactory.getOverlay(OverlayType.ACCOUNT)));
         buttons[2] = createButton(Constants.LEFT_PADDING, Constants.SETTINGS_BUTTON_Y, "optionsButton",
-                () -> overlayManager.push(optionsOverlay));
+                () -> overlayManager.push(OverlayFactory.getOverlay(OverlayType.OPTIONS)));
         buttons[3] = createButton(Constants.LEFT_PADDING, Constants.CREDITS_BUTTON_Y, "aboutButton",
-                () -> overlayManager.push(aboutOverlay));
+                () -> overlayManager.push(OverlayFactory.getOverlay(OverlayType.ABOUT)));
         buttons[4] = createButton(Constants.LEFT_PADDING, Constants.QUIT_BUTTON_Y, "quitButton",
-                () -> pewPewSmash.conclude());
+                () -> GameManager.getInstance().conclude());
     }
 
     private Button createButton(int x, int y, String imageName, Runnable onClick) {

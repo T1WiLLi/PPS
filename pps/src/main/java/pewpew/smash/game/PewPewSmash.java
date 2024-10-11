@@ -7,8 +7,10 @@ import pewpew.smash.engine.GameTime;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.input.KeyHandler;
 import pewpew.smash.game.input.MouseHandler;
+import pewpew.smash.game.overlay.OverlayFactory;
 import pewpew.smash.game.settings.SettingsManager;
 import pewpew.smash.game.states.GameStateType;
+import pewpew.smash.game.states.StateFactory;
 import pewpew.smash.game.states.StateManager;
 import pewpew.smash.game.utils.FontFactory;
 
@@ -20,7 +22,11 @@ public class PewPewSmash extends Game {
 
     @Override
     public void init() {
-        this.stateManager = new StateManager(this);
+        GameManager.getInstance().setGame(this);
+
+        StateFactory.preLoadStates();
+
+        this.stateManager = new StateManager();
         this.stateManager.setState(GameStateType.MENU);
 
         new MouseHandler(this.stateManager);
@@ -30,6 +36,7 @@ public class PewPewSmash extends Game {
         SettingsManager.getInstance();
         AudioPlayer.getInstance();
         SettingsManager.getInstance().updateGameSettings();
+        OverlayFactory.preLoadOverlays();
     }
 
     @Override

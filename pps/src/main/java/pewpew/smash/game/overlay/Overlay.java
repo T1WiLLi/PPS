@@ -7,9 +7,6 @@ import java.awt.image.BufferedImage;
 import pewpew.smash.engine.Canvas;
 
 public abstract class Overlay {
-
-    protected final OverlayManager overlayManager;
-
     protected boolean isDisplaying;
     protected int x, y, width, height;
     protected BufferedImage background;
@@ -30,8 +27,7 @@ public abstract class Overlay {
 
     public abstract void handleKeyRelease(KeyEvent e);
 
-    public Overlay(OverlayManager overlayManager, int x, int y, int width, int height) {
-        this.overlayManager = overlayManager;
+    public Overlay(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -52,6 +48,6 @@ public abstract class Overlay {
     }
 
     protected final void close() {
-        overlayManager.pop();
+        OverlayManager.getInstance().pop();
     }
 }

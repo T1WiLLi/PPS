@@ -28,8 +28,8 @@ public class ConnectionOverlay extends Overlay {
 
     private BufferedImage loginPanel;
 
-    public ConnectionOverlay(OverlayManager overlayManager, int x, int y, int width, int height) {
-        super(overlayManager, x, y, width, height);
+    public ConnectionOverlay(int x, int y, int width, int height) {
+        super(x, y, width, height);
         loadBackground();
         loadButtons();
         loadTextFields();

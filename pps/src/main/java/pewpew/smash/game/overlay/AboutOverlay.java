@@ -19,8 +19,8 @@ public class AboutOverlay extends Overlay {
     private float scrollPosition = 600f;
     private float scrollSpeed = 0.3f;
 
-    public AboutOverlay(OverlayManager overlayManager, int x, int y, int width, int height) {
-        super(overlayManager, x, y, width, height);
+    public AboutOverlay(int x, int y, int width, int height) {
+        super(x, y, width, height);
         loadConfig();
         loadButtons();
         loadBackground();

@@ -2,37 +2,20 @@ package pewpew.smash.game.states;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.RenderingEngine;
-import pewpew.smash.game.PewPewSmash;
+import pewpew.smash.game.GameManager;
 
 public class StateManager {
 
     private GameState currentState;
-    private final PewPewSmash pewPewSmash;
-
-    private final Map<GameStateType, Supplier<GameState>> stateFactories = new HashMap<>();
-    private final Map<GameStateType, GameState> cachedStates = new HashMap<>();
-
-    public StateManager(PewPewSmash pewPewSmash) {
-        this.pewPewSmash = pewPewSmash;
-
-        stateFactories.put(GameStateType.MENU, () -> new Menu(this.pewPewSmash));
-        stateFactories.put(GameStateType.PLAYING, () -> new Playing(this.pewPewSmash));
-    }
 
     public void setState(GameStateType stateType) {
         if (stateType == GameStateType.QUIT) {
-            pewPewSmash.conclude();
+            GameManager.getInstance().conclude();
         } else {
-            if (!cachedStates.containsKey(stateType)) {
-                cachedStates.put(stateType, stateFactories.get(stateType).get());
-            }
-            this.currentState = cachedStates.get(stateType);
+            this.currentState = StateFactory.getState(stateType);
         }
     }
 
