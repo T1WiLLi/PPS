@@ -48,26 +48,8 @@ public class OptionsOverlay extends Overlay {
 
     @Override
     public void update() {
-        backButton.update();
-        saveButton.update();
-        keyBindButtons.forEach(Button::update);
-        antiAliasingCheckbox.update();
-        textAliasingCheckbox.update();
-        musicCheckbox.update();
-        sfxCheckbox.update();
-        uiCheckbox.update();
-        fpsCycler.update();
-        renderQualityCycler.update();
-        generalVolumeSlider.update();
-        sfxVolumeSlider.update();
-
-        if (generalVolumeSlider.isMouseOver() && generalVolumeSlider.isMousePressed()) {
-            SettingsManager.getInstance().getSettings().getAudio().setGeneralVolume(generalVolumeSlider.getValue());
-        }
-
-        if (sfxVolumeSlider.isMouseOver() && sfxVolumeSlider.isMousePressed()) {
-            SettingsManager.getInstance().getSettings().getAudio().setSfxVolume(sfxVolumeSlider.getValue());
-        }
+        updateButton();
+        updateSlider();
     }
 
     @Override
@@ -170,6 +152,31 @@ public class OptionsOverlay extends Overlay {
 
     @Override
     public void handleMouseDrag(MouseEvent e) {
+    }
+
+    private void updateButton() {
+        backButton.update();
+        saveButton.update();
+        keyBindButtons.forEach(Button::update);
+        antiAliasingCheckbox.update();
+        textAliasingCheckbox.update();
+        musicCheckbox.update();
+        sfxCheckbox.update();
+        uiCheckbox.update();
+        fpsCycler.update();
+        renderQualityCycler.update();
+        generalVolumeSlider.update();
+        sfxVolumeSlider.update();
+    }
+
+    private void updateSlider() {
+        if (generalVolumeSlider.isMouseOver() && generalVolumeSlider.isMousePressed()) {
+            SettingsManager.getInstance().getSettings().getAudio().setGeneralVolume(generalVolumeSlider.getValue());
+        }
+
+        if (sfxVolumeSlider.isMouseOver() && sfxVolumeSlider.isMousePressed()) {
+            SettingsManager.getInstance().getSettings().getAudio().setSfxVolume(sfxVolumeSlider.getValue());
+        }
     }
 
     private void renderKeyBindings(Canvas canvas, int x, int currentY) {

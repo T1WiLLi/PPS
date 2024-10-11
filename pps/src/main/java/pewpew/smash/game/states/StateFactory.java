@@ -5,8 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public class StateFactory {
-    private static final Map<GameStateType, Supplier<GameState>> stateSuppliers = new ConcurrentHashMap<>();
-    private static final Map<GameStateType, GameState> cachedStates = new ConcurrentHashMap<>();
+    private static final Map<GameStateType, Supplier<State>> stateSuppliers = new ConcurrentHashMap<>();
+    private static final Map<GameStateType, State> cachedStates = new ConcurrentHashMap<>();
 
     static {
         stateSuppliers.put(GameStateType.MENU, Menu::new);
@@ -19,7 +19,7 @@ public class StateFactory {
         }
     }
 
-    public static GameState getState(GameStateType stateType) {
+    public static State getState(GameStateType stateType) {
         return cachedStates.get(stateType);
     }
 }

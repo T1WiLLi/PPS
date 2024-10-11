@@ -19,7 +19,7 @@ import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
-public class Menu extends GameState {
+public class Menu implements State {
 
     private OverlayManager overlayManager;
     private Button[] buttons;

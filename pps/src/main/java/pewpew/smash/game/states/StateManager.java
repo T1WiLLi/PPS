@@ -9,7 +9,7 @@ import pewpew.smash.game.GameManager;
 
 public class StateManager {
 
-    private GameState currentState;
+    private State currentState;
 
     public void setState(GameStateType stateType) {
         if (stateType == GameStateType.QUIT) {
@@ -19,7 +19,7 @@ public class StateManager {
         }
     }
 
-    public GameState getCurrentState() {
+    public State getCurrentState() {
         return this.currentState;
     }
 
