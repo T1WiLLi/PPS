@@ -383,7 +383,7 @@ public class OptionsOverlay extends Overlay {
     }
 
     private void loadCyclers() {
-        fpsCycler = new Cycler(width / 2 + 125, 248, 25, 25, new String[] { "30", "60", "144" },
+        fpsCycler = new Cycler(width / 2 + 125, 248, 25, 25, new String[] { "30", "60", "120" },
                 String.valueOf(SettingsManager.getInstance().getSettings().getVideo().getFps()).trim());
         renderQualityCycler = new Cycler(width / 2 + 270, 350, 25, 25, new String[] { "Quality", "Fast" },
                 SettingsManager.getInstance().getSettings().getVideo().getRenderQuality().trim());
