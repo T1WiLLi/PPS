@@ -1,1 +1,1 @@
-# PewPew Smash (PPS) Documentation
+# PewPewSmash (PPS) Documentation
