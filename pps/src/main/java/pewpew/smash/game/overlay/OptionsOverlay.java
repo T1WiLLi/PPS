@@ -37,8 +37,8 @@ public class OptionsOverlay extends Overlay {
     private boolean isDraggingGeneralVolumeSlider;
     private boolean isDraggingSfxVolumeSlider;
 
-    public OptionsOverlay(OverlayManager overlayManager, int x, int y, int width, int height) {
-        super(overlayManager, x, y, width, height);
+    public OptionsOverlay(int x, int y, int width, int height) {
+        super(x, y, width, height);
         this.keyBindButtons = new ArrayList<>();
         loadButtons();
         loadCheckboxes();

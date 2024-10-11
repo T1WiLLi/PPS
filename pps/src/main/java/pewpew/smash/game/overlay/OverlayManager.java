@@ -8,10 +8,20 @@ import java.util.function.Consumer;
 import pewpew.smash.engine.Canvas;
 
 public class OverlayManager {
+
+    private static OverlayManager instance;
+
     private Deque<Overlay> overlays;
 
-    public OverlayManager() {
-        overlays = new ArrayDeque<>();
+    public synchronized static OverlayManager getInstance() {
+        if (instance == null) {
+            synchronized (OverlayManager.class) {
+                if (instance == null) {
+                    instance = new OverlayManager();
+                }
+            }
+        }
+        return instance;
     }
 
     public void push(Overlay overlay) {
@@ -39,9 +49,7 @@ public class OverlayManager {
     }
 
     public void render(Canvas canvas) {
-        for (Overlay overlay : overlays) {
-            overlay.render(canvas);
-        }
+        overlays.forEach(overlay -> overlay.render(canvas));
     }
 
     public boolean handleMousePress(MouseEvent e) {
@@ -73,5 +81,9 @@ public class OverlayManager {
             eventHandler.accept(overlays.peek());
         }
         return !overlays.isEmpty();
+    }
+
+    private OverlayManager() {
+        overlays = new ArrayDeque<>();
     }
 }

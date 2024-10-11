@@ -24,8 +24,8 @@ public class PlayOverlay extends Overlay {
     private ButtonImage hoveredButton = null;
     private Map<ButtonImage, BufferedImage> blurredBackgrounds = new HashMap<>();
 
-    public PlayOverlay(OverlayManager overlayManager, int x, int y, int width, int height) {
-        super(overlayManager, x, y, width, height);
+    public PlayOverlay(int x, int y, int width, int height) {
+        super(x, y, width, height);
         loadBackground();
         loadButtons();
         generateBlurredBackgrounds();
