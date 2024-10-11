@@ -138,13 +138,13 @@ public class PlayOverlay extends Overlay {
     }
 
     private void loadButtons() {
-        this.buttons[0] = new ButtonImage(Constants.LEFT_PADDING, 300 - 120, 230, 240,
+        this.buttons[0] = new ButtonImage(Constants.LEFT_PADDING, 320 - 120, 230, 240,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/sandbox"),
                 () -> System.out.println("Sandbox"));
-        this.buttons[1] = new ButtonImage(Constants.LEFT_PADDING + 230 + 25, 300 - 120, 230, 240,
+        this.buttons[1] = new ButtonImage(Constants.LEFT_PADDING + 230 + 25, 320 - 120, 230, 240,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/battleRoyale"),
                 () -> System.out.println("Battle Royale"));
-        this.buttons[2] = new ButtonImage(Constants.RIGHT_PADDING - 20, 300 - 120, 230, 240,
+        this.buttons[2] = new ButtonImage(Constants.RIGHT_PADDING - 20, 320 - 120, 230, 240,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/arena"),
                 () -> System.out.println("Arena"));
         this.backButton = new Button(

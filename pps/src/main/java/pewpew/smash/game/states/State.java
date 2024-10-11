@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 
 import pewpew.smash.engine.Canvas;
 
-public abstract class GameState {
+public interface State {
 
     public abstract void update();
 

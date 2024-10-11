@@ -5,7 +5,7 @@ import java.awt.event.MouseEvent;
 
 import pewpew.smash.engine.Canvas;
 
-public class Playing extends GameState {
+public class Playing implements State {
 
     public Playing() {
     }

@@ -38,6 +38,14 @@ public enum FontFactory {
         return metrics.stringWidth(text);
     }
 
+    public int getFontHeight(Canvas canvas) {
+        Graphics2D g = canvas.getGraphics2D();
+        if (g == null) {
+            throw new IllegalStateException("Graphics context is not available");
+        }
+        return g.getFontMetrics().getAscent();
+    }
+
     public Font getFont() {
         return this.font;
     }
