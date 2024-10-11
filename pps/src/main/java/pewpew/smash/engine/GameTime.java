@@ -5,8 +5,8 @@ import lombok.Setter;
 public class GameTime {
 
     @Setter
-    private int FPS_TARGET = 144;
-    private int UPS_TARGET = 200;
+    private int FPS_TARGET = 120;
+    private int UPS_TARGET = 240;
 
     private static volatile GameTime instance;
 
