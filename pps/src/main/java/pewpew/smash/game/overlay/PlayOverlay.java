@@ -11,6 +11,8 @@ import java.util.Map;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.constants.Constants;
+import pewpew.smash.game.states.GameStateType;
+import pewpew.smash.game.states.StateManager;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.ui.ButtonImage;
 import pewpew.smash.game.utils.FontFactory;
@@ -140,7 +142,7 @@ public class PlayOverlay extends Overlay {
     private void loadButtons() {
         this.buttons[0] = new ButtonImage(Constants.LEFT_PADDING, 320 - 120, 230, 240,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/sandbox"),
-                () -> System.out.println("Sandbox"));
+                () -> StateManager.getInstance().setState(GameStateType.PLAYING));
         this.buttons[1] = new ButtonImage(Constants.LEFT_PADDING + 230 + 25, 320 - 120, 230, 240,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/battleRoyale"),
                 () -> System.out.println("Battle Royale"));

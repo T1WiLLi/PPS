@@ -9,7 +9,20 @@ import pewpew.smash.game.GameManager;
 
 public class StateManager {
 
+    private static StateManager instance;
+
     private State currentState;
+
+    public synchronized static StateManager getInstance() {
+        if (instance == null) {
+            synchronized (StateManager.class) {
+                if (instance == null) {
+                    instance = new StateManager();
+                }
+            }
+        }
+        return instance;
+    }
 
     public void setState(GameStateType stateType) {
         if (stateType == GameStateType.QUIT) {
