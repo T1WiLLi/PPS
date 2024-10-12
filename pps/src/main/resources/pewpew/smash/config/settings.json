@@ -1,6 +1,6 @@
 {
   "video" : {
-    "fps" : 144,
+    "fps" : 60,
     "antiAliasing" : true,
     "textAliasing" : true,
     "renderQuality" : "quality"
@@ -28,7 +28,7 @@
   "audio" : {
     "generalVolume" : 1.0,
     "sfxVolume" : 0.20624999701976776,
-    "music" : false,
+    "music" : true,
     "sfx" : true,
     "ui" : true
   }

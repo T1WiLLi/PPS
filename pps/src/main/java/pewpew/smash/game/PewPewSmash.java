@@ -7,6 +7,7 @@ import pewpew.smash.engine.GameTime;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.input.KeyHandler;
 import pewpew.smash.game.input.MouseHandler;
+import pewpew.smash.game.settings.SettingsManager;
 import pewpew.smash.game.states.GameStateType;
 import pewpew.smash.game.states.StateManager;
 import pewpew.smash.game.utils.FontFactory;
@@ -26,11 +27,13 @@ public class PewPewSmash extends Game {
 
         new MouseHandler(this.stateManager);
         new KeyHandler(this.stateManager);
+
+        SettingsManager.getInstance().updateGameSettings();
     }
 
     @Override
-    public void update() {
-        this.stateManager.update();
+    public void update(double deltaTime) {
+        this.stateManager.update(deltaTime);
     }
 
     @Override

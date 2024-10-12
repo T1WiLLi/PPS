@@ -6,7 +6,7 @@ public abstract class Game {
 
     public abstract void init();
 
-    public abstract void update();
+    public abstract void update(double deltaTime);
 
     public abstract void render(Canvas canvas);
 
@@ -32,7 +32,7 @@ public abstract class Game {
 
         while (playing) {
             while (GameTime.getInstance().shouldUpdate()) {
-                update();
+                update(GameTime.getInstance().getDeltaTime());
             }
 
             if (GameTime.getInstance().shouldRender()) {

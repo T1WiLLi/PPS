@@ -11,7 +11,7 @@ public class Playing implements State {
     }
 
     @Override
-    public void update() {
+    public void update(double deltaTime) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
