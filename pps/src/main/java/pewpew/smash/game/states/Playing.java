@@ -1,5 +1,6 @@
 package pewpew.smash.game.states;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
@@ -12,14 +13,12 @@ public class Playing implements State {
 
     @Override
     public void update(double deltaTime) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+
     }
 
     @Override
     public void render(Canvas canvas) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'render'");
+        canvas.renderString("HI GUYS", 400, 300, Color.RED);
     }
 
     @Override
