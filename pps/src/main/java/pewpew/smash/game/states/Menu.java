@@ -34,7 +34,7 @@ public class Menu implements State {
     }
 
     @Override
-    public void update() {
+    public void update(double deltaTime) {
         if (overlayManager.hasActiveOverlays()) {
             overlayManager.update();
             return;

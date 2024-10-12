@@ -23,9 +23,9 @@ public class StateManager {
         return this.currentState;
     }
 
-    public void update() {
+    public void update(double deltaTime) {
         if (currentState != null) {
-            currentState.update();
+            currentState.update(deltaTime);
         }
     }
 

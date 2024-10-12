@@ -21,6 +21,7 @@ public class GameTime {
     private long lastUpdateTime;
     private long lastRenderTime;
     private long accumulatedTime;
+    private double deltaTime;
     private final long UPDATE_INTERVAL;
 
     private GameTime() {
@@ -29,6 +30,7 @@ public class GameTime {
         lastRenderTime = System.nanoTime();
         UPDATE_INTERVAL = 1000000000 / UPS_TARGET;
         accumulatedTime = 0;
+        deltaTime = 0.0;
     }
 
     public static GameTime getInstance() {
@@ -42,11 +44,18 @@ public class GameTime {
         return instance;
     }
 
+    public double getDeltaTime() {
+        return deltaTime;
+    }
+
     public boolean shouldUpdate() {
         long currentTime = System.nanoTime();
-        accumulatedTime += currentTime - lastUpdateTime;
+        long elapsedTime = currentTime - lastUpdateTime;
         lastUpdateTime = currentTime;
 
+        deltaTime = elapsedTime / 1_000_000_000.0;
+
+        accumulatedTime += elapsedTime;
         if (accumulatedTime >= UPDATE_INTERVAL) {
             accumulatedTime -= UPDATE_INTERVAL;
             updateUPS();
