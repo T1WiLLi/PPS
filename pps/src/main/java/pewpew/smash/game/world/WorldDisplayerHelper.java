@@ -42,6 +42,11 @@ public class WorldDisplayerHelper {
     }
 
     public static void main(String[] args) {
-        WorldDisplayerHelper.displayWorld(WorldGenerator.getWorldImage(new WorldGenerator().getWorldData()));
+        WorldGenerator worldGenerator = new WorldGenerator();
+        long startTime = System.currentTimeMillis();
+        displayWorld(WorldGenerator.getWorldImage(worldGenerator.getWorldData()));
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken to display world: " + (endTime - startTime) + " milliseconds.");
+
     }
 }
