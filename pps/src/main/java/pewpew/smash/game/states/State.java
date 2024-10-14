@@ -7,7 +7,7 @@ import pewpew.smash.engine.Canvas;
 
 public interface State {
 
-    public abstract void update();
+    public abstract void update(double deltaTime);
 
     public abstract void render(Canvas canvas);
 
