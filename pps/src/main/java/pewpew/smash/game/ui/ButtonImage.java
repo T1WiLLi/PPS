@@ -23,7 +23,8 @@ public class ButtonImage extends Button {
     public void update() {
         if (mouseOver) {
             scaleOnMouseOver();
-        } else if (mousePressed && mouseOver) {
+        }
+        if (mousePressed && mouseOver) {
             onClick.run();
             resetState();
         }
