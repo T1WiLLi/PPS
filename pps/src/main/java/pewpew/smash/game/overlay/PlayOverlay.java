@@ -2,47 +2,42 @@ package pewpew.smash.game.overlay;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.ConvolveOp;
-import java.awt.image.Kernel;
-import java.util.HashMap;
-import java.util.Map;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.constants.Constants;
-import pewpew.smash.game.states.GameStateType;
-import pewpew.smash.game.states.StateManager;
 import pewpew.smash.game.ui.Button;
-import pewpew.smash.game.ui.ButtonImage;
 import pewpew.smash.game.utils.FontFactory;
 import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class PlayOverlay extends Overlay {
 
-    private ButtonImage[] buttons = new ButtonImage[3];
+    private Button joinButton;
+    private Button hostButton;
     private Button backButton;
-    private ButtonImage hoveredButton = null;
-    private Map<ButtonImage, BufferedImage> blurredBackgrounds = new HashMap<>();
+    private String description = "";
 
     public PlayOverlay(int x, int y, int width, int height) {
         super(x, y, width, height);
         loadBackground();
         loadButtons();
-        generateBlurredBackgrounds();
     }
 
     @Override
     public void update() {
-        updateButtons();
+        joinButton.update();
+        hostButton.update();
+        backButton.update();
     }
 
     @Override
     public void render(Canvas canvas) {
-        renderBackground(canvas);
-        renderButtons(canvas);
+        canvas.renderImage(background, x, y, width, height);
+        joinButton.render(canvas);
+        hostButton.render(canvas);
+        backButton.render(canvas);
         renderTitle(canvas);
+        renderDescription(canvas);
         FontFactory.resetFont(canvas);
     }
 
@@ -64,67 +59,40 @@ public class PlayOverlay extends Overlay {
 
     @Override
     public void handleMouseDrag(MouseEvent e) {
+
     }
 
     @Override
     public void handleKeyPress(KeyEvent e) {
+
     }
 
     @Override
     public void handleKeyRelease(KeyEvent e) {
-    }
 
-    private void updateButtons() {
-        for (ButtonImage buttonImage : buttons) {
-            buttonImage.update();
-        }
-        backButton.update();
-    }
-
-    private void renderBackground(Canvas canvas) {
-        if (hoveredButton != null && blurredBackgrounds.containsKey(hoveredButton)) {
-            canvas.renderImage(blurredBackgrounds.get(hoveredButton), x, y, width, height);
-        } else {
-            canvas.renderImage(background, x, y, width, height);
-        }
-    }
-
-    private void renderButtons(Canvas canvas) {
-        for (ButtonImage buttonImage : buttons) {
-            buttonImage.render(canvas);
-        }
-        backButton.render(canvas);
-    }
-
-    private void renderTitle(Canvas canvas) {
-        FontFactory.IMPACT_X_LARGE.applyFont(canvas);
-        String title = "Choose Your Game Mode!";
-        int titleWidth = FontFactory.IMPACT_X_LARGE.getFontWidth(title, canvas);
-        canvas.renderString(title, (width - titleWidth) / 2, 180);
     }
 
     private void handleMouseInput(boolean isPressed) {
-        for (Button button : buttons) {
-            setButtonPressedState(button, isPressed);
-        }
+        setButtonPressedState(joinButton, isPressed);
+        setButtonPressedState(hostButton, isPressed);
         setButtonPressedState(backButton, isPressed);
     }
 
     private void resetButtonHoverStates() {
-        for (Button button : buttons) {
-            button.setMouseOver(false);
-        }
+        joinButton.setMouseOver(false);
+        hostButton.setMouseOver(false);
         backButton.setMouseOver(false);
+        description = "Select an option...";
     }
 
     private void updateButtonHoverStates() {
-        hoveredButton = null;
-        for (ButtonImage button : buttons) {
-            boolean isHovered = HelpMethods.isIn(button.getBounds());
-            button.setMouseOver(isHovered);
-            if (isHovered) {
-                hoveredButton = button;
-            }
+        if (HelpMethods.isIn(joinButton.getBounds())) {
+            joinButton.setMouseOver(true);
+            description = "Join an existing game by entering the server IP. Play with your friends.";
+
+        } else if (HelpMethods.isIn(hostButton.getBounds())) {
+            hostButton.setMouseOver(true);
+            description = "Host a new game by entering server details. Don't forget to notify your friends !";
         }
         backButton.setMouseOver(HelpMethods.isIn(backButton.getBounds()));
     }
@@ -135,44 +103,42 @@ public class PlayOverlay extends Overlay {
         }
     }
 
+    private void renderDescription(Canvas canvas) {
+        if (!description.isEmpty()) {
+            FontFactory.IMPACT_SMALL.applyFont(canvas);
+            int descriptionWidth = FontFactory.IMPACT_SMALL.getFontWidth(description, canvas);
+            canvas.renderString(description, (width - descriptionWidth) / 2, height - 50);
+        }
+    }
+
+    private void renderTitle(Canvas canvas) {
+        FontFactory.IMPACT_X_LARGE.applyFont(canvas);
+        String title = "Choose Your Option!";
+        int titleWidth = FontFactory.IMPACT_X_LARGE.getFontWidth(title, canvas);
+        canvas.renderString(title, (width - titleWidth) / 2, 180);
+    }
+
     private void loadBackground() {
         this.background = ResourcesLoader.getImage(ResourcesLoader.BACKGROUND_PATH, "overlay");
     }
 
     private void loadButtons() {
-        this.buttons[0] = new ButtonImage(Constants.LEFT_PADDING, 320 - 120, 230, 240,
-                ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/sandbox"),
-                () -> StateManager.getInstance().setState(GameStateType.PLAYING));
-        this.buttons[1] = new ButtonImage(Constants.LEFT_PADDING + 230 + 25, 320 - 120, 230, 240,
-                ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/battleRoyale"),
-                () -> System.out.println("Battle Royale"));
-        this.buttons[2] = new ButtonImage(Constants.RIGHT_PADDING - 20, 320 - 120, 230, 240,
-                ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/arena"),
-                () -> System.out.println("Arena"));
-        this.backButton = new Button(
-                Constants.LEFT_PADDING,
-                Constants.TOP_PADDING,
+        this.joinButton = new Button(Constants.LEFT_PADDING + 100, 320, 230, 60,
+                ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/joinButton"),
+                () -> {
+                    close();
+                    OverlayManager.getInstance().push(OverlayFactory.getOverlay(OverlayType.JOIN));
+                });
+
+        this.hostButton = new Button(Constants.RIGHT_PADDING - 100, 320, 230, 60,
+                ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/hostButton"),
+                () -> {
+                    close();
+                    OverlayManager.getInstance().push(OverlayFactory.getOverlay(OverlayType.HOST));
+                });
+
+        this.backButton = new Button(Constants.LEFT_PADDING, Constants.TOP_PADDING,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/backButton"),
                 this::close);
     }
-
-    private void generateBlurredBackgrounds() {
-        for (ButtonImage buttonImage : buttons) {
-            blurredBackgrounds.put(buttonImage, applyBlurFilter(buttonImage.getNormalSprite()));
-        }
-    }
-
-    private BufferedImage applyBlurFilter(BufferedImage image) {
-        int kernelSize = 15;
-        float[] matrix = new float[kernelSize * kernelSize];
-        float value = 1.0f / (kernelSize * kernelSize);
-
-        for (int i = 0; i < matrix.length; i++) {
-            matrix[i] = value;
-        }
-
-        BufferedImageOp op = new ConvolveOp(new Kernel(kernelSize, kernelSize, matrix), ConvolveOp.EDGE_NO_OP, null);
-        return op.filter(image, null);
-    }
-
 }

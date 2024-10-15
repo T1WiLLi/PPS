@@ -5,5 +5,7 @@ public enum OverlayType {
     OPTIONS,
     CONNECTION,
     ACCOUNT,
-    PLAY;
+    PLAY,
+    HOST,
+    JOIN;
 }
