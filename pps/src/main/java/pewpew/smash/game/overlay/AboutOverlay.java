@@ -9,7 +9,6 @@ import pewpew.smash.game.config.ConfigReader;
 import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.utils.FontFactory;
-import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class AboutOverlay extends Overlay {
@@ -42,17 +41,17 @@ public class AboutOverlay extends Overlay {
 
     @Override
     public void handleMousePress(MouseEvent e) {
-        handleMouseInput(e, true);
+        this.backButton.handleMouseInput(true);
     }
 
     @Override
     public void handleMouseRelease(MouseEvent e) {
-        handleMouseInput(e, false);
+        this.backButton.handleMouseInput(false);
     }
 
     @Override
     public void handleMouseMove(MouseEvent e) {
-        this.backButton.setMouseOver(HelpMethods.isIn(backButton.getBounds()));
+        this.backButton.handleMouseMove();
     }
 
     @Override
@@ -93,12 +92,6 @@ public class AboutOverlay extends Overlay {
             for (AboutConfig.CreditSection section : aboutConfig.getCredits()) {
                 currentY = renderCreditSection(canvas, centerX, currentY, section);
             }
-        }
-    }
-
-    private void handleMouseInput(MouseEvent e, boolean isPressed) {
-        if (HelpMethods.isIn(backButton.getBounds())) {
-            this.backButton.setMousePressed(isPressed);
         }
     }
 
