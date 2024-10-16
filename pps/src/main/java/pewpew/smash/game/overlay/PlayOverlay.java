@@ -1,8 +1,5 @@
 package pewpew.smash.game.overlay;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.ui.Button;
@@ -38,33 +35,6 @@ public class PlayOverlay extends Overlay {
         renderTitle(canvas);
         renderDescription(canvas);
         FontFactory.resetFont(canvas);
-    }
-
-    @Override
-    public void handleMousePress(MouseEvent e) {
-    }
-
-    @Override
-    public void handleMouseRelease(MouseEvent e) {
-    }
-
-    @Override
-    public void handleMouseMove(MouseEvent e) {
-    }
-
-    @Override
-    public void handleMouseDrag(MouseEvent e) {
-
-    }
-
-    @Override
-    public void handleKeyPress(KeyEvent e) {
-
-    }
-
-    @Override
-    public void handleKeyRelease(KeyEvent e) {
-
     }
 
     private void renderDescription(Canvas canvas) {

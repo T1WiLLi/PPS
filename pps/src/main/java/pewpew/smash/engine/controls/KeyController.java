@@ -2,11 +2,16 @@ package pewpew.smash.engine.controls;
 
 import java.util.Map;
 
+import lombok.Getter;
+
 import java.util.HashMap;
 
 import java.awt.event.KeyEvent;
 
 public abstract class KeyController {
+
+    @Getter
+    private static KeyEvent keyPressed;
 
     private final Map<Integer, Boolean> pressedKeys;
 
@@ -38,6 +43,7 @@ public abstract class KeyController {
 
     public void keyPressed(KeyEvent e) {
         pressedKeys.computeIfPresent(e.getKeyCode(), (k, v) -> true);
+        keyPressed = e;
     }
 
     public void keyReleased(KeyEvent e) {

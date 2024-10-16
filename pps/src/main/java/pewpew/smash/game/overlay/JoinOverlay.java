@@ -61,28 +61,12 @@ public class JoinOverlay extends Overlay {
     }
 
     @Override
-    public void handleMouseRelease(MouseEvent e) {
-    }
-
-    @Override
-    public void handleMouseMove(MouseEvent e) {
-    }
-
-    @Override
-    public void handleMouseDrag(MouseEvent e) {
-    }
-
-    @Override
     public void handleKeyPress(KeyEvent e) {
         if (ipInput.isFocused()) {
             ipInput.keyPressed(e);
         } else if (portInput.isFocused()) {
             portInput.keyPressed(e);
         }
-    }
-
-    @Override
-    public void handleKeyRelease(KeyEvent e) {
     }
 
     private void loadInputs() {
