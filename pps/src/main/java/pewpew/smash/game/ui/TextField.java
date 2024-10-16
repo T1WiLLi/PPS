@@ -9,6 +9,9 @@ import java.awt.image.BufferedImage;
 
 import lombok.Getter;
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.engine.controls.MouseController;
+import pewpew.smash.game.utils.HelpMethods;
+import pewpew.smash.engine.controls.KeyController;
 
 public class TextField extends UiElement {
 
@@ -36,13 +39,15 @@ public class TextField extends UiElement {
 
     @Override
     protected void loadSprites(BufferedImage spriteSheet) {
-        // No sprites to load for TextField
     }
 
     @Override
     public void update() {
-        updateScaledBounds();
+        super.update();
         updateCursorBlink();
+        if (focused) {
+            handleKeyEvents();
+        }
     }
 
     @Override
@@ -52,6 +57,21 @@ public class TextField extends UiElement {
         renderBackground(canvas);
         renderText(canvas);
         renderCursor(canvas);
+    }
+
+    @Override
+    protected void handleMouseInput() {
+        if (MouseController.isMousePressed()) {
+            if (HelpMethods.isIn(bounds)) {
+                setFocused(true);
+            } else {
+                setFocused(false);
+            }
+        }
+    }
+
+    @Override
+    protected void handleMouseMove() {
     }
 
     private void renderBackground(Canvas canvas) {
@@ -106,29 +126,26 @@ public class TextField extends UiElement {
         }
     }
 
-    public void keyPressed(KeyEvent e) {
-        if (focused) {
-            handleKeyEvent(e);
-        }
-    }
-
-    private void handleKeyEvent(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_BACK_SPACE:
-                handleBackspace();
-                break;
-            case KeyEvent.VK_DELETE:
-                handleDelete();
-                break;
-            case KeyEvent.VK_LEFT:
-                moveCursorLeft();
-                break;
-            case KeyEvent.VK_RIGHT:
-                moveCursorRight();
-                break;
-            default:
-                handleCharacterInput(e);
-                break;
+    private void handleKeyEvents() {
+        KeyEvent e = KeyController.getKeyPressed();
+        if (e != null) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_BACK_SPACE:
+                    handleBackspace();
+                    break;
+                case KeyEvent.VK_DELETE:
+                    handleDelete();
+                    break;
+                case KeyEvent.VK_LEFT:
+                    moveCursorLeft();
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    moveCursorRight();
+                    break;
+                default:
+                    handleCharacterInput(e);
+                    break;
+            }
         }
     }
 
@@ -194,17 +211,5 @@ public class TextField extends UiElement {
         } else if (cursorX < textOffset) {
             textOffset = cursorX;
         }
-    }
-
-    @Override
-    protected void handleMouseInput() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleMouseInput'");
-    }
-
-    @Override
-    protected void handleMouseMove() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleMouseMove'");
     }
 }

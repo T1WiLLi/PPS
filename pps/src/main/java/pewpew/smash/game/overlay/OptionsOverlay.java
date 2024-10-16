@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
+@FunctionalOverlay({ "HandleMousePress", "HandleMouseRelease", "HandleKeyPress" })
 public class OptionsOverlay extends Overlay {
 
     private Button backButton, saveButton;
@@ -82,10 +83,6 @@ public class OptionsOverlay extends Overlay {
     }
 
     @Override
-    public void handleMouseMove(MouseEvent e) {
-    }
-
-    @Override
     public void handleKeyPress(KeyEvent e) {
         if (awaitingKeyBind != null) {
             String keyName = KeyEvent.getKeyText(e.getKeyCode());
@@ -98,14 +95,6 @@ public class OptionsOverlay extends Overlay {
             }
             awaitingKeyBind = null;
         }
-    }
-
-    @Override
-    public void handleKeyRelease(KeyEvent e) {
-    }
-
-    @Override
-    public void handleMouseDrag(MouseEvent e) {
     }
 
     private void updateButton() {
