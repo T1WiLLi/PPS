@@ -10,6 +10,7 @@ import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.audio.AudioPlayer.SoundType;
 import pewpew.smash.game.constants.Constants;
+import pewpew.smash.game.utils.HelpMethods;
 
 @ToString
 public class Button extends UiElement {
@@ -34,6 +35,7 @@ public class Button extends UiElement {
         loadSprites(spriteSheet);
     }
 
+    @Override
     public void update() {
         index = 0;
         updateState();
@@ -45,8 +47,21 @@ public class Button extends UiElement {
         updateScaledBounds();
     }
 
+    @Override
     public void render(Canvas canvas) {
         canvas.renderImage(sprites[index], xPos, yPos, width, height);
+    }
+
+    @Override
+    public void handleMouseInput(boolean isPressed) {
+        if (HelpMethods.isIn(bounds)) {
+            setMousePressed(isPressed);
+        }
+    }
+
+    @Override
+    public void handleMouseMove() {
+        setMouseOver(HelpMethods.isIn(bounds));
     }
 
     private void updateState() {
