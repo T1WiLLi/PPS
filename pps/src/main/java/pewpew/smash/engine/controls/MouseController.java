@@ -3,21 +3,13 @@ package pewpew.smash.engine.controls;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import lombok.Getter;
+
 public abstract class MouseController extends MouseAdapter {
+    @Getter
     private static int mouseX = 0, mouseY = 0;
+    @Getter
     private static boolean mousePressed = false;
-
-    public static int getMouseX() {
-        return mouseX;
-    }
-
-    public static int getMouseY() {
-        return mouseY;
-    }
-
-    public static boolean isPressed() {
-        return mousePressed;
-    }
 
     @Override
     public void mouseMoved(MouseEvent e) {

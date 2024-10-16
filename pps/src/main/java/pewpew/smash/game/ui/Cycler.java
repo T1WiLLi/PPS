@@ -66,8 +66,7 @@ public class Cycler extends UiElement {
 
     @Override
     protected void handleMouseInput() {
-        // Check if mouse is over the Cycler and has been pressed
-        if (HelpMethods.isIn(bounds) && MouseController.isPressed() && !isAnimating) {
+        if (HelpMethods.isIn(bounds) && MouseController.isMousePressed() && !isAnimating) {
             nextCycle();
             onCycle.run();
             AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
@@ -76,7 +75,6 @@ public class Cycler extends UiElement {
 
     @Override
     protected void handleMouseMove() {
-        // Intentionally left blank, but could be customized to show hover effects
     }
 
     public String getCurrentCycle() {
