@@ -10,8 +10,8 @@ import java.awt.image.BufferedImage;
 import lombok.Getter;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.MouseController;
+import pewpew.smash.game.input.KeyHandler;
 import pewpew.smash.game.utils.HelpMethods;
-import pewpew.smash.engine.controls.KeyController;
 
 public class TextField extends UiElement {
 
@@ -127,7 +127,7 @@ public class TextField extends UiElement {
     }
 
     private void handleKeyEvents() {
-        KeyEvent e = KeyController.getKeyPressed();
+        KeyEvent e = KeyHandler.getLastEvent();
         if (e != null) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_BACK_SPACE:

@@ -1,14 +1,11 @@
 package pewpew.smash.game.overlay;
 
 import java.awt.Color;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.ui.TextField;
 import pewpew.smash.game.utils.FontFactory;
-import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class JoinOverlay extends Overlay {
@@ -44,29 +41,6 @@ public class JoinOverlay extends Overlay {
         playButton.render(canvas);
         backButton.render(canvas);
         renderErrorMessage(canvas);
-    }
-
-    @Override
-    public void handleMousePress(MouseEvent e) {
-        if (HelpMethods.isIn(ipInput.getBounds())) {
-            ipInput.setFocused(true);
-            portInput.setFocused(false);
-        } else if (HelpMethods.isIn(portInput.getBounds())) {
-            portInput.setFocused(true);
-            ipInput.setFocused(false);
-        } else {
-            ipInput.setFocused(false);
-            portInput.setFocused(false);
-        }
-    }
-
-    @Override
-    public void handleKeyPress(KeyEvent e) {
-        if (ipInput.isFocused()) {
-            ipInput.keyPressed(e);
-        } else if (portInput.isFocused()) {
-            portInput.keyPressed(e);
-        }
     }
 
     private void loadInputs() {

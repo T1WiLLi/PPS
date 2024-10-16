@@ -12,7 +12,6 @@ import pewpew.smash.game.utils.ResourcesLoader;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
-@FunctionalOverlay({ "HandleMousePress", "HandleMouseRelease", "HandleKeyPress" })
+@FunctionalOverlay("HandleKeyPress")
 public class OptionsOverlay extends Overlay {
 
     private Button backButton, saveButton;
@@ -67,19 +66,6 @@ public class OptionsOverlay extends Overlay {
         renderVideoSettings(canvas, width / 2 + 25, 240);
         renderAudioSettings(canvas, width / 2 + 25, 420);
         FontFactory.resetFont(canvas);
-    }
-
-    @Override
-    public void handleMousePress(MouseEvent e) {
-        if (awaitingKeyBind != null)
-            return;
-    }
-
-    @Override
-    public void handleMouseRelease(MouseEvent e) {
-        backButton.setMousePressed(false);
-        saveButton.setMousePressed(false);
-        keyBindButtons.forEach(button -> button.setMousePressed(false));
     }
 
     @Override
