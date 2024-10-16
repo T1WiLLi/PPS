@@ -1,9 +1,6 @@
 package pewpew.smash.game.overlay;
 
 import pewpew.smash.engine.Canvas;
-import pewpew.smash.game.audio.AudioClip;
-import pewpew.smash.game.audio.AudioPlayer;
-import pewpew.smash.game.audio.AudioPlayer.SoundType;
 import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.settings.SettingsManager;
 import pewpew.smash.game.ui.Button;
@@ -11,7 +8,6 @@ import pewpew.smash.game.ui.Checkbox;
 import pewpew.smash.game.ui.Cycler;
 import pewpew.smash.game.ui.Slider;
 import pewpew.smash.game.utils.FontFactory;
-import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 import java.awt.Color;
@@ -79,7 +75,6 @@ public class OptionsOverlay extends Overlay {
 
         handleButtonPress();
         handleCheckboxPress();
-        handleCyclerPress();
     }
 
     @Override
@@ -212,25 +207,6 @@ public class OptionsOverlay extends Overlay {
         musicCheckbox.handleMouseInput();
         sfxCheckbox.handleMouseInput();
         uiCheckbox.handleMouseInput();
-    }
-
-    private void handleCyclerPress() {
-        fpsCycler.handleMouseInput();
-        renderQualityCycler.handleMouseInput();
-        if (HelpMethods.isIn(fpsCycler.getBounds())) {
-            fpsCycler.nextCycle();
-            SettingsManager.getInstance().getSettings().getVideo()
-                    .setFps(Integer.parseInt(fpsCycler.getCurrentCycle()));
-            AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
-
-        }
-        if (HelpMethods.isIn(renderQualityCycler.getBounds())) {
-            renderQualityCycler.nextCycle();
-            SettingsManager.getInstance().getSettings().getVideo()
-                    .setRenderQuality(renderQualityCycler.getCurrentCycle().toLowerCase());
-            AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
-
-        }
     }
 
     private void startKeyBindingProcess(String action, String currentKey) {
