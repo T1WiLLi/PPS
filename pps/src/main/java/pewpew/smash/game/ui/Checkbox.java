@@ -10,9 +10,6 @@ import pewpew.smash.game.utils.ResourcesLoader;
 import java.awt.image.BufferedImage;
 import java.awt.Color;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,11 +20,14 @@ public class Checkbox extends UiElement {
     @Setter
     private boolean checked;
 
+    private Runnable onCheck;
+
     private BufferedImage checkSprite;
 
-    public Checkbox(int x, int y) {
+    public Checkbox(int x, int y, Runnable onCheck) {
         super(x, y, 25, 25);
         this.checked = false;
+        this.onCheck = onCheck;
         loadSprites(ResourcesLoader.getImage(ResourcesLoader.MISC_PATH, "check"));
     }
 
@@ -44,16 +44,13 @@ public class Checkbox extends UiElement {
         }
     }
 
-    public void handleMouseInput(boolean isPressed, Consumer<Boolean> setter) {
+    @Override
+    public void handleMouseInput(boolean isPressed) {
         if (HelpMethods.isIn(bounds)) {
             checked = !checked;
-            setter.accept(checked);
+            onCheck.run();
             AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
         }
-    }
-
-    @Override
-    protected void handleMouseInput(boolean isPressed) {
     }
 
     @Override
