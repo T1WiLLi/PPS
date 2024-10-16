@@ -42,7 +42,7 @@ public class Button extends UiElement {
 
         index = 0;
         updateState();
-        if (mouseOver && MouseController.isPressed()) {
+        if (mouseOver && MouseController.isMousePressed()) {
             mousePressed = true;
         }
         if (mouseOver && mousePressed) {
@@ -60,7 +60,7 @@ public class Button extends UiElement {
     @Override
     protected void handleMouseInput() {
         if (HelpMethods.isIn(bounds)) {
-            setMousePressed(MouseController.isPressed());
+            setMousePressed(MouseController.isMousePressed());
         } else {
             setMousePressed(false);
         }

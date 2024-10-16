@@ -40,7 +40,6 @@ public class Slider extends UiElement {
 
     @Override
     protected void loadSprites(BufferedImage spriteSheet) {
-        // No sprites to load for Slider
     }
 
     @Override
@@ -106,7 +105,7 @@ public class Slider extends UiElement {
     @Override
     protected void handleMouseInput() {
         mouseOver = HelpMethods.isIn(bounds);
-        if (mouseOver && MouseController.isPressed()) {
+        if (mouseOver && MouseController.isMousePressed()) {
             isDragging = true;
         }
     }
@@ -114,7 +113,7 @@ public class Slider extends UiElement {
     @Override
     protected void handleMouseMove() {
         if (isDragging) {
-            if (MouseController.isPressed()) {
+            if (MouseController.isMousePressed()) {
                 updateValueFromMouse(MouseController.getMouseX());
             } else {
                 isDragging = false;
