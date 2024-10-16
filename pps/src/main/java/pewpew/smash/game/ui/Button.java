@@ -53,9 +53,11 @@ public class Button extends UiElement {
     }
 
     @Override
-    public void handleMouseInput(boolean isPressed) {
+    public void handleMouseInput() {
         if (HelpMethods.isIn(bounds)) {
-            setMousePressed(isPressed);
+            setMousePressed(true);
+        } else {
+            setMousePressed(false);
         }
     }
 

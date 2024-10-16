@@ -45,7 +45,7 @@ public class Checkbox extends UiElement {
     }
 
     @Override
-    public void handleMouseInput(boolean isPressed) {
+    public void handleMouseInput() {
         if (HelpMethods.isIn(bounds)) {
             checked = !checked;
             onCheck.run();

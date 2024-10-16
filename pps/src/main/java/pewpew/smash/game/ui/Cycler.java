@@ -8,6 +8,10 @@ import java.awt.geom.AffineTransform;
 
 import lombok.ToString;
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.game.audio.AudioClip;
+import pewpew.smash.game.audio.AudioPlayer;
+import pewpew.smash.game.audio.AudioPlayer.SoundType;
+import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 @ToString
@@ -17,12 +21,14 @@ public class Cycler extends UiElement {
     private String[] cycles;
     private int currentIndex;
 
+    private Runnable onCycle;
+
     private boolean isAnimating;
     private long animationStartTime;
     private static final long ANIMATION_DURATION = 300;
     private static final int TOTAL_ROTATION = -180;
 
-    public Cycler(int x, int y, int w, int h, String[] cycles, String initialValue) {
+    public Cycler(int x, int y, int w, int h, String[] cycles, String initialValue, Runnable onCycle) {
         super(x, y, w, h);
         this.cycles = cycles;
         this.currentIndex = findInitialIndex(initialValue);
@@ -51,6 +57,20 @@ public class Cycler extends UiElement {
         } finally {
             g2d.setTransform(originalTransform);
         }
+    }
+
+    @Override
+    public void handleMouseInput() {
+        if (HelpMethods.isIn(bounds)) {
+            nextCycle();
+            onCycle.run();
+            AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
+        }
+    }
+
+    @Override
+    public void handleMouseMove() {
+
     }
 
     public String getCurrentCycle() {

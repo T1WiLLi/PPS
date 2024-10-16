@@ -34,6 +34,12 @@ public class Loader extends UiElement {
         drawPercentageText(canvas);
     }
 
+    protected void handleMouseInput() {
+    }
+
+    protected void handleMouseMove() {
+    }
+
     private void drawBackground(Canvas canvas) {
         canvas.renderRectangle(xPos, yPos, width, height, Color.GRAY);
     }
