@@ -74,7 +74,6 @@ public class OptionsOverlay extends Overlay {
             return;
 
         handleButtonPress();
-        handleCheckboxPress();
     }
 
     @Override
@@ -199,14 +198,6 @@ public class OptionsOverlay extends Overlay {
         for (KeyBindButton button : keyBindButtons) {
             button.handleMouseInput();
         }
-    }
-
-    private void handleCheckboxPress() {
-        antiAliasingCheckbox.handleMouseInput();
-        textAliasingCheckbox.handleMouseInput();
-        musicCheckbox.handleMouseInput();
-        sfxCheckbox.handleMouseInput();
-        uiCheckbox.handleMouseInput();
     }
 
     private void startKeyBindingProcess(String action, String currentKey) {

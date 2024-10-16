@@ -1,6 +1,7 @@
 package pewpew.smash.game.ui;
 
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.audio.AudioPlayer.SoundType;
@@ -33,7 +34,7 @@ public class Checkbox extends UiElement {
 
     @Override
     public void update() {
-        updateScaledBounds();
+        super.update();
     }
 
     @Override
@@ -46,7 +47,7 @@ public class Checkbox extends UiElement {
 
     @Override
     public void handleMouseInput() {
-        if (HelpMethods.isIn(bounds)) {
+        if (HelpMethods.isIn(bounds) && MouseController.isPressed()) {
             checked = !checked;
             onCheck.run();
             AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
@@ -55,7 +56,6 @@ public class Checkbox extends UiElement {
 
     @Override
     public void handleMouseMove() {
-
     }
 
     @Override
