@@ -23,6 +23,10 @@ public abstract class UiElement {
 
     protected abstract void render(Canvas canvas);
 
+    protected abstract void handleMouseInput();
+
+    protected abstract void handleMouseMove();
+
     public UiElement(int x, int y, int w, int h) {
         xPos = x;
         yPos = y;
