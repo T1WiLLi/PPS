@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.audio.AudioPlayer.SoundType;
@@ -37,14 +38,18 @@ public class Button extends UiElement {
 
     @Override
     public void update() {
+        super.update();
+
         index = 0;
         updateState();
+        if (mouseOver && MouseController.isPressed()) {
+            mousePressed = true;
+        }
         if (mouseOver && mousePressed) {
             playButtonPressedSound();
             onClick.run();
             resetState();
         }
-        updateScaledBounds();
     }
 
     @Override
@@ -53,16 +58,16 @@ public class Button extends UiElement {
     }
 
     @Override
-    public void handleMouseInput() {
+    protected void handleMouseInput() {
         if (HelpMethods.isIn(bounds)) {
-            setMousePressed(true);
+            setMousePressed(MouseController.isPressed());
         } else {
             setMousePressed(false);
         }
     }
 
     @Override
-    public void handleMouseMove() {
+    protected void handleMouseMove() {
         setMouseOver(HelpMethods.isIn(bounds));
     }
 
@@ -82,13 +87,11 @@ public class Button extends UiElement {
     }
 
     private void playButtonHoveredSound() {
-        AudioPlayer.getInstance().play(AudioClip.BUTTON_HOVERED, 0.80f,
-                false, SoundType.UI);
+        AudioPlayer.getInstance().play(AudioClip.BUTTON_HOVERED, 0.80f, false, SoundType.UI);
     }
 
     private void playButtonPressedSound() {
-        AudioPlayer.getInstance().play(AudioClip.BUTTON_PRESSED, 0.80f,
-                false, SoundType.UI);
+        AudioPlayer.getInstance().play(AudioClip.BUTTON_PRESSED, 0.80f, false, SoundType.UI);
     }
 
     protected void resetState() {

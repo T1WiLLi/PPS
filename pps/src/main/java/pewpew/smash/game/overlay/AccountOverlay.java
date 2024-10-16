@@ -9,7 +9,6 @@ import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.utils.FontFactory;
-import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class AccountOverlay extends Overlay {
@@ -46,29 +45,14 @@ public class AccountOverlay extends Overlay {
 
     @Override
     public void handleMousePress(MouseEvent e) {
-        for (Button button : buttons) {
-            handleMouseInput(true, button);
-        }
     }
 
     @Override
     public void handleMouseRelease(MouseEvent e) {
-        for (Button button : buttons) {
-            handleMouseInput(false, button);
-        }
     }
 
     @Override
     public void handleMouseMove(MouseEvent e) {
-        for (Button button : buttons) {
-            button.setMouseOver(false);
-        }
-
-        for (Button button : buttons) {
-            if (HelpMethods.isIn(button.getBounds())) {
-                button.setMouseOver(true);
-            }
-        }
     }
 
     @Override
@@ -81,12 +65,6 @@ public class AccountOverlay extends Overlay {
 
     @Override
     public void handleKeyRelease(KeyEvent e) {
-    }
-
-    private void handleMouseInput(boolean isPressed, Button button) {
-        if (HelpMethods.isIn(button.getBounds())) {
-            button.setMousePressed(isPressed);
-        }
     }
 
     private void renderXPBar(Canvas canvas) {

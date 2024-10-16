@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 
 import pewpew.smash.engine.Canvas;
 
+// TODO: Remove handler function, and instead create an interface like FunctionnalInterface, will also need to redo all of the 'managing and factory' code
 public abstract class Overlay {
     protected boolean isDisplaying;
     protected int x, y, width, height;

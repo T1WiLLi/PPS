@@ -7,7 +7,6 @@ import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.utils.FontFactory;
-import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class PlayOverlay extends Overlay {
@@ -43,18 +42,14 @@ public class PlayOverlay extends Overlay {
 
     @Override
     public void handleMousePress(MouseEvent e) {
-        handleMouseInput(true);
     }
 
     @Override
     public void handleMouseRelease(MouseEvent e) {
-        handleMouseInput(false);
     }
 
     @Override
     public void handleMouseMove(MouseEvent e) {
-        resetButtonHoverStates();
-        updateButtonHoverStates();
     }
 
     @Override
@@ -70,37 +65,6 @@ public class PlayOverlay extends Overlay {
     @Override
     public void handleKeyRelease(KeyEvent e) {
 
-    }
-
-    private void handleMouseInput(boolean isPressed) {
-        setButtonPressedState(joinButton, isPressed);
-        setButtonPressedState(hostButton, isPressed);
-        setButtonPressedState(backButton, isPressed);
-    }
-
-    private void resetButtonHoverStates() {
-        joinButton.setMouseOver(false);
-        hostButton.setMouseOver(false);
-        backButton.setMouseOver(false);
-        description = "Select an option...";
-    }
-
-    private void updateButtonHoverStates() {
-        if (HelpMethods.isIn(joinButton.getBounds())) {
-            joinButton.setMouseOver(true);
-            description = "Join an existing game by entering the server IP. Play with your friends.";
-
-        } else if (HelpMethods.isIn(hostButton.getBounds())) {
-            hostButton.setMouseOver(true);
-            description = "Host a new game by entering server details. Don't forget to notify your friends !";
-        }
-        backButton.setMouseOver(HelpMethods.isIn(backButton.getBounds()));
-    }
-
-    private void setButtonPressedState(Button button, boolean isPressed) {
-        if (HelpMethods.isIn(button.getBounds())) {
-            button.setMousePressed(isPressed);
-        }
     }
 
     private void renderDescription(Canvas canvas) {
