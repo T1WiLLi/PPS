@@ -58,18 +58,14 @@ public class JoinOverlay extends Overlay {
             ipInput.setFocused(false);
             portInput.setFocused(false);
         }
-        handleMouseInput(true);
     }
 
     @Override
     public void handleMouseRelease(MouseEvent e) {
-        handleMouseInput(false);
     }
 
     @Override
     public void handleMouseMove(MouseEvent e) {
-        resetButtonHoverStates();
-        updateButtonHoverStates();
     }
 
     @Override
@@ -87,27 +83,6 @@ public class JoinOverlay extends Overlay {
 
     @Override
     public void handleKeyRelease(KeyEvent e) {
-    }
-
-    private void handleMouseInput(boolean isPressed) {
-        setButtonPressedState(playButton, isPressed);
-        setButtonPressedState(backButton, isPressed);
-    }
-
-    private void resetButtonHoverStates() {
-        playButton.setMouseOver(false);
-        backButton.setMouseOver(false);
-    }
-
-    private void updateButtonHoverStates() {
-        playButton.setMouseOver(HelpMethods.isIn(playButton.getBounds()));
-        backButton.setMouseOver(HelpMethods.isIn(backButton.getBounds()));
-    }
-
-    private void setButtonPressedState(Button button, boolean isPressed) {
-        if (HelpMethods.isIn(button.getBounds())) {
-            button.setMousePressed(isPressed);
-        }
     }
 
     private void loadInputs() {

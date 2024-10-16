@@ -41,17 +41,14 @@ public class AboutOverlay extends Overlay {
 
     @Override
     public void handleMousePress(MouseEvent e) {
-        this.backButton.handleMouseInput();
     }
 
     @Override
     public void handleMouseRelease(MouseEvent e) {
-        this.backButton.handleMouseInput();
     }
 
     @Override
     public void handleMouseMove(MouseEvent e) {
-        this.backButton.handleMouseMove();
     }
 
     @Override

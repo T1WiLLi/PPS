@@ -72,8 +72,6 @@ public class OptionsOverlay extends Overlay {
     public void handleMousePress(MouseEvent e) {
         if (awaitingKeyBind != null)
             return;
-
-        handleButtonPress();
     }
 
     @Override
@@ -85,7 +83,6 @@ public class OptionsOverlay extends Overlay {
 
     @Override
     public void handleMouseMove(MouseEvent e) {
-        handleButtonHover();
     }
 
     @Override
@@ -192,25 +189,8 @@ public class OptionsOverlay extends Overlay {
         FontFactory.resetFont(canvas);
     }
 
-    private void handleButtonPress() {
-        backButton.handleMouseInput();
-        saveButton.handleMouseInput();
-        for (KeyBindButton button : keyBindButtons) {
-            button.handleMouseInput();
-        }
-    }
-
     private void startKeyBindingProcess(String action, String currentKey) {
         awaitingKeyBind = action;
-    }
-
-    private void handleButtonHover() {
-        backButton.handleMouseMove();
-        saveButton.handleMouseMove();
-
-        for (KeyBindButton button : keyBindButtons) {
-            button.handleMouseMove();
-        }
     }
 
     private void updateKeyBinding(String action, String newKey) {

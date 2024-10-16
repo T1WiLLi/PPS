@@ -63,7 +63,6 @@ public class ConnectionOverlay extends Overlay {
 
     @Override
     public void handleMouseMove(MouseEvent e) {
-        updateMouseOverState();
     }
 
     @Override
@@ -125,17 +124,7 @@ public class ConnectionOverlay extends Overlay {
 
     private void handleMouseInput(boolean isPressed) {
         if (isPressed) {
-            pressButton(backButton, isPressed);
-            pressButton(loginButton, isPressed);
             updateTextFieldFocus();
-        }
-    }
-
-    private void pressButton(Button button, boolean isPressed) {
-        if (HelpMethods.isIn(button.getBounds())) {
-            button.setMousePressed(isPressed);
-        } else {
-            button.setMousePressed(false);
         }
     }
 
@@ -145,13 +134,6 @@ public class ConnectionOverlay extends Overlay {
 
         usernameField.setFocused(usernameFocused);
         passwordField.setFocused(passwordFocused);
-    }
-
-    private void updateMouseOverState() {
-        backButton.setMouseOver(
-                HelpMethods.isIn(backButton.getBounds()));
-        loginButton.setMouseOver(
-                HelpMethods.isIn(loginButton.getBounds()));
     }
 
     private void handleKeyInput(KeyEvent e) {
