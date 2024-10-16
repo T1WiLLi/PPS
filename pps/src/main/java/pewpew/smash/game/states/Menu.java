@@ -16,7 +16,6 @@ import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.overlay.*;
 import pewpew.smash.game.ui.Button;
-import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class Menu implements State {
@@ -57,21 +56,18 @@ public class Menu implements State {
     @Override
     public void handleMousePress(MouseEvent e) {
         if (!overlayManager.handleMousePress(e)) {
-            handleMouseInput(true);
         }
     }
 
     @Override
     public void handleMouseRelease(MouseEvent e) {
         if (!overlayManager.handleMouseRelease(e)) {
-            handleMouseInput(false);
         }
     }
 
     @Override
     public void handleMouseMove(MouseEvent e) {
         if (!overlayManager.handleMouseMove(e)) {
-            updateMouseOverButtons();
         }
     }
 
@@ -139,15 +135,6 @@ public class Menu implements State {
         }
     }
 
-    private void updateMouseOverButtons() {
-        for (Button button : buttons) {
-            if (button != null) {
-                button.setMouseOver(
-                        HelpMethods.isIn(button.getBounds()));
-            }
-        }
-    }
-
     private void renderBackground(Canvas canvas) {
         canvas.renderImage(background, 0, 0, 800, 600);
     }
@@ -198,15 +185,6 @@ public class Menu implements State {
         if (isUserCurrentlyConnected != isUserConnected) {
             isUserConnected = isUserCurrentlyConnected;
             buttons[1] = isUserCurrentlyConnected ? accountButton : connectButton;
-        }
-    }
-
-    private void handleMouseInput(boolean isPressed) {
-        for (Button button : buttons) {
-            if (button != null && HelpMethods.isIn(button.getBounds())) {
-                button.setMousePressed(isPressed);
-                break;
-            }
         }
     }
 }

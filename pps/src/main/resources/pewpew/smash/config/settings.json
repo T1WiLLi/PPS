@@ -1,9 +1,9 @@
 {
   "video" : {
     "fps" : 120,
-    "antiAliasing" : true,
-    "textAliasing" : true,
-    "renderQuality" : "fast"
+    "antiAliasing" : false,
+    "textAliasing" : false,
+    "renderQuality" : "quality"
   },
   "key" : {
     "movement" : {

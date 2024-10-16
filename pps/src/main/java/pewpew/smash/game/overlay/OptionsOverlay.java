@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
-@FunctionalOverlay("HandleKeyPress")
+@FunctionalOverlay({ "HandleKeyPress" })
 public class OptionsOverlay extends Overlay {
 
     private Button backButton, saveButton;

@@ -8,8 +8,15 @@ import lombok.Getter;
 public abstract class MouseController extends MouseAdapter {
     @Getter
     private static int mouseX = 0, mouseY = 0;
-    @Getter
     private static boolean mousePressed = false;
+
+    public static boolean isMousePressed() {
+        return mousePressed;
+    }
+
+    public static void consumeEvent() {
+        mousePressed = false;
+    }
 
     @Override
     public void mouseMoved(MouseEvent e) {
