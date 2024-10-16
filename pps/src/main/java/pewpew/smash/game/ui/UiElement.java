@@ -23,7 +23,7 @@ public abstract class UiElement {
 
     protected abstract void render(Canvas canvas);
 
-    protected abstract void handleMouseInput(boolean isPressed);
+    protected abstract void handleMouseInput();
 
     protected abstract void handleMouseMove();
 

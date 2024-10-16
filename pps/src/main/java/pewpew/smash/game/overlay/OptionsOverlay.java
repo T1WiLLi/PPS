@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class OptionsOverlay extends Overlay {
 
@@ -34,8 +33,6 @@ public class OptionsOverlay extends Overlay {
     private String awaitingKeyBind = null;
 
     private Slider generalVolumeSlider, sfxVolumeSlider;
-    private boolean isDraggingGeneralVolumeSlider;
-    private boolean isDraggingSfxVolumeSlider;
 
     public OptionsOverlay(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -49,7 +46,6 @@ public class OptionsOverlay extends Overlay {
     @Override
     public void update() {
         updateButton();
-        updateSlider();
     }
 
     @Override
@@ -82,23 +78,8 @@ public class OptionsOverlay extends Overlay {
             return;
 
         handleButtonPress();
-        handleCheckboxPress(e);
-        handleCyclerPress(e);
-        handleSliderPress();
-    }
-
-    private void handleSliderPress() {
-        if (HelpMethods.isIn(generalVolumeSlider.getBounds())) {
-            generalVolumeSlider.setMousePressed(true);
-            generalVolumeSlider.setMouseOver(true);
-            isDraggingGeneralVolumeSlider = true;
-        }
-
-        if (HelpMethods.isIn(sfxVolumeSlider.getBounds())) {
-            sfxVolumeSlider.setMousePressed(true);
-            sfxVolumeSlider.setMouseOver(true);
-            isDraggingSfxVolumeSlider = true;
-        }
+        handleCheckboxPress();
+        handleCyclerPress();
     }
 
     @Override
@@ -106,29 +87,11 @@ public class OptionsOverlay extends Overlay {
         backButton.setMousePressed(false);
         saveButton.setMousePressed(false);
         keyBindButtons.forEach(button -> button.setMousePressed(false));
-
-        if (isDraggingGeneralVolumeSlider) {
-            generalVolumeSlider.setMousePressed(false);
-            isDraggingGeneralVolumeSlider = false;
-        }
-
-        if (isDraggingSfxVolumeSlider) {
-            sfxVolumeSlider.setMousePressed(false);
-            isDraggingSfxVolumeSlider = false;
-        }
     }
 
     @Override
     public void handleMouseMove(MouseEvent e) {
         handleButtonHover();
-
-        if (!isDraggingGeneralVolumeSlider) {
-            generalVolumeSlider.setMouseOver(HelpMethods.isIn(generalVolumeSlider.getBounds()));
-        }
-
-        if (!isDraggingSfxVolumeSlider) {
-            sfxVolumeSlider.setMouseOver(HelpMethods.isIn(sfxVolumeSlider.getBounds()));
-        }
     }
 
     @Override
@@ -167,16 +130,6 @@ public class OptionsOverlay extends Overlay {
         renderQualityCycler.update();
         generalVolumeSlider.update();
         sfxVolumeSlider.update();
-    }
-
-    private void updateSlider() {
-        if (generalVolumeSlider.isMouseOver() && generalVolumeSlider.isMousePressed()) {
-            SettingsManager.getInstance().getSettings().getAudio().setGeneralVolume(generalVolumeSlider.getValue());
-        }
-
-        if (sfxVolumeSlider.isMouseOver() && sfxVolumeSlider.isMousePressed()) {
-            SettingsManager.getInstance().getSettings().getAudio().setSfxVolume(sfxVolumeSlider.getValue());
-        }
     }
 
     private void renderKeyBindings(Canvas canvas, int x, int currentY) {
@@ -246,52 +199,24 @@ public class OptionsOverlay extends Overlay {
     }
 
     private void handleButtonPress() {
-        if (HelpMethods.isIn(backButton.getBounds())) {
-            backButton.setMousePressed(true);
-        }
-        if (HelpMethods.isIn(saveButton.getBounds())) {
-            saveButton.setMousePressed(true);
-        }
+        backButton.handleMouseInput();
+        saveButton.handleMouseInput();
         for (KeyBindButton button : keyBindButtons) {
-            if (HelpMethods.isIn(button.getBounds())) {
-                button.setMousePressed(true);
-            }
+            button.handleMouseInput();
         }
     }
 
-    private void handleCheckboxPress(MouseEvent e) {
-        if (HelpMethods.isIn(antiAliasingCheckbox.getBounds())) {
-            handleCheckboxClick(antiAliasingCheckbox,
-                    isChecked -> SettingsManager.getInstance().getSettings().getVideo().setAntiAliasing(isChecked));
-        }
-        if (HelpMethods.isIn(textAliasingCheckbox.getBounds())) {
-            handleCheckboxClick(textAliasingCheckbox,
-                    isChecked -> SettingsManager.getInstance().getSettings().getVideo().setTextAliasing(isChecked));
-        }
-
-        if (HelpMethods.isIn(musicCheckbox.getBounds())) {
-            handleCheckboxClick(musicCheckbox,
-                    isChecked -> SettingsManager.getInstance().getSettings().getAudio().setMusic(isChecked));
-        }
-
-        if (HelpMethods.isIn(sfxCheckbox.getBounds())) {
-            handleCheckboxClick(sfxCheckbox,
-                    isChecked -> SettingsManager.getInstance().getSettings().getAudio().setSfx(isChecked));
-        }
-
-        if (HelpMethods.isIn(uiCheckbox.getBounds())) {
-            handleCheckboxClick(uiCheckbox,
-                    isChecked -> SettingsManager.getInstance().getSettings().getAudio().setUi(isChecked));
-        }
+    private void handleCheckboxPress() {
+        antiAliasingCheckbox.handleMouseInput();
+        textAliasingCheckbox.handleMouseInput();
+        musicCheckbox.handleMouseInput();
+        sfxCheckbox.handleMouseInput();
+        uiCheckbox.handleMouseInput();
     }
 
-    private void handleCheckboxClick(Checkbox checkbox, Consumer<Boolean> setter) {
-        checkbox.setChecked(!checkbox.isChecked());
-        setter.accept(checkbox.isChecked());
-        AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
-    }
-
-    private void handleCyclerPress(MouseEvent e) {
+    private void handleCyclerPress() {
+        fpsCycler.handleMouseInput();
+        renderQualityCycler.handleMouseInput();
         if (HelpMethods.isIn(fpsCycler.getBounds())) {
             fpsCycler.nextCycle();
             SettingsManager.getInstance().getSettings().getVideo()
@@ -313,11 +238,11 @@ public class OptionsOverlay extends Overlay {
     }
 
     private void handleButtonHover() {
-        backButton.setMouseOver(HelpMethods.isIn(backButton.getBounds()));
-        saveButton.setMouseOver(HelpMethods.isIn(saveButton.getBounds()));
+        backButton.handleMouseMove();
+        saveButton.handleMouseMove();
 
         for (KeyBindButton button : keyBindButtons) {
-            button.setMouseOver(HelpMethods.isIn(button.getBounds()));
+            button.handleMouseMove();
         }
     }
 
@@ -331,9 +256,11 @@ public class OptionsOverlay extends Overlay {
 
     private void loadButtons() {
         sfxVolumeSlider = new Slider(width / 2 + 200, 465, 180, 40,
-                (float) SettingsManager.getInstance().getSettings().getAudio().getSfxVolume());
+                (float) SettingsManager.getInstance().getSettings().getAudio().getSfxVolume(),
+                () -> SettingsManager.getInstance().getSettings().getAudio().setSfxVolume(sfxVolumeSlider.getValue()));
         generalVolumeSlider = new Slider(width / 2 + 200, 422, 180, 40,
-                (float) SettingsManager.getInstance().getSettings().getAudio().getGeneralVolume());
+                (float) SettingsManager.getInstance().getSettings().getAudio().getGeneralVolume(), () -> SettingsManager
+                        .getInstance().getSettings().getAudio().setGeneralVolume(generalVolumeSlider.getValue()));
         backButton = new Button(Constants.LEFT_PADDING, Constants.TOP_PADDING,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/backButton"), this::close);
         saveButton = new Button(Constants.RIGHT_PADDING, Constants.TOP_PADDING,
@@ -366,27 +293,36 @@ public class OptionsOverlay extends Overlay {
     }
 
     private void loadCheckboxes() {
-        antiAliasingCheckbox = new Checkbox(width / 2 + 175, 280);
+        antiAliasingCheckbox = new Checkbox(width / 2 + 175, 280, () -> SettingsManager.getInstance().getSettings()
+                .getVideo().setAntiAliasing(antiAliasingCheckbox.isChecked()));
         antiAliasingCheckbox.setChecked(SettingsManager.getInstance().getSettings().getVideo().isAntiAliasing());
 
-        textAliasingCheckbox = new Checkbox(width / 2 + 175, 320);
+        textAliasingCheckbox = new Checkbox(width / 2 + 175, 320, () -> SettingsManager.getInstance().getSettings()
+                .getVideo().setTextAliasing(textAliasingCheckbox.isChecked()));
         textAliasingCheckbox.setChecked(SettingsManager.getInstance().getSettings().getVideo().isTextAliasing());
 
-        musicCheckbox = new Checkbox(width / 2 + 120, 500);
+        musicCheckbox = new Checkbox(width / 2 + 120, 500,
+                () -> SettingsManager.getInstance().getSettings().getAudio().setMusic(musicCheckbox.isChecked()));
         musicCheckbox.setChecked(SettingsManager.getInstance().getSettings().getAudio().isMusic());
 
-        sfxCheckbox = new Checkbox(width / 2 + 120, 535);
+        sfxCheckbox = new Checkbox(width / 2 + 120, 535,
+                () -> SettingsManager.getInstance().getSettings().getAudio().setSfx(sfxCheckbox.isChecked()));
         sfxCheckbox.setChecked(SettingsManager.getInstance().getSettings().getAudio().isSfx());
 
-        uiCheckbox = new Checkbox(width / 2 + 120, 570);
+        uiCheckbox = new Checkbox(width / 2 + 120, 570,
+                () -> SettingsManager.getInstance().getSettings().getAudio().setUi(uiCheckbox.isChecked()));
         uiCheckbox.setChecked(SettingsManager.getInstance().getSettings().getAudio().isUi());
     }
 
     private void loadCyclers() {
         fpsCycler = new Cycler(width / 2 + 125, 248, 25, 25, new String[] { "30", "60", "120" },
-                String.valueOf(SettingsManager.getInstance().getSettings().getVideo().getFps()).trim());
+                String.valueOf(SettingsManager.getInstance().getSettings().getVideo().getFps()).trim(),
+                () -> SettingsManager.getInstance().getSettings().getVideo()
+                        .setFps(Integer.parseInt(fpsCycler.getCurrentCycle())));
         renderQualityCycler = new Cycler(width / 2 + 270, 350, 25, 25, new String[] { "Quality", "Fast" },
-                SettingsManager.getInstance().getSettings().getVideo().getRenderQuality().trim());
+                SettingsManager.getInstance().getSettings().getVideo().getRenderQuality().trim(),
+                () -> SettingsManager.getInstance().getSettings().getVideo()
+                        .setRenderQuality(renderQualityCycler.getCurrentCycle().toLowerCase()));
     }
 
     private static class KeyBindButton extends Button {

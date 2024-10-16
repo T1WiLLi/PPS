@@ -10,10 +10,10 @@ import lombok.ToString;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.utils.ScaleUtils;
+import pewpew.smash.game.utils.HelpMethods;
 
 @ToString
 public class Slider extends UiElement {
-
     @Getter
     private float value;
 
@@ -27,11 +27,14 @@ public class Slider extends UiElement {
     @Getter
     private int handleX;
     private Rectangle handleBounds;
+    private boolean isDragging;
+    private final Runnable onValueChanged;
 
-    public Slider(int x, int y, int width, int height, float initialValue) {
+    public Slider(int x, int y, int width, int height, float initialValue, Runnable onValueChanged) {
         super(x, y, width, height);
         this.value = clampValue(initialValue);
         this.handleBounds = new Rectangle();
+        this.onValueChanged = onValueChanged;
         updateHandlePosition();
     }
 
@@ -44,26 +47,25 @@ public class Slider extends UiElement {
     public void update() {
         updateScaledBounds();
         updateHandleBounds();
-        handleMouseInput();
+
+        mouseOver = HelpMethods.isIn(bounds);
+        if (mouseOver && MouseController.isPressed()) {
+            isDragging = true;
+        }
+
+        if (isDragging) {
+            if (MouseController.isPressed()) {
+                updateValueFromMouse(MouseController.getMouseX());
+            } else {
+                isDragging = false;
+            }
+        }
     }
 
     @Override
     public void render(Canvas canvas) {
         renderTrack(canvas);
         renderHandle(canvas);
-    }
-
-    public void setValue(float newValue) {
-        this.value = clampValue(newValue);
-        updateHandlePosition();
-    }
-
-    public int getHandleXStart() {
-        return ScaleUtils.scaleX(handleX);
-    }
-
-    public int getHandleXEnd() {
-        return ScaleUtils.scaleX(handleX + HANDLE_WIDTH);
     }
 
     private void updateHandlePosition() {
@@ -79,17 +81,6 @@ public class Slider extends UiElement {
                 ScaleUtils.scaleHeight(height));
     }
 
-    private void handleMouseInput() {
-        int scaledMouseX = MouseController.getMouseX();
-        int scaledMouseY = MouseController.getMouseY();
-
-        mouseOver = bounds.contains(scaledMouseX, scaledMouseY);
-
-        if (mousePressed) {
-            updateValueFromMouse(scaledMouseX);
-        }
-    }
-
     private void updateValueFromMouse(int scaledMouseX) {
         int scaledSliderStart = ScaleUtils.scaleX(xPos);
         int scaledSliderEnd = ScaleUtils.scaleX(xPos + width - HANDLE_WIDTH);
@@ -99,6 +90,16 @@ public class Slider extends UiElement {
         float newValue = (float) (constrainedMouseX - scaledSliderStart) /
                 (scaledSliderEnd - scaledSliderStart);
         setValue(newValue);
+    }
+
+    public void setValue(float newValue) {
+        float oldValue = this.value;
+        this.value = clampValue(newValue);
+        updateHandlePosition();
+
+        if (oldValue != this.value && onValueChanged != null) {
+            onValueChanged.run();
+        }
     }
 
     private void renderTrack(Canvas canvas) {
@@ -113,5 +114,15 @@ public class Slider extends UiElement {
 
     private float clampValue(float value) {
         return Math.max(0.0f, Math.min(1.0f, value));
+    }
+
+    @Override
+    protected void handleMouseInput() {
+
+    }
+
+    @Override
+    protected void handleMouseMove() {
+
     }
 }

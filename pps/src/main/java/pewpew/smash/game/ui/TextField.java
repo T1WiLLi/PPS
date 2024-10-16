@@ -195,4 +195,16 @@ public class TextField extends UiElement {
             textOffset = cursorX;
         }
     }
+
+    @Override
+    protected void handleMouseInput() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleMouseInput'");
+    }
+
+    @Override
+    protected void handleMouseMove() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleMouseMove'");
+    }
 }

@@ -17,11 +17,13 @@ public class MouseHandler extends MouseController {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        super.mousePressed(e);
         this.stateManager.handleMousePress(e);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        super.mouseReleased(e);
         this.stateManager.handleMouseRelease(e);
     }
 
