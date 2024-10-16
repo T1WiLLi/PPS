@@ -25,6 +25,7 @@ public class Loader extends UiElement {
 
     @Override
     public void update() {
+        super.update();
     }
 
     @Override

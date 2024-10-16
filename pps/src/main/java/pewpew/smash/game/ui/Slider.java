@@ -45,21 +45,8 @@ public class Slider extends UiElement {
 
     @Override
     public void update() {
-        updateScaledBounds();
+        super.update();
         updateHandleBounds();
-
-        mouseOver = HelpMethods.isIn(bounds);
-        if (mouseOver && MouseController.isPressed()) {
-            isDragging = true;
-        }
-
-        if (isDragging) {
-            if (MouseController.isPressed()) {
-                updateValueFromMouse(MouseController.getMouseX());
-            } else {
-                isDragging = false;
-            }
-        }
     }
 
     @Override
@@ -118,11 +105,20 @@ public class Slider extends UiElement {
 
     @Override
     protected void handleMouseInput() {
-
+        mouseOver = HelpMethods.isIn(bounds);
+        if (mouseOver && MouseController.isPressed()) {
+            isDragging = true;
+        }
     }
 
     @Override
     protected void handleMouseMove() {
-
+        if (isDragging) {
+            if (MouseController.isPressed()) {
+                updateValueFromMouse(MouseController.getMouseX());
+            } else {
+                isDragging = false;
+            }
+        }
     }
 }
