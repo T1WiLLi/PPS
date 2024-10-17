@@ -44,16 +44,16 @@ public class JoinOverlay extends Overlay {
     }
 
     private void loadInputs() {
-        ipInput = new TextField(x + 50, y + 100, width - 300, 30);
-        portInput = new TextField(x + 50, y + 160, width - 300, 30);
+        ipInput = new TextField(90, 120, width - 300, 30);
+        portInput = new TextField(90, 200, width - 300, 30);
     }
 
     private void loadButtons() {
-        this.playButton = new Button(x + width / 2 - 120, 240, 110, 40,
+        this.playButton = new Button(90, 300,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/playButton"),
                 this::validateInputs);
 
-        this.backButton = new Button(x + width / 2 + 10, 240, 110, 40,
+        this.backButton = new Button(500, 300,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/backButton"),
                 () -> {
                     close();
@@ -70,8 +70,8 @@ public class JoinOverlay extends Overlay {
 
     private void renderLabels(Canvas canvas) {
         FontFactory.IMPACT_SMALL.applyFont(canvas);
-        canvas.renderString("Server IP:", x + 50, y + 90);
-        canvas.renderString("Port:", x + 50, y + 150);
+        canvas.renderString("Server IP:", 90, 110);
+        canvas.renderString("Port:", 90, 190);
     }
 
     private void renderErrorMessage(Canvas canvas) {
