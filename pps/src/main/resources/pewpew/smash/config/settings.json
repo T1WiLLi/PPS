@@ -1,8 +1,8 @@
 {
   "video" : {
     "fps" : 120,
-    "antiAliasing" : false,
-    "textAliasing" : false,
+    "antiAliasing" : true,
+    "textAliasing" : true,
     "renderQuality" : "quality"
   },
   "key" : {

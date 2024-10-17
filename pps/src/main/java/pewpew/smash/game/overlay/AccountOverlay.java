@@ -43,30 +43,6 @@ public class AccountOverlay extends Overlay {
         FontFactory.resetFont(canvas);
     }
 
-    @Override
-    public void handleMousePress(MouseEvent e) {
-    }
-
-    @Override
-    public void handleMouseRelease(MouseEvent e) {
-    }
-
-    @Override
-    public void handleMouseMove(MouseEvent e) {
-    }
-
-    @Override
-    public void handleMouseDrag(MouseEvent e) {
-    }
-
-    @Override
-    public void handleKeyPress(KeyEvent e) {
-    }
-
-    @Override
-    public void handleKeyRelease(KeyEvent e) {
-    }
-
     private void renderXPBar(Canvas canvas) {
         canvas.renderRectangle(xpBarX, xpBarY, XP_BAR_WIDTH, XP_BAR_HEIGHT, XP_BAR_BACKGROUND);
 
