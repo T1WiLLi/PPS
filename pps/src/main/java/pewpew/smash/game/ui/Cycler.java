@@ -69,6 +69,7 @@ public class Cycler extends UiElement {
         if (HelpMethods.isIn(bounds) && MouseController.isMousePressed() && !isAnimating) {
             nextCycle();
             onCycle.run();
+            MouseController.consumeEvent();
             AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
         }
     }

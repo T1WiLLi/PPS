@@ -48,6 +48,7 @@ public class Button extends UiElement {
         if (mouseOver && mousePressed) {
             playButtonPressedSound();
             onClick.run();
+            MouseController.consumeEvent();
             resetState();
         }
     }
