@@ -24,6 +24,7 @@ public class PlayOverlay extends Overlay {
         joinButton.update();
         hostButton.update();
         backButton.update();
+        updateDescription();
     }
 
     @Override
@@ -37,19 +38,26 @@ public class PlayOverlay extends Overlay {
         FontFactory.resetFont(canvas);
     }
 
-    private void renderDescription(Canvas canvas) {
-        if (!description.isEmpty()) {
-            FontFactory.IMPACT_SMALL.applyFont(canvas);
-            int descriptionWidth = FontFactory.IMPACT_SMALL.getFontWidth(description, canvas);
-            canvas.renderString(description, (width - descriptionWidth) / 2, height - 50);
-        }
-    }
-
     private void renderTitle(Canvas canvas) {
         FontFactory.IMPACT_X_LARGE.applyFont(canvas);
         String title = "Choose Your Option!";
         int titleWidth = FontFactory.IMPACT_X_LARGE.getFontWidth(title, canvas);
         canvas.renderString(title, (width - titleWidth) / 2, 180);
+    }
+
+    private void renderDescription(Canvas canvas) {
+        FontFactory.SMALL_FONT.applyFont(canvas);
+        int descriptionWidth = FontFactory.SMALL_FONT.getFontWidth(description, canvas);
+        canvas.renderString(description, (width - descriptionWidth) / 2, height - 50);
+    }
+
+    private void updateDescription() {
+        description = "Join or Host a game!";
+        if (joinButton.isMouseOver()) {
+            description = "Join a game and play with your friends !";
+        } else if (hostButton.isMouseOver()) {
+            description = "Host a game and invite your friends to play with you!";
+        }
     }
 
     private void loadBackground() {

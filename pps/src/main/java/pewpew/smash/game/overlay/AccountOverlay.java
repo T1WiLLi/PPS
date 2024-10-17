@@ -1,7 +1,5 @@
 package pewpew.smash.game.overlay;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.Color;
 
 import pewpew.smash.engine.Canvas;

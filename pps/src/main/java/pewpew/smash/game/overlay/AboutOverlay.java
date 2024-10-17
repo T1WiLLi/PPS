@@ -58,7 +58,7 @@ public class AboutOverlay extends Overlay {
             FontFactory.IMPACT_SMALL.applyFont(canvas);
             int centerX = this.width / 2;
 
-            float currentY = scrollPosition; // Start the scrolling from the current position
+            float currentY = scrollPosition;
 
             for (AboutConfig.CreditSection section : aboutConfig.getCredits()) {
                 currentY = renderCreditSection(canvas, centerX, currentY, section);

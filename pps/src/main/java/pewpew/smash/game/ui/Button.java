@@ -18,7 +18,10 @@ public class Button extends UiElement {
 
     private int index;
     @Setter
-    protected boolean mouseOver, mousePressed;
+    @Getter
+    protected boolean mouseOver;
+    @Setter
+    protected boolean mousePressed;
     protected boolean hasSFXPlayed;
     @Getter
     protected Runnable onClick;
