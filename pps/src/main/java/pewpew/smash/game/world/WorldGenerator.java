@@ -1,6 +1,5 @@
 package pewpew.smash.game.world;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -19,11 +18,6 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
     private static final byte GRASS = 1;
     private static final byte WATER = 2;
     private static final byte SAND = 3;
-
-    private static final Color SAND_COLOR = new Color(210, 180, 140);
-    private static final Color DEEP_WATER_COLOR = new Color(0, 0, 169);
-    private static final Color SHALLOW_WATER_COLOR = new Color(0, 128, 255);
-    private static final int MAX_WATER_DEPTH = 120;
 
     public WorldGenerator() {
         this.world = new byte[this.worldWidth][this.worldHeight];
@@ -138,13 +132,28 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
 
+        TextureFactory textureFactory = TextureFactory.getInstance();
         int[][] distanceToLand = calculateDistanceToLand(world);
 
         for (int y = 0; y < worldHeight; y++) {
             for (int x = 0; x < worldWidth; x++) {
-                Color color = getTileColor(world[x][y], x, y, distanceToLand[x][y]);
-                g.setColor(color);
-                g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                byte tileType = world[x][y];
+                BufferedImage tileTexture;
+
+                if (tileType == GRASS) {
+                    tileTexture = textureFactory.getTexture(TextureType.GRASS, (x + y) % 3);
+                } else if (tileType == WATER) {
+                    int distance = distanceToLand[x][y];
+                    tileTexture = textureFactory.generateWaterTexture(distance);
+                } else if (tileType == SAND) {
+                    tileTexture = textureFactory.getTexture(TextureType.SAND, (x + y) % 3);
+                } else {
+                    tileTexture = null;
+                }
+
+                if (tileTexture != null) {
+                    g.drawImage(tileTexture, x * tileSize, y * tileSize, null);
+                }
             }
         }
 
@@ -158,7 +167,6 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
         int[][] distance = new int[worldWidth][worldHeight];
         Queue<Point> queue = new LinkedList<>();
 
-        // Initialize distances and find land tiles
         for (int x = 0; x < worldWidth; x++) {
             for (int y = 0; y < worldHeight; y++) {
                 if (world[x][y] == GRASS || world[x][y] == SAND) {
@@ -170,7 +178,6 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
             }
         }
 
-        // BFS to calculate distances
         int[][] directions = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
         while (!queue.isEmpty()) {
             Point p = queue.poll();
@@ -185,46 +192,7 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
                 }
             }
         }
-
         return distance;
-    }
-
-    private static Color getTileColor(byte tileType, int x, int y, int distanceToLand) {
-        switch (tileType) {
-            case GRASS:
-                return getGrassColor(x, y);
-            case WATER:
-                return getWaterColor(distanceToLand);
-            case SAND:
-                return SAND_COLOR;
-            default:
-                return Color.BLACK;
-        }
-    }
-
-    private static Color getGrassColor(int x, int y) {
-        double noiseValue = (new PerlinNoise(System.currentTimeMillis()).noise(x * 0.003, y * 0.003) + 1) / 2;
-        int baseGreen = 139;
-        int greenVariation = (int) (noiseValue * 30);
-        int green = Math.min(255, Math.max(100, baseGreen + greenVariation));
-        return new Color(34, green, 34);
-    }
-
-    private static Color getWaterColor(int distanceToLand) {
-        if (distanceToLand >= MAX_WATER_DEPTH) {
-            return DEEP_WATER_COLOR;
-        } else {
-            float ratio = (float) distanceToLand / MAX_WATER_DEPTH;
-            ratio = 1 - (1 - ratio) * (1 - ratio);
-            return interpolateColor(SHALLOW_WATER_COLOR, DEEP_WATER_COLOR, ratio);
-        }
-    }
-
-    private static Color interpolateColor(Color c1, Color c2, float ratio) {
-        int red = (int) (c1.getRed() * (1 - ratio) + c2.getRed() * ratio);
-        int green = (int) (c1.getGreen() * (1 - ratio) + c2.getGreen() * ratio);
-        int blue = (int) (c1.getBlue() * (1 - ratio) + c2.getBlue() * ratio);
-        return new Color(red, green, blue);
     }
 
     private static class Point {

@@ -42,6 +42,7 @@ public class WorldDisplayerHelper {
     }
 
     public static void main(String[] args) {
+        TextureFactory.getInstance().preloadTextures();
         WorldGenerator worldGenerator = new WorldGenerator();
         long startTime = System.currentTimeMillis();
         displayWorld(WorldGenerator.getWorldImage(worldGenerator.getWorldData()));
