@@ -6,17 +6,22 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.audio.AudioPlayer.SoundType;
 import pewpew.smash.game.constants.Constants;
+import pewpew.smash.game.utils.HelpMethods;
 
 @ToString
 public class Button extends UiElement {
 
     private int index;
     @Setter
-    protected boolean mouseOver, mousePressed;
+    @Getter
+    protected boolean mouseOver;
+    @Setter
+    protected boolean mousePressed;
     protected boolean hasSFXPlayed;
     @Getter
     protected Runnable onClick;
@@ -34,19 +39,40 @@ public class Button extends UiElement {
         loadSprites(spriteSheet);
     }
 
+    @Override
     public void update() {
+        super.update();
+
         index = 0;
         updateState();
+        if (mouseOver && MouseController.isMousePressed()) {
+            mousePressed = true;
+        }
         if (mouseOver && mousePressed) {
             playButtonPressedSound();
             onClick.run();
+            MouseController.consumeEvent();
             resetState();
         }
-        updateScaledBounds();
     }
 
+    @Override
     public void render(Canvas canvas) {
         canvas.renderImage(sprites[index], xPos, yPos, width, height);
+    }
+
+    @Override
+    protected void handleMouseInput() {
+        if (HelpMethods.isIn(bounds)) {
+            setMousePressed(MouseController.isMousePressed());
+        } else {
+            setMousePressed(false);
+        }
+    }
+
+    @Override
+    protected void handleMouseMove() {
+        setMouseOver(HelpMethods.isIn(bounds));
     }
 
     private void updateState() {
@@ -65,13 +91,11 @@ public class Button extends UiElement {
     }
 
     private void playButtonHoveredSound() {
-        AudioPlayer.getInstance().play(AudioClip.BUTTON_HOVERED, 0.80f,
-                false, SoundType.UI);
+        AudioPlayer.getInstance().play(AudioClip.BUTTON_HOVERED, 0.80f, false, SoundType.UI);
     }
 
     private void playButtonPressedSound() {
-        AudioPlayer.getInstance().play(AudioClip.BUTTON_PRESSED, 0.80f,
-                false, SoundType.UI);
+        AudioPlayer.getInstance().play(AudioClip.BUTTON_PRESSED, 0.80f, false, SoundType.UI);
     }
 
     protected void resetState() {

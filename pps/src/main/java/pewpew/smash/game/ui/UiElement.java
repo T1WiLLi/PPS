@@ -19,9 +19,11 @@ public abstract class UiElement {
 
     protected abstract void loadSprites(BufferedImage spriteSheet);
 
-    protected abstract void update();
-
     protected abstract void render(Canvas canvas);
+
+    protected abstract void handleMouseInput();
+
+    protected abstract void handleMouseMove();
 
     public UiElement(int x, int y, int w, int h) {
         xPos = x;
@@ -29,6 +31,12 @@ public abstract class UiElement {
         width = w;
         height = h;
         loadBounds();
+    }
+
+    protected void update() {
+        updateScaledBounds();
+        handleMouseInput();
+        handleMouseMove();
     }
 
     protected void updateScaledBounds() {

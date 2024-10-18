@@ -2,8 +2,6 @@ package pewpew.smash.game.overlay;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 import pewpew.smash.database.models.Player;
@@ -14,7 +12,6 @@ import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.ui.TextField;
-import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class ConnectionOverlay extends Overlay {
@@ -49,34 +46,6 @@ public class ConnectionOverlay extends Overlay {
         renderButtons(canvas);
         renderTextFields(canvas);
         renderErrorMessage(canvas);
-    }
-
-    @Override
-    public void handleMousePress(MouseEvent e) {
-        handleMouseInput(true);
-    }
-
-    @Override
-    public void handleMouseRelease(MouseEvent e) {
-        handleMouseInput(false);
-    }
-
-    @Override
-    public void handleMouseMove(MouseEvent e) {
-        updateMouseOverState();
-    }
-
-    @Override
-    public void handleMouseDrag(MouseEvent e) {
-    }
-
-    @Override
-    public void handleKeyPress(KeyEvent e) {
-        handleKeyInput(e);
-    }
-
-    @Override
-    public void handleKeyRelease(KeyEvent e) {
     }
 
     private void updateButtons() {
@@ -120,67 +89,6 @@ public class ConnectionOverlay extends Overlay {
             canvas.setFont(new Font("Impact", Font.TRUETYPE_FONT, 18));
             canvas.renderString(errorMessage, 280, 533, Color.RED);
             canvas.resetFont();
-        }
-    }
-
-    private void handleMouseInput(boolean isPressed) {
-        if (isPressed) {
-            pressButton(backButton, isPressed);
-            pressButton(loginButton, isPressed);
-            updateTextFieldFocus();
-        }
-    }
-
-    private void pressButton(Button button, boolean isPressed) {
-        if (HelpMethods.isIn(button.getBounds())) {
-            button.setMousePressed(isPressed);
-        } else {
-            button.setMousePressed(false);
-        }
-    }
-
-    private void updateTextFieldFocus() {
-        boolean usernameFocused = HelpMethods.isIn(usernameField.getBounds());
-        boolean passwordFocused = HelpMethods.isIn(passwordField.getBounds());
-
-        usernameField.setFocused(usernameFocused);
-        passwordField.setFocused(passwordFocused);
-    }
-
-    private void updateMouseOverState() {
-        backButton.setMouseOver(
-                HelpMethods.isIn(backButton.getBounds()));
-        loginButton.setMouseOver(
-                HelpMethods.isIn(loginButton.getBounds()));
-    }
-
-    private void handleKeyInput(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_TAB) {
-            toggleTextFieldFocus();
-        } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            if (passwordField.isFocused()) {
-                loginButton.getOnClick().run();
-            }
-        } else {
-            handleTextFieldKeyPress(e);
-        }
-    }
-
-    private void toggleTextFieldFocus() {
-        if (usernameField.isFocused()) {
-            usernameField.setFocused(false);
-            passwordField.setFocused(true);
-        } else if (passwordField.isFocused()) {
-            passwordField.setFocused(false);
-            usernameField.setFocused(true);
-        }
-    }
-
-    private void handleTextFieldKeyPress(KeyEvent e) {
-        if (usernameField.isFocused()) {
-            usernameField.keyPressed(e);
-        } else if (passwordField.isFocused()) {
-            passwordField.keyPressed(e);
         }
     }
 

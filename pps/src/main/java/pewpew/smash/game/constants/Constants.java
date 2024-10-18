@@ -23,5 +23,4 @@ public class Constants {
     public static final int SETTINGS_BUTTON_Y = DEFAULT_SCREEN_HEIGHT - BOTTOM_PADDING - 2 * BUTTON_HEIGHT - 20;
     public static final int CREDITS_BUTTON_Y = DEFAULT_SCREEN_HEIGHT - BOTTOM_PADDING - BUTTON_HEIGHT - 10;
     public static final int QUIT_BUTTON_Y = DEFAULT_SCREEN_HEIGHT - BOTTOM_PADDING;
-
 }
