@@ -1,13 +1,9 @@
 package pewpew.smash.game.overlay;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.utils.FontFactory;
-import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class PlayOverlay extends Overlay {
@@ -28,6 +24,7 @@ public class PlayOverlay extends Overlay {
         joinButton.update();
         hostButton.update();
         backButton.update();
+        updateDescription();
     }
 
     @Override
@@ -41,81 +38,26 @@ public class PlayOverlay extends Overlay {
         FontFactory.resetFont(canvas);
     }
 
-    @Override
-    public void handleMousePress(MouseEvent e) {
-        handleMouseInput(true);
-    }
-
-    @Override
-    public void handleMouseRelease(MouseEvent e) {
-        handleMouseInput(false);
-    }
-
-    @Override
-    public void handleMouseMove(MouseEvent e) {
-        resetButtonHoverStates();
-        updateButtonHoverStates();
-    }
-
-    @Override
-    public void handleMouseDrag(MouseEvent e) {
-
-    }
-
-    @Override
-    public void handleKeyPress(KeyEvent e) {
-
-    }
-
-    @Override
-    public void handleKeyRelease(KeyEvent e) {
-
-    }
-
-    private void handleMouseInput(boolean isPressed) {
-        setButtonPressedState(joinButton, isPressed);
-        setButtonPressedState(hostButton, isPressed);
-        setButtonPressedState(backButton, isPressed);
-    }
-
-    private void resetButtonHoverStates() {
-        joinButton.setMouseOver(false);
-        hostButton.setMouseOver(false);
-        backButton.setMouseOver(false);
-        description = "Select an option...";
-    }
-
-    private void updateButtonHoverStates() {
-        if (HelpMethods.isIn(joinButton.getBounds())) {
-            joinButton.setMouseOver(true);
-            description = "Join an existing game by entering the server IP. Play with your friends.";
-
-        } else if (HelpMethods.isIn(hostButton.getBounds())) {
-            hostButton.setMouseOver(true);
-            description = "Host a new game by entering server details. Don't forget to notify your friends !";
-        }
-        backButton.setMouseOver(HelpMethods.isIn(backButton.getBounds()));
-    }
-
-    private void setButtonPressedState(Button button, boolean isPressed) {
-        if (HelpMethods.isIn(button.getBounds())) {
-            button.setMousePressed(isPressed);
-        }
-    }
-
-    private void renderDescription(Canvas canvas) {
-        if (!description.isEmpty()) {
-            FontFactory.IMPACT_SMALL.applyFont(canvas);
-            int descriptionWidth = FontFactory.IMPACT_SMALL.getFontWidth(description, canvas);
-            canvas.renderString(description, (width - descriptionWidth) / 2, height - 50);
-        }
-    }
-
     private void renderTitle(Canvas canvas) {
         FontFactory.IMPACT_X_LARGE.applyFont(canvas);
         String title = "Choose Your Option!";
         int titleWidth = FontFactory.IMPACT_X_LARGE.getFontWidth(title, canvas);
         canvas.renderString(title, (width - titleWidth) / 2, 180);
+    }
+
+    private void renderDescription(Canvas canvas) {
+        FontFactory.SMALL_FONT.applyFont(canvas);
+        int descriptionWidth = FontFactory.SMALL_FONT.getFontWidth(description, canvas);
+        canvas.renderString(description, (width - descriptionWidth) / 2, height - 50);
+    }
+
+    private void updateDescription() {
+        description = "Join or Host a game!";
+        if (joinButton.isMouseOver()) {
+            description = "Join a game and play with your friends !";
+        } else if (hostButton.isMouseOver()) {
+            description = "Host a game and invite your friends to play with you!";
+        }
     }
 
     private void loadBackground() {

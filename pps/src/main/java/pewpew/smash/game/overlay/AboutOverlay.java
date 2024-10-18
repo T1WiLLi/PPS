@@ -1,15 +1,12 @@
 package pewpew.smash.game.overlay;
 
 import java.awt.Color;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.config.AboutConfig;
 import pewpew.smash.game.config.ConfigReader;
 import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.utils.FontFactory;
-import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class AboutOverlay extends Overlay {
@@ -41,33 +38,6 @@ public class AboutOverlay extends Overlay {
     }
 
     @Override
-    public void handleMousePress(MouseEvent e) {
-        handleMouseInput(e, true);
-    }
-
-    @Override
-    public void handleMouseRelease(MouseEvent e) {
-        handleMouseInput(e, false);
-    }
-
-    @Override
-    public void handleMouseMove(MouseEvent e) {
-        this.backButton.setMouseOver(HelpMethods.isIn(backButton.getBounds()));
-    }
-
-    @Override
-    public void handleMouseDrag(MouseEvent e) {
-    }
-
-    @Override
-    public void handleKeyPress(KeyEvent e) {
-    }
-
-    @Override
-    public void handleKeyRelease(KeyEvent e) {
-    }
-
-    @Override
     public void activate() {
         super.activate();
         if (isDisplaying()) {
@@ -88,17 +58,11 @@ public class AboutOverlay extends Overlay {
             FontFactory.IMPACT_SMALL.applyFont(canvas);
             int centerX = this.width / 2;
 
-            float currentY = scrollPosition; // Start the scrolling from the current position
+            float currentY = scrollPosition;
 
             for (AboutConfig.CreditSection section : aboutConfig.getCredits()) {
                 currentY = renderCreditSection(canvas, centerX, currentY, section);
             }
-        }
-    }
-
-    private void handleMouseInput(MouseEvent e, boolean isPressed) {
-        if (HelpMethods.isIn(backButton.getBounds())) {
-            this.backButton.setMousePressed(isPressed);
         }
     }
 

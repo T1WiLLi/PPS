@@ -21,20 +21,18 @@ public class ButtonImage extends Button {
 
     @Override
     public void update() {
+        super.update();
+
         if (mouseOver) {
             scaleOnMouseOver();
         }
-        if (mousePressed && mouseOver) {
-            onClick.run();
-            resetState();
-        }
-        updateScaledBounds();
     }
 
     @Override
     public void render(Canvas canvas) {
         if (mouseOver) {
-            canvas.renderImage(normalSprite, (int) (xPos - (width * (scaleFactor - 1) / 2)),
+            canvas.renderImage(normalSprite,
+                    (int) (xPos - (width * (scaleFactor - 1) / 2)),
                     (int) (yPos - (height * (scaleFactor - 1) / 2)),
                     (int) (width * scaleFactor), (int) (height * scaleFactor));
         } else {

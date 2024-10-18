@@ -8,6 +8,11 @@ import java.awt.geom.AffineTransform;
 
 import lombok.ToString;
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.engine.controls.MouseController;
+import pewpew.smash.game.audio.AudioClip;
+import pewpew.smash.game.audio.AudioPlayer;
+import pewpew.smash.game.audio.AudioPlayer.SoundType;
+import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 @ToString
@@ -17,13 +22,16 @@ public class Cycler extends UiElement {
     private String[] cycles;
     private int currentIndex;
 
+    private Runnable onCycle;
+
     private boolean isAnimating;
     private long animationStartTime;
     private static final long ANIMATION_DURATION = 300;
     private static final int TOTAL_ROTATION = -180;
 
-    public Cycler(int x, int y, int w, int h, String[] cycles, String initialValue) {
+    public Cycler(int x, int y, int w, int h, String[] cycles, String initialValue, Runnable onCycle) {
         super(x, y, w, h);
+        this.onCycle = onCycle;
         this.cycles = cycles;
         this.currentIndex = findInitialIndex(initialValue);
         this.isAnimating = false;
@@ -37,7 +45,10 @@ public class Cycler extends UiElement {
 
     @Override
     public void update() {
-        updateScaledBounds();
+        super.update();
+        if (isAnimating) {
+            updateAnimation();
+        }
     }
 
     @Override
@@ -51,6 +62,20 @@ public class Cycler extends UiElement {
         } finally {
             g2d.setTransform(originalTransform);
         }
+    }
+
+    @Override
+    protected void handleMouseInput() {
+        if (HelpMethods.isIn(bounds) && MouseController.isMousePressed() && !isAnimating) {
+            nextCycle();
+            onCycle.run();
+            MouseController.consumeEvent();
+            AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
+        }
+    }
+
+    @Override
+    protected void handleMouseMove() {
     }
 
     public String getCurrentCycle() {
@@ -77,6 +102,13 @@ public class Cycler extends UiElement {
     private void startAnimation() {
         isAnimating = true;
         animationStartTime = System.currentTimeMillis();
+    }
+
+    private void updateAnimation() {
+        long elapsedTime = System.currentTimeMillis() - animationStartTime;
+        if (elapsedTime >= ANIMATION_DURATION) {
+            isAnimating = false;
+        }
     }
 
     private int findInitialIndex(String initialValue) {
@@ -117,13 +149,9 @@ public class Cycler extends UiElement {
 
         if (isAnimating) {
             long elapsedTime = System.currentTimeMillis() - animationStartTime;
-            if (elapsedTime >= ANIMATION_DURATION) {
-                isAnimating = false;
-            } else {
-                float progress = (float) elapsedTime / ANIMATION_DURATION;
-                float currentRotation = progress * TOTAL_ROTATION;
-                g2d.rotate(Math.toRadians(currentRotation), centerX, centerY);
-            }
+            float progress = Math.min(1.0f, (float) elapsedTime / ANIMATION_DURATION);
+            float currentRotation = progress * TOTAL_ROTATION;
+            g2d.rotate(Math.toRadians(currentRotation), centerX, centerY);
         }
     }
 }

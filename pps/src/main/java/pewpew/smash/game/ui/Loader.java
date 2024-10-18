@@ -25,6 +25,7 @@ public class Loader extends UiElement {
 
     @Override
     public void update() {
+        super.update();
     }
 
     @Override
@@ -32,6 +33,12 @@ public class Loader extends UiElement {
         drawBackground(canvas);
         drawProgressBar(canvas);
         drawPercentageText(canvas);
+    }
+
+    protected void handleMouseInput() {
+    }
+
+    protected void handleMouseMove() {
     }
 
     private void drawBackground(Canvas canvas) {

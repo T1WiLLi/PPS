@@ -4,13 +4,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.function.Consumer;
 import pewpew.smash.engine.Canvas;
 
 public class OverlayManager {
 
     private static OverlayManager instance;
-
     private Deque<Overlay> overlays;
 
     public synchronized static OverlayManager getInstance() {
@@ -52,35 +50,82 @@ public class OverlayManager {
         overlays.forEach(overlay -> overlay.render(canvas));
     }
 
+    private boolean isEventHandledByOverlay(Overlay overlay, String eventType) {
+        FunctionalOverlay annotation = overlay.getClass().getAnnotation(FunctionalOverlay.class);
+        if (annotation != null) {
+            for (String handler : annotation.value()) {
+                if (handler.equals(eventType)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean handleMousePress(MouseEvent e) {
-        return handleEvent(overlay -> overlay.handleMousePress(e));
+        Overlay currentOverlay = overlays.peek();
+        if (currentOverlay != null && currentOverlay.isDisplaying()) {
+            if (isEventHandledByOverlay(currentOverlay, "HandleMousePress")) {
+                currentOverlay.handleMousePress(e);
+            }
+            return true;
+        }
+        return false;
     }
 
     public boolean handleMouseRelease(MouseEvent e) {
-        return handleEvent(overlay -> overlay.handleMouseRelease(e));
+        Overlay currentOverlay = overlays.peek();
+        if (currentOverlay != null && currentOverlay.isDisplaying()) {
+            if (isEventHandledByOverlay(currentOverlay, "HandleMouseRelease")) {
+                currentOverlay.handleMouseRelease(e);
+            }
+            return true;
+        }
+        return false;
     }
 
     public boolean handleMouseMove(MouseEvent e) {
-        return handleEvent(overlay -> overlay.handleMouseMove(e));
+        Overlay currentOverlay = overlays.peek();
+        if (currentOverlay != null && currentOverlay.isDisplaying()) {
+            if (isEventHandledByOverlay(currentOverlay, "HandleMouseMove")) {
+                currentOverlay.handleMouseMove(e);
+            }
+            return true;
+        }
+        return false;
     }
 
     public boolean handleMouseDrag(MouseEvent e) {
-        return handleEvent(overlay -> overlay.handleMouseDrag(e));
+        Overlay currentOverlay = overlays.peek();
+        if (currentOverlay != null && currentOverlay.isDisplaying()) {
+            if (isEventHandledByOverlay(currentOverlay, "HandleMouseDrag")) {
+                currentOverlay.handleMouseDrag(e);
+            }
+            return true;
+        }
+        return false;
     }
 
     public boolean handleKeyPress(KeyEvent e) {
-        return handleEvent(overlay -> overlay.handleKeyPress(e));
+        Overlay currentOverlay = overlays.peek();
+        if (currentOverlay != null && currentOverlay.isDisplaying()) {
+            if (isEventHandledByOverlay(currentOverlay, "HandleKeyPress")) {
+                currentOverlay.handleKeyPress(e);
+            }
+            return true;
+        }
+        return false;
     }
 
     public boolean handleKeyRelease(KeyEvent e) {
-        return handleEvent(overlay -> overlay.handleKeyRelease(e));
-    }
-
-    private boolean handleEvent(Consumer<Overlay> eventHandler) {
-        if (!overlays.isEmpty()) {
-            eventHandler.accept(overlays.peek());
+        Overlay currentOverlay = overlays.peek();
+        if (currentOverlay != null && currentOverlay.isDisplaying()) {
+            if (isEventHandledByOverlay(currentOverlay, "HandleKeyRelease")) {
+                currentOverlay.handleKeyRelease(e);
+            }
+            return true;
         }
-        return !overlays.isEmpty();
+        return false;
     }
 
     private OverlayManager() {

@@ -1,6 +1,11 @@
 package pewpew.smash.game.ui;
 
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.engine.controls.MouseController;
+import pewpew.smash.game.audio.AudioClip;
+import pewpew.smash.game.audio.AudioPlayer;
+import pewpew.smash.game.audio.AudioPlayer.SoundType;
+import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 import java.awt.image.BufferedImage;
@@ -16,17 +21,20 @@ public class Checkbox extends UiElement {
     @Setter
     private boolean checked;
 
+    private Runnable onCheck;
+
     private BufferedImage checkSprite;
 
-    public Checkbox(int x, int y) {
+    public Checkbox(int x, int y, Runnable onCheck) {
         super(x, y, 25, 25);
         this.checked = false;
+        this.onCheck = onCheck;
         loadSprites(ResourcesLoader.getImage(ResourcesLoader.MISC_PATH, "check"));
     }
 
     @Override
     public void update() {
-        updateScaledBounds();
+        super.update();
     }
 
     @Override
@@ -35,6 +43,20 @@ public class Checkbox extends UiElement {
         if (checked) {
             canvas.renderImage(checkSprite, xPos, yPos - 10, this.width + 10, this.height + 10);
         }
+    }
+
+    @Override
+    public void handleMouseInput() {
+        if (HelpMethods.isIn(bounds) && MouseController.isMousePressed()) {
+            checked = !checked;
+            onCheck.run();
+            MouseController.consumeEvent();
+            AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
+        }
+    }
+
+    @Override
+    public void handleMouseMove() {
     }
 
     @Override
