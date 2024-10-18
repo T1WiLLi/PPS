@@ -88,5 +88,4 @@ public class ClientWrapper extends KryoNetWrapper {
     protected void sendToUDP(int connection, Object packet) {
         throw new UnsupportedOperationException("Unimplemented method 'sendToUDP'");
     }
-
 }
