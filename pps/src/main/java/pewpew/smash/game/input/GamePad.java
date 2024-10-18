@@ -1,59 +1,48 @@
 package pewpew.smash.game.input;
 
-import lombok.Setter;
-import pewpew.smash.engine.controls.KeyController;
+import pewpew.smash.engine.controls.MovementController;
 
-import java.awt.event.KeyEvent;
-import java.util.HashMap;
-import java.util.Map;
-
-@Setter
-public class GamePad extends KeyController {
+public class GamePad extends MovementController {
 
     private static final GamePad INSTANCE = new GamePad();
-    private final Map<String, Integer> actionKeyMap = new HashMap<>();
 
     public final synchronized static GamePad getInstance() {
         return INSTANCE;
     }
 
-    public void updateBindings(Map<String, String> movement, Map<String, String> misc) {
-        clearKeys();
-        actionKeyMap.clear();
-        bindKeysFromMap(movement);
-        bindKeysFromMap(misc);
+    public boolean isUpKeyPressed() {
+        return isKeyPressed("up");
     }
 
-    public boolean isKeyPressed(String action) {
-        Integer keyCode = actionKeyMap.get(action);
-        return keyCode != null && isKeyPressed(keyCode);
+    public boolean isDownKeyPressed() {
+        return isKeyPressed("down");
     }
 
-    public boolean isKeyPressed(int keyCode) {
-        return super.isKeyPressed(keyCode);
+    public boolean isLeftKeyPressed() {
+        return isKeyPressed("left");
     }
 
-    public boolean isMoving() {
-        return isKeyPressed("left") || isKeyPressed("right")
-                || isKeyPressed("up") || isKeyPressed("down");
+    public boolean isRightKeyPressed() {
+        return isKeyPressed("right");
     }
 
-    private void bindKeysFromMap(Map<String, String> keyMap) {
-        keyMap.forEach((action, keyName) -> {
-            int keyCode = parseKeyNameToKeyCode(keyName);
-            if (keyCode != -1) {
-                bindKey(keyCode);
-                actionKeyMap.put(action, keyCode);
-            }
-        });
+    public boolean isUseKeyPressed() {
+        return isKeyPressed("use");
     }
 
-    private int parseKeyNameToKeyCode(String keyName) {
-        try {
-            return (int) KeyEvent.class.getField("VK_" + keyName.toUpperCase()).get(null);
-        } catch (Exception e) {
-            System.err.println("Invalid key name: " + keyName);
-            return -1;
-        }
+    public boolean isReloadKeyPressed() {
+        return isKeyPressed("reload");
+    }
+
+    public boolean isMapKeyPressed() {
+        return isKeyPressed("map");
+    }
+
+    public boolean isInventoryKeyPressed() {
+        return isKeyPressed("inventory");
+    }
+
+    public boolean isPauseKeyPressed() {
+        return isKeyPressed("pause");
     }
 }
