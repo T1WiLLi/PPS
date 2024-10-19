@@ -14,7 +14,9 @@ import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.ClientIDResponsePacket;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
+import pewpew.smash.game.network.packets.PlayerLeftPacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
+import pewpew.smash.game.network.packets.PositionPacket;
 
 public class ServerHandler extends Handler implements Runnable {
 
@@ -23,8 +25,8 @@ public class ServerHandler extends Handler implements Runnable {
     private EntityManager entityManager;
     private GameTime gameTime;
 
-    public ServerHandler(int tcp, int udp) {
-        this.server = new ServerWrapper(tcp, udp);
+    public ServerHandler(int port) {
+        this.server = new ServerWrapper(port, port);
         this.executor = Executors.newSingleThreadExecutor();
         this.entityManager = new EntityManager();
         this.gameTime = GameTime.getInstance();
@@ -68,11 +70,24 @@ public class ServerHandler extends Handler implements Runnable {
         player.teleport(400, 300);
         this.entityManager.addPlayerEntity(player.getId(), player);
         this.server.sendToTCP(connection.getID(), new ClientIDResponsePacket(player.getId()));
+        PlayerJoinedPacket joinedPacket = new PlayerJoinedPacket(player.getId(), player.getUsername());
+
+        this.server.sendToAllExceptTCP(connection.getID(), joinedPacket);
+
+        this.entityManager.playerEntitiesIterator().forEachRemaining(existingPlayer -> {
+            if (existingPlayer.getId() != player.getId()) {
+                PlayerJoinedPacket existingPlayerPacket = new PlayerJoinedPacket(
+                        existingPlayer.getId(),
+                        existingPlayer.getUsername());
+                this.server.sendToTCP(connection.getID(), existingPlayerPacket);
+            }
+        });
     }
 
     @Override
     protected void onDisconnect(Connection connection) {
-
+        this.entityManager.removePlayerEntity(connection.getID());
+        this.server.sendToAllTCP(new PlayerLeftPacket(connection.getID()));
     }
 
     @Override
@@ -102,6 +117,14 @@ public class ServerHandler extends Handler implements Runnable {
     }
 
     private void sendStateUpdate() {
+        sendPlayerPos();
+    }
 
+    private void sendPlayerPos() {
+        this.entityManager.playerEntitiesIterator().forEachRemaining(player -> {
+            PositionPacket packet = new PositionPacket(player.getId(), player.getX(), player.getY(),
+                    player.getRotation());
+            this.server.sendToAllUDP(packet);
+        });
     }
 }

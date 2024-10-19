@@ -11,12 +11,21 @@ public class Player extends MovableEntity {
 
     @Setter
     @Getter
-    String username;
+    private String username;
+
+    @Setter
+    @Getter
+    private short rotation;
 
     public Player(int id) {
         setDimensions(30, 30);
         setSpeed(2);
         this.id = id;
+    }
+
+    public Player(int id, String username) {
+        this(id);
+        this.username = username;
     }
 
     @Override
@@ -26,7 +35,7 @@ public class Player extends MovableEntity {
 
     @Override
     public void updateServer(double deltaTime) {
-        move();
+        move(deltaTime);
     }
 
     @Override
