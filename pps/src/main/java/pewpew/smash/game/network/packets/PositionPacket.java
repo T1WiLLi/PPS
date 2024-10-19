@@ -11,5 +11,5 @@ public class PositionPacket extends BasePacket {
     private int id;
     private int x;
     private int y;
-    private short r; // Rotation degree (0-360)
+    private float r; // Rotation degree (0-360)
 }

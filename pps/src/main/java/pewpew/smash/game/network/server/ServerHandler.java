@@ -11,7 +11,6 @@ import pewpew.smash.engine.GameTime;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.manager.EntityManager;
-import pewpew.smash.game.network.packets.ClientIDResponsePacket;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
@@ -56,8 +55,7 @@ public class ServerHandler extends Handler implements Runnable {
             PlayerUsernamePacket usernamePacket = (PlayerUsernamePacket) packet;
             this.entityManager.getPlayerEntity(connection.getID()).setUsername(usernamePacket.getUsername());
             PlayerJoinedPacket joinedPacket = new PlayerJoinedPacket(connection.getID(), usernamePacket.getUsername());
-            this.server.sendToAllTCP(joinedPacket); // TODO : Should we exclude the sender? if so, we will need to use
-                                                    // the function sendToAllExceptTCP
+            this.server.sendToAllExceptTCP(connection.getID(), joinedPacket);
         } else if (packet instanceof DirectionPacket) {
             DirectionPacket directionPacket = (DirectionPacket) packet;
             this.entityManager.getPlayerEntity(connection.getID()).setDirection(directionPacket.getDirection());
@@ -68,20 +66,15 @@ public class ServerHandler extends Handler implements Runnable {
     protected void onConnect(Connection connection) {
         Player player = new Player(connection.getID());
         player.teleport(400, 300);
-        this.entityManager.addPlayerEntity(player.getId(), player);
-        this.server.sendToTCP(connection.getID(), new ClientIDResponsePacket(player.getId()));
-        PlayerJoinedPacket joinedPacket = new PlayerJoinedPacket(player.getId(), player.getUsername());
-
-        this.server.sendToAllExceptTCP(connection.getID(), joinedPacket);
 
         this.entityManager.playerEntitiesIterator().forEachRemaining(existingPlayer -> {
-            if (existingPlayer.getId() != player.getId()) {
-                PlayerJoinedPacket existingPlayerPacket = new PlayerJoinedPacket(
-                        existingPlayer.getId(),
-                        existingPlayer.getUsername());
-                this.server.sendToTCP(connection.getID(), existingPlayerPacket);
-            }
+            PlayerJoinedPacket existingPlayerPacket = new PlayerJoinedPacket(
+                    existingPlayer.getId(),
+                    existingPlayer.getUsername());
+            this.server.sendToTCP(connection.getID(), existingPlayerPacket);
         });
+
+        this.entityManager.addPlayerEntity(player.getId(), player);
     }
 
     @Override
@@ -122,9 +115,11 @@ public class ServerHandler extends Handler implements Runnable {
 
     private void sendPlayerPos() {
         this.entityManager.playerEntitiesIterator().forEachRemaining(player -> {
-            PositionPacket packet = new PositionPacket(player.getId(), player.getX(), player.getY(),
-                    player.getRotation());
-            this.server.sendToAllUDP(packet);
+            if (player.hasPositionChanged()) {
+                PositionPacket packet = new PositionPacket(player.getId(), player.getX(), player.getY(),
+                        player.getRotation());
+                this.server.sendToAllUDP(packet);
+            }
         });
     }
 }

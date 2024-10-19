@@ -8,6 +8,8 @@ import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.entities.MovableEntity;
 
 public class Player extends MovableEntity {
+    private int prevX, prevY;
+    private float prevRotation;
 
     @Setter
     @Getter
@@ -15,7 +17,7 @@ public class Player extends MovableEntity {
 
     @Setter
     @Getter
-    private short rotation;
+    private float rotation;
 
     public Player(int id) {
         setDimensions(30, 30);
@@ -35,6 +37,9 @@ public class Player extends MovableEntity {
 
     @Override
     public void updateServer(double deltaTime) {
+        prevX = getX();
+        prevY = getY();
+        prevRotation = getRotation();
         move(deltaTime);
     }
 
@@ -43,4 +48,7 @@ public class Player extends MovableEntity {
         canvas.renderCircle(x, y, 30, Color.WHITE);
     }
 
+    public boolean hasPositionChanged() {
+        return getX() != prevX || getY() != prevY || getRotation() != prevRotation;
+    }
 }

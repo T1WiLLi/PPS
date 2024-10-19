@@ -5,7 +5,6 @@ import com.esotericsoftware.kryo.Kryo;
 import pewpew.smash.engine.controls.Direction;
 import pewpew.smash.game.network.packets.BasePacket;
 import pewpew.smash.game.network.packets.BroadcastMessagePacket;
-import pewpew.smash.game.network.packets.ClientIDResponsePacket;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
@@ -23,7 +22,6 @@ public class KryoRegister {
     private void registerPacket(Kryo kryo) {
         kryo.register(BasePacket.class);
         kryo.register(BroadcastMessagePacket.class);
-        kryo.register(ClientIDResponsePacket.class);
         kryo.register(DirectionPacket.class);
         kryo.register(PlayerJoinedPacket.class);
         kryo.register(PlayerLeftPacket.class);

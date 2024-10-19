@@ -63,13 +63,7 @@ public class ClientHandler extends Handler implements Runnable {
 
     @Override
     protected void handlePacket(Connection connection, Object packet) {
-        if (packet instanceof ClientIDResponsePacket) {
-            ClientIDResponsePacket clientID = (ClientIDResponsePacket) packet;
-            local.setID(clientID.getClientID());
-            this.client.sendToTCP(new PlayerUsernamePacket(
-                    local.getUsername().equals("Guest") ? local.getUsername() + "-" + local.getID()
-                            : local.getUsername()));
-        } else if (packet instanceof PositionPacket) {
+        if (packet instanceof PositionPacket) {
             PositionPacket position = (PositionPacket) packet;
             Player player = this.entityManager.getPlayerEntity(position.getId());
             player.teleport(position.getX(), position.getY());
@@ -86,7 +80,15 @@ public class ClientHandler extends Handler implements Runnable {
 
     @Override
     protected void onConnect(Connection connection) {
+        Player player = new Player(connection.getID(),
+                local.getUsername().equals("Guest") ? local.getUsername() + "-" + connection.getID()
+                        : local.getUsername());
 
+        this.client.sendToTCP(new PlayerUsernamePacket(
+                local.getUsername().equals("Guest") ? local.getUsername() + "-" + connection.getID()
+                        : local.getUsername()));
+
+        this.entityManager.addPlayerEntity(player.getId(), player);
     }
 
     @Override
