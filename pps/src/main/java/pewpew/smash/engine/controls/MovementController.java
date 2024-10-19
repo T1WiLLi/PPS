@@ -54,7 +54,7 @@ public class MovementController extends KeyController {
             return Direction.RIGHT;
         }
 
-        return null;
+        return Direction.NONE;
     }
 
     private void bindMovementKeys() {
