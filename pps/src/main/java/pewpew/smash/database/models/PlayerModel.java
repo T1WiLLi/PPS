@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Player {
+public class PlayerModel {
     private int id;
     private String username;
     private String passwordHash;

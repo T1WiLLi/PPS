@@ -11,16 +11,16 @@ import java.util.List;
 import pewpew.smash.database.Database;
 import pewpew.smash.database.ResultSetProcessor;
 import pewpew.smash.database.models.Achievement;
-import pewpew.smash.database.models.Player;
+import pewpew.smash.database.models.PlayerModel;
 import pewpew.smash.database.models.Rank;
 
 public class AuthService {
 
-    public Player authenticate(String username, String password) {
+    public PlayerModel authenticate(String username, String password) {
         username = sanitize(username);
         password = sanitize(password);
 
-        Player player = getPlayerData(username);
+        PlayerModel player = getPlayerData(username);
 
         if (player == null) {
             return null;
@@ -56,8 +56,8 @@ public class AuthService {
         return hexString.toString();
     }
 
-    private Player getPlayerData(String username) {
-        final Player[] player = { null };
+    private PlayerModel getPlayerData(String username) {
+        final PlayerModel[] player = { null };
         String query = "SELECT p.id, p.username, p.password, pr.rank_id, pr.current_xp, r.name as rank_name, r.description as rank_description, r.image_url as rank_image_url, r.max_xp, r.min_xp FROM players p "
                 +
                 "LEFT JOIN player_ranks pr ON p.id = pr.player_id " +
@@ -74,7 +74,7 @@ public class AuthService {
                             rs.getString("rank_description"), rs.getString("rank_image_url"),
                             rs.getInt("current_xp"), rs.getInt("max_xp"), rs.getInt("min_xp"));
                     List<Achievement> achievements = getPlayerAchievements(playerId);
-                    player[0] = new Player(playerId, username, passwordHash, rank, achievements);
+                    player[0] = new PlayerModel(playerId, username, passwordHash, rank, achievements);
                 }
             }
         }, username);

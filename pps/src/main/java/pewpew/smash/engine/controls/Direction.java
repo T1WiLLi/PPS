@@ -9,7 +9,8 @@ public enum Direction {
     UP_LEFT(-1, -1),
     UP_RIGHT(1, -1),
     DOWN_LEFT(-1, 1),
-    DOWN_RIGHT(1, 1);
+    DOWN_RIGHT(1, 1),
+    NONE(0, 0);
 
     private final int xMultiplier;
     private final int yMultiplier;
