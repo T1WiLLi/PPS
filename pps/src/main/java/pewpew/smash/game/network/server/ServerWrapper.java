@@ -38,6 +38,10 @@ public class ServerWrapper extends KryoNetWrapper {
         ((Server) this.endPoint).sendToAllTCP(packet);
     }
 
+    public void sendToAllExceptTCP(int connection, Object packet) {
+        ((Server) this.endPoint).sendToAllExceptTCP(connection, packet);
+    }
+
     public void sendToAllUDP(Object packet) {
         ((Server) this.endPoint).sendToAllUDP(packet);
     }

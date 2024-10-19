@@ -16,6 +16,8 @@ public final class User {
 
     private boolean isConnected = false;
 
+    private int iD;
+
     private String username = "Guest";
     private Rank rank = new Rank(-1, "none", "none", "none", 0, 0, 0);
     private List<Achievement> achievements;
