@@ -46,6 +46,10 @@ public class Canvas {
     }
 
     // Image Rendering Methods
+    public void renderImage(BufferedImage img, int x, int y) {
+        graphics2D.drawImage(img, null, x, y);
+    }
+
     public void renderImage(BufferedImage img, int x, int y, int width, int height) {
         if (img != null) {
             graphics2D.drawImage(img, x, y, width, height, null);

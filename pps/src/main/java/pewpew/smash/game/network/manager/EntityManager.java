@@ -65,21 +65,21 @@ public class EntityManager {
         return playerEntitiesMap.containsKey(id);
     }
 
-    public void clearAllEntities() {
+    public synchronized void clearAllEntities() {
         updatableEntitiesMap.clear();
         movableEntitiesMap.clear();
         playerEntitiesMap.clear();
     }
 
-    public Iterator<UpdatableEntity> updatableEntitiesIterator() {
+    public synchronized Iterator<UpdatableEntity> updatableEntitiesIterator() {
         return updatableEntitiesMap.values().iterator();
     }
 
-    public Iterator<MovableEntity> movableEntitiesIterator() {
+    public synchronized Iterator<MovableEntity> movableEntitiesIterator() {
         return movableEntitiesMap.values().iterator();
     }
 
-    public Iterator<Player> playerEntitiesIterator() {
+    public synchronized Iterator<Player> playerEntitiesIterator() {
         return playerEntitiesMap.values().iterator();
     }
 }
