@@ -32,10 +32,6 @@ public class StateManager {
         }
     }
 
-    public State getCurrentState() {
-        return this.currentState;
-    }
-
     public void update(double deltaTime) {
         if (currentState != null) {
             currentState.update(deltaTime);
