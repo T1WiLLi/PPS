@@ -1,8 +1,10 @@
 package pewpew.smash.game.gamemode;
 
+import java.awt.event.MouseEvent;
+
 import pewpew.smash.engine.Canvas;
 
-public class Sandbox implements GameModeMethods {
+public class Sandbox implements GameMode {
 
     @Override
     public void update(double deltaTime) {
@@ -21,6 +23,26 @@ public class Sandbox implements GameModeMethods {
 
     @Override
     public void start() {
+
+    }
+
+    @Override
+    public void handleMousePress(MouseEvent e) {
+
+    }
+
+    @Override
+    public void handleMouseRelease(MouseEvent e) {
+
+    }
+
+    @Override
+    public void handleMouseMove(MouseEvent e) {
+
+    }
+
+    @Override
+    public void handleMouseDrag(MouseEvent e) {
 
     }
 }
