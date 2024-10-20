@@ -31,4 +31,12 @@ public class ScaleUtils {
     public static int scaleButtonHeight() {
         return (int) (RenderingEngine.getInstance().getScale()[1] * Constants.BUTTON_HEIGHT);
     }
+
+    public static double getScaleX() {
+        return RenderingEngine.getInstance().getScale()[0];
+    }
+
+    public static double getScaleY() {
+        return RenderingEngine.getInstance().getScale()[1];
+    }
 }

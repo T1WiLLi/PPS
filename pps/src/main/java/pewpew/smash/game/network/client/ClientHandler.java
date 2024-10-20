@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.esotericsoftware.kryonet.Connection;
 
+import lombok.Getter;
 import pewpew.smash.engine.GameTime;
 import pewpew.smash.engine.controls.Direction;
 import pewpew.smash.game.entities.Player;
@@ -14,7 +15,6 @@ import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
-import pewpew.smash.game.network.packets.ClientIDResponsePacket;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
@@ -25,6 +25,7 @@ public class ClientHandler extends Handler implements Runnable {
     private ExecutorService executor;
 
     private ClientWrapper client;
+    @Getter
     private EntityManager entityManager;
     private GamePad gamePad;
     private User local;
@@ -54,9 +55,6 @@ public class ClientHandler extends Handler implements Runnable {
             // for now.
             if (GameTime.getInstance().shouldUpdate()) {
                 sendDirection();
-            }
-            if (GameTime.getInstance().shouldRender()) {
-                // Render
             }
         }
     }
