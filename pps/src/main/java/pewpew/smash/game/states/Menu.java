@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Polygon;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 import pewpew.smash.engine.Canvas;
@@ -51,29 +50,6 @@ public class Menu implements State {
         renderBackground(canvas);
         renderButtons(canvas);
         renderBanner(canvas);
-    }
-
-    @Override
-    public void handleMousePress(MouseEvent e) {
-        if (!overlayManager.handleMousePress(e)) {
-        }
-    }
-
-    @Override
-    public void handleMouseRelease(MouseEvent e) {
-        if (!overlayManager.handleMouseRelease(e)) {
-        }
-    }
-
-    @Override
-    public void handleMouseMove(MouseEvent e) {
-        if (!overlayManager.handleMouseMove(e)) {
-        }
-    }
-
-    @Override
-    public void handleMouseDrag(MouseEvent e) {
-        overlayManager.handleMouseDrag(e);
     }
 
     @Override
