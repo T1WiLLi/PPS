@@ -25,7 +25,7 @@ public class PewPewSmash extends Game {
         this.stateManager = StateManager.getInstance();
         this.stateManager.setState(GameStateType.MENU);
 
-        new MouseHandler(this.stateManager);
+        new MouseHandler();
         new KeyHandler(this.stateManager);
 
         SettingsManager.getInstance().updateGameSettings();
