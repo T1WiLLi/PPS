@@ -8,6 +8,7 @@ import pewpew.smash.game.network.packets.BroadcastMessagePacket;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
+import pewpew.smash.game.network.packets.PlayerUsernamePacket;
 import pewpew.smash.game.network.packets.PositionPacket;
 import pewpew.smash.game.network.packets.WorldDataPacket;
 
@@ -25,6 +26,7 @@ public class KryoRegister {
         kryo.register(DirectionPacket.class);
         kryo.register(PlayerJoinedPacket.class);
         kryo.register(PlayerLeftPacket.class);
+        kryo.register(PlayerUsernamePacket.class);
         kryo.register(PositionPacket.class);
         kryo.register(WorldDataPacket.class);
     }

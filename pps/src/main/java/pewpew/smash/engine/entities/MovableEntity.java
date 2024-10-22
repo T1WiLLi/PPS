@@ -10,7 +10,7 @@ import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.Direction;
 
 @Getter
-@ToString
+@ToString(callSuper = true)
 public abstract class MovableEntity extends UpdatableEntity {
 
     @Setter

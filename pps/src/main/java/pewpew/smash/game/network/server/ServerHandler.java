@@ -35,8 +35,8 @@ public class ServerHandler extends Handler implements Runnable {
 
     @Override
     public void start() throws IOException {
-        this.server.start();
         this.server.addListener(bindListener());
+        this.server.start();
         this.executor.execute(this);
     }
 
@@ -66,9 +66,9 @@ public class ServerHandler extends Handler implements Runnable {
     @Override
     protected void onConnect(Connection connection) {
         Player player = new Player(connection.getID());
-        player.teleport(400, 300);
+        player.teleport(100, 100);
 
-        this.entityManager.playerEntitiesIterator().forEachRemaining(existingPlayer -> {
+        this.entityManager.getPlayerEntities().forEach(existingPlayer -> {
             PlayerJoinedPacket existingPlayerPacket = new PlayerJoinedPacket(
                     existingPlayer.getId(),
                     existingPlayer.getUsername());
@@ -106,7 +106,7 @@ public class ServerHandler extends Handler implements Runnable {
     }
 
     private void update(double deltaTime) {
-        this.entityUpdater.update(deltaTime);
+        entityManager.getPlayerEntities().forEach(Player::updateServer);
     }
 
     // Do other state update, such as hp, collision, bullet, ammo, inventory , etc.

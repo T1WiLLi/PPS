@@ -2,6 +2,7 @@ package pewpew.smash.game.network.manager;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.engine.entities.UpdatableEntity;
 import pewpew.smash.game.entities.Player;
@@ -11,45 +12,49 @@ public class EntityManager {
     private final Map<Integer, MovableEntity> movableEntitiesMap;
     private final Map<Integer, Player> playerEntitiesMap;
 
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
+    private final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+
     public EntityManager() {
         this.updatableEntitiesMap = new ConcurrentHashMap<>();
         this.movableEntitiesMap = new ConcurrentHashMap<>();
         this.playerEntitiesMap = new ConcurrentHashMap<>();
     }
 
-    public void addUpdatableEntity(int id, UpdatableEntity entity) {
+    public synchronized void addUpdatableEntity(int id, UpdatableEntity entity) {
         updatableEntitiesMap.put(id, entity);
     }
 
-    public void addMovableEntity(int id, MovableEntity entity) {
+    public synchronized void addMovableEntity(int id, MovableEntity entity) {
         movableEntitiesMap.put(id, entity);
     }
 
-    public void addPlayerEntity(int id, Player entity) {
+    public synchronized void addPlayerEntity(int id, Player entity) {
         playerEntitiesMap.put(id, entity);
     }
 
-    public UpdatableEntity removeUpdatableEntity(int id) {
+    public synchronized UpdatableEntity removeUpdatableEntity(int id) {
         return updatableEntitiesMap.remove(id);
     }
 
-    public MovableEntity removeMovableEntity(int id) {
+    public synchronized MovableEntity removeMovableEntity(int id) {
         return movableEntitiesMap.remove(id);
     }
 
-    public Player removePlayerEntity(int id) {
+    public synchronized Player removePlayerEntity(int id) {
         return playerEntitiesMap.remove(id);
     }
 
-    public UpdatableEntity getUpdatableEntity(int id) {
+    public synchronized UpdatableEntity getUpdatableEntity(int id) {
         return updatableEntitiesMap.get(id);
     }
 
-    public MovableEntity getMovableEntity(int id) {
+    public synchronized MovableEntity getMovableEntity(int id) {
         return movableEntitiesMap.get(id);
     }
 
-    public Player getPlayerEntity(int id) {
+    public synchronized Player getPlayerEntity(int id) {
         return playerEntitiesMap.get(id);
     }
 
@@ -65,21 +70,46 @@ public class EntityManager {
         return playerEntitiesMap.containsKey(id);
     }
 
-    public synchronized void clearAllEntities() {
-        updatableEntitiesMap.clear();
-        movableEntitiesMap.clear();
-        playerEntitiesMap.clear();
+    public void clearAllEntities() {
+        writeLock.lock();
+        try {
+            updatableEntitiesMap.clear();
+            movableEntitiesMap.clear();
+            playerEntitiesMap.clear();
+        } finally {
+            writeLock.unlock();
+        }
     }
 
-    public synchronized Iterator<UpdatableEntity> updatableEntitiesIterator() {
-        return updatableEntitiesMap.values().iterator();
+    public List<UpdatableEntity> getUpdatableEntities() {
+        readLock.lock();
+        try {
+            return new ArrayList<>(updatableEntitiesMap.values());
+        } finally {
+            readLock.unlock();
+        }
     }
 
-    public synchronized Iterator<MovableEntity> movableEntitiesIterator() {
-        return movableEntitiesMap.values().iterator();
+    public List<MovableEntity> getMovableEntities() {
+        readLock.lock();
+        try {
+            return new ArrayList<>(movableEntitiesMap.values());
+        } finally {
+            readLock.unlock();
+        }
     }
 
-    public synchronized Iterator<Player> playerEntitiesIterator() {
-        return playerEntitiesMap.values().iterator();
+    public List<Player> getPlayerEntities() {
+        readLock.lock();
+        try {
+            return new ArrayList<>(playerEntitiesMap.values());
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    public String size() {
+        return "Player[" + playerEntitiesMap.size() + "] & MovableEntity[" + movableEntitiesMap.size()
+                + "]  & UpdatableEntity[" + updatableEntitiesMap.size() + "]";
     }
 }

@@ -19,8 +19,6 @@ public class EntityRenderer {
     public void render(Canvas canvas, Camera camera) {
         ViewBounds bounds = calculateBounds(canvas, camera);
 
-        canvas.scale(camera.getX(), camera.getY());
-
         renderPlayers(canvas, camera, bounds);
         renderMovableEntities(canvas, camera, bounds);
         renderUpdatableEntities(canvas, camera, bounds);
@@ -29,15 +27,13 @@ public class EntityRenderer {
     }
 
     private void renderPlayers(Canvas canvas, Camera camera, ViewBounds bounds) {
-        entityManager.playerEntitiesIterator().forEachRemaining(player -> {
-            if (isInView(player.getX(), player.getY(), bounds)) {
-                renderEntity(canvas, camera, player);
-            }
+        entityManager.getPlayerEntities().forEach(player -> {
+            renderEntity(canvas, camera, player);
         });
     }
 
     private void renderMovableEntities(Canvas canvas, Camera camera, ViewBounds bounds) {
-        entityManager.movableEntitiesIterator().forEachRemaining(entity -> {
+        entityManager.getMovableEntities().forEach(entity -> {
             if (isInView(entity.getX(), entity.getY(), bounds)) {
                 renderEntity(canvas, camera, entity);
             }
@@ -45,7 +41,7 @@ public class EntityRenderer {
     }
 
     private void renderUpdatableEntities(Canvas canvas, Camera camera, ViewBounds bounds) {
-        entityManager.updatableEntitiesIterator().forEachRemaining(entity -> {
+        entityManager.getUpdatableEntities().forEach(entity -> {
             if (isInView(entity.getX(), entity.getY(), bounds)) {
                 renderEntity(canvas, camera, entity);
             }

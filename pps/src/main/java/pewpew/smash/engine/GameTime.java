@@ -18,10 +18,10 @@ public class GameTime {
     private static volatile long upsTimeDelta;
     private static volatile long gameStartTime;
 
-    private long lastUpdateTime;
-    private long lastRenderTime;
-    private long accumulatedTime;
-    private double deltaTime;
+    private volatile long lastUpdateTime;
+    private volatile long lastRenderTime;
+    private volatile long accumulatedTime;
+    private volatile double deltaTime;
     private final long UPDATE_INTERVAL;
 
     private GameTime() {
@@ -33,7 +33,7 @@ public class GameTime {
         deltaTime = 0.0;
     }
 
-    public static GameTime getInstance() {
+    public synchronized static GameTime getInstance() {
         if (instance == null) {
             synchronized (GameTime.class) {
                 if (instance == null) {
@@ -48,12 +48,10 @@ public class GameTime {
         return deltaTime;
     }
 
-    public boolean shouldUpdate() {
+    public synchronized boolean shouldUpdate() {
         long currentTime = System.nanoTime();
         long elapsedTime = currentTime - lastUpdateTime;
         lastUpdateTime = currentTime;
-
-        deltaTime = elapsedTime / 1_000_000_000.0;
 
         accumulatedTime += elapsedTime;
         if (accumulatedTime >= UPDATE_INTERVAL) {
