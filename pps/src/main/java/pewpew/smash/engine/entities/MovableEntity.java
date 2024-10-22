@@ -20,29 +20,8 @@ public abstract class MovableEntity extends UpdatableEntity {
 
     public void move(double deltaTime) {
         hasMoved = true;
-        x += direction.getVelocityX((int) (speed * deltaTime));
-        y += direction.getVelocityY((int) (speed * deltaTime));
-    }
-
-    public void move(Direction direction) {
-        this.direction = direction;
-        move(1);
-    }
-
-    public void moveUp() {
-        this.move(Direction.UP);
-    }
-
-    public void moveDown() {
-        this.move(Direction.DOWN);
-    }
-
-    public void moveLeft() {
-        this.move(Direction.LEFT);
-    }
-
-    public void moveRight() {
-        this.move(Direction.RIGHT);
+        x += direction.getVelocityX((int) (speed));
+        y += direction.getVelocityY((int) (speed));
     }
 
     public void setSpeed(int speed) {

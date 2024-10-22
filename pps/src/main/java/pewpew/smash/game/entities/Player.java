@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.entities.MovableEntity;
+import pewpew.smash.game.input.GamePad;
 
 public class Player extends MovableEntity {
     private int prevX, prevY;
@@ -20,7 +21,7 @@ public class Player extends MovableEntity {
     private float rotation;
 
     public Player(int id) {
-        setDimensions(30, 30);
+        setDimensions(10, 10);
         setSpeed(2);
         this.id = id;
     }
@@ -40,12 +41,13 @@ public class Player extends MovableEntity {
         prevX = getX();
         prevY = getY();
         prevRotation = getRotation();
+        setDirection(GamePad.getInstance().getDirection());
         move(deltaTime);
     }
 
     @Override
     public void render(Canvas canvas) {
-        canvas.renderCircle(x, y, 30, Color.WHITE);
+        canvas.renderCircle(x, y, width / 2 + height / 2, Color.RED);
     }
 
     public boolean hasPositionChanged() {

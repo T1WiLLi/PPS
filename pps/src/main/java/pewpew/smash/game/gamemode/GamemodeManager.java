@@ -21,6 +21,7 @@ public class GameModeManager {
 
     public void setGameMode(GameModeType type) {
         this.currentGameMode = GameModeFactory.getGameMode(type);
+        this.currentGameMode.start();
     }
 
     public void update(double deltaTime) {
