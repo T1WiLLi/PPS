@@ -15,19 +15,20 @@ import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
-import pewpew.smash.game.network.packets.PositionPacket;
 
 public class ServerHandler extends Handler implements Runnable {
 
     private ExecutorService executor;
     private ServerWrapper server;
     private EntityManager entityManager;
+    private EntityUpdater entityUpdater;
     private GameTime gameTime;
 
     public ServerHandler(int port) {
         this.server = new ServerWrapper(port, port);
         this.executor = Executors.newSingleThreadExecutor();
         this.entityManager = new EntityManager();
+        this.entityUpdater = new EntityUpdater(entityManager);
         this.gameTime = GameTime.getInstance();
         registersClasses(this.server.getKryo());
     }
@@ -104,22 +105,16 @@ public class ServerHandler extends Handler implements Runnable {
         }
     }
 
-    private void update(double deltaTime) { // Ensure that the update() function in the player class never modifies the
-                                            // collection (it shouldn't anyway lmao)
-        this.entityManager.playerEntitiesIterator().forEachRemaining(player -> player.updateServer(deltaTime));
+    private void update(double deltaTime) {
+        this.entityUpdater.update(deltaTime);
     }
 
+    // Do other state update, such as hp, collision, bullet, ammo, inventory , etc.
     private void sendStateUpdate() {
         sendPlayerPos();
     }
 
     private void sendPlayerPos() {
-        this.entityManager.playerEntitiesIterator().forEachRemaining(player -> {
-            if (player.hasPositionChanged()) {
-                PositionPacket packet = new PositionPacket(player.getId(), player.getX(), player.getY(),
-                        player.getRotation());
-                this.server.sendToAllUDP(packet);
-            }
-        });
+        this.entityUpdater.sendPlayerPositions(this.server);
     }
 }
