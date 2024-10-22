@@ -22,14 +22,14 @@ public enum Direction {
 
     public int getVelocityX(int speed) {
         if (xMultiplier != 0 && yMultiplier != 0) {
-            return (int) (xMultiplier * speed / Math.sqrt(2));
+            return (int) (xMultiplier * speed / 0.707);
         }
         return xMultiplier * speed;
     }
 
     public int getVelocityY(int speed) {
         if (xMultiplier != 0 && yMultiplier != 0) {
-            return (int) (yMultiplier * speed / Math.sqrt(2));
+            return (int) (yMultiplier * speed / 0.707);
         }
         return yMultiplier * speed;
     }

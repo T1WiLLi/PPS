@@ -4,6 +4,10 @@ import java.awt.Color;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.constants.Constants;
+import pewpew.smash.game.gamemode.GameModeManager;
+import pewpew.smash.game.gamemode.GameModeType;
+import pewpew.smash.game.states.GameStateType;
+import pewpew.smash.game.states.StateManager;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.ui.Checkbox;
 import pewpew.smash.game.ui.Cycler;
@@ -100,7 +104,7 @@ public class HostOverlay extends Overlay {
     private void loadButtons() {
         playButton = new Button(Constants.LEFT_PADDING + 60, 500,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/playButton"),
-                () -> System.out.println("Play !"));
+                () -> loadGame());
 
         backButton = new Button(Constants.RIGHT_PADDING - 60, 500,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/backButton"), () -> {
@@ -286,5 +290,11 @@ public class HostOverlay extends Overlay {
         mapSelector.render(canvas);
         healthPointsSelector.render(canvas);
         respawnEnabled.render(canvas);
+    }
+
+    private void loadGame() {
+        StateManager.getInstance().setState(GameStateType.PLAYING);
+        GameModeManager.getInstance().setGameMode(GameModeType.SANDBOX);
+        close();
     }
 }

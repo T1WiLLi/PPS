@@ -4,8 +4,8 @@ import pewpew.smash.engine.entities.StaticEntity;
 
 public class Camera {
     private float x, y;
-    private final int MAP_WIDTH = 20000;
-    private final int MAP_HEIGHT = 20000;
+    private final int MAP_WIDTH = 2000;
+    private final int MAP_HEIGHT = 2000;
     private float zoom = 1.0f;
 
     public Camera() {

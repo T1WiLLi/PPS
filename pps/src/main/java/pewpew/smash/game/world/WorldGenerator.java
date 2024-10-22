@@ -10,8 +10,8 @@ import pewpew.smash.game.utils.HelpMethods;
 
 public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
     private static final int tileSize = 5;
-    private int worldWidth = 4000;
-    private int worldHeight = 4000;
+    private int worldWidth = 400;
+    private int worldHeight = 400;
     private byte[][] world;
     private double[][] noiseCache;
 

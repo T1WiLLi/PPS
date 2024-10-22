@@ -16,9 +16,10 @@ import pewpew.smash.game.states.StateFactory;
 import pewpew.smash.game.ui.Loader;
 import pewpew.smash.game.utils.FontFactory;
 import pewpew.smash.game.utils.ResourcesLoader;
+import pewpew.smash.game.world.TextureFactory;
 
 public class Launcher {
-    private static final int TOTAL_RESOURCES = 50;
+    private static final int TOTAL_RESOURCES = 60;
     private static AtomicInteger loadingProgress = new AtomicInteger(0);
     private static BufferedImage background;
 
@@ -78,6 +79,7 @@ public class Launcher {
         loadStates();
         loadGameModes();
         loadOverlays();
+        loadTextures();
     }
 
     private static void loadSettings() {
@@ -103,6 +105,11 @@ public class Launcher {
 
     private static void loadOverlays() {
         OverlayFactory.preLoadOverlays();
+        incrementLoadingProgress();
+    }
+
+    private static void loadTextures() {
+        TextureFactory.getInstance().preloadTextures();
         incrementLoadingProgress();
     }
 
