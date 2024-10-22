@@ -18,6 +18,16 @@ public abstract class MouseController extends MouseAdapter {
         mousePressed = false;
     }
 
+    public static double getMouseAngle() {
+        return Math.toDegrees(Math.atan2(mouseY, mouseX));
+    }
+
+    public static double getMouseAngleFrom(double x, double y) {
+        double deltaX = mouseX - x;
+        double deltaY = mouseY - y;
+        return Math.toDegrees(Math.atan2(deltaY, deltaX));
+    }
+
     @Override
     public void mouseMoved(MouseEvent e) {
         updateMousePosition(e);

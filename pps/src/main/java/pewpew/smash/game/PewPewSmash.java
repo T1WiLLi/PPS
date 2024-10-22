@@ -4,6 +4,7 @@ import pewpew.smash.database.Database;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.Game;
 import pewpew.smash.engine.GameTime;
+import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.input.KeyHandler;
 import pewpew.smash.game.input.MouseHandler;
@@ -34,6 +35,7 @@ public class PewPewSmash extends Game {
     @Override
     public void update(double deltaTime) {
         this.stateManager.update(deltaTime);
+        System.out.println("Mouse Angle is: " + MouseController.getMouseAngleFrom(300, 400));
     }
 
     @Override

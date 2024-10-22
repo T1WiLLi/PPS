@@ -2,8 +2,6 @@ package pewpew.smash.game.gamemode;
 
 import pewpew.smash.engine.Canvas;
 
-import java.awt.event.MouseEvent;
-
 public class GameModeManager {
 
     private static GameModeManager instance;
@@ -34,30 +32,6 @@ public class GameModeManager {
     public void render(Canvas canvas) {
         if (currentGameMode != null) {
             currentGameMode.render(canvas);
-        }
-    }
-
-    public void handleMousePress(MouseEvent e) {
-        if (currentGameMode != null) {
-            currentGameMode.handleMousePress(e);
-        }
-    }
-
-    public void handleMouseRelease(MouseEvent e) {
-        if (currentGameMode != null) {
-            currentGameMode.handleMouseRelease(e);
-        }
-    }
-
-    public void handleMouseMove(MouseEvent e) {
-        if (currentGameMode != null) {
-            currentGameMode.handleMouseMove(e);
-        }
-    }
-
-    public void handleMouseDrag(MouseEvent e) {
-        if (currentGameMode != null) {
-            currentGameMode.handleMouseDrag(e);
         }
     }
 }
