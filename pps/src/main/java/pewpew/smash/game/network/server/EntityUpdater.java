@@ -18,26 +18,26 @@ public class EntityUpdater {
         this.entityManager = entityManager;
     }
 
-    public void update(double deltaTime) {
-        entityManager.playerEntitiesIterator().forEachRemaining(player -> player.updateServer(deltaTime));
+    public void update() {
+        entityManager.getPlayerEntities().forEach(player -> player.updateServer());
 
         ViewBounds combinedFOV = calculateCombinedPlayerFOV();
 
-        entityManager.movableEntitiesIterator().forEachRemaining(entity -> {
+        entityManager.getMovableEntities().forEach(entity -> {
             if (isInView(entity, combinedFOV)) {
-                entity.updateServer(deltaTime);
+                entity.updateServer();
             }
         });
 
-        entityManager.updatableEntitiesIterator().forEachRemaining(entity -> {
+        entityManager.getUpdatableEntities().forEach(entity -> {
             if (isInView(entity, combinedFOV)) {
-                entity.updateServer(deltaTime);
+                entity.updateServer();
             }
         });
     }
 
     public void sendPlayerPositions(ServerWrapper server) {
-        entityManager.playerEntitiesIterator().forEachRemaining(player -> {
+        entityManager.getPlayerEntities().forEach(player -> {
             if (player.hasPositionChanged()) {
                 PositionPacket packet = new PositionPacket(player.getId(), player.getX(), player.getY(),
                         player.getRotation());
@@ -55,7 +55,7 @@ public class EntityUpdater {
         double minY = Double.MAX_VALUE;
         double maxY = Double.MIN_VALUE;
 
-        Iterator<Player> iterator = entityManager.playerEntitiesIterator();
+        Iterator<Player> iterator = entityManager.getPlayerEntities().iterator();
         while (iterator.hasNext()) {
             Player player = iterator.next();
             double bufferX = BASE_WIDTH * FOV_BUFFER;

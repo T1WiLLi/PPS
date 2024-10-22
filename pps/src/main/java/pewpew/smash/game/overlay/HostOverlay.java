@@ -295,6 +295,7 @@ public class HostOverlay extends Overlay {
     private void loadGame() {
         StateManager.getInstance().setState(GameStateType.PLAYING);
         GameModeManager.getInstance().setGameMode(GameModeType.SANDBOX);
+        GameModeManager.getInstance().getCurrentGameMode().build(new String[] { "127.0.0.1", "12345", "true" });
         close();
     }
 }

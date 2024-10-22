@@ -2,6 +2,8 @@ package pewpew.smash.game.network;
 
 import java.util.List;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,7 +18,7 @@ public final class User {
 
     private boolean isConnected = false;
 
-    private int iD;
+    private AtomicInteger localID = new AtomicInteger(Integer.MIN_VALUE);
 
     private String username = "Guest";
     private Rank rank = new Rank(-1, "none", "none", "none", 0, 0, 0);
@@ -30,5 +32,9 @@ public final class User {
         this.username = username;
         this.rank = rank;
         this.achievements = achievements;
+    }
+
+    public void setID(int id) {
+        this.localID.set(id);
     }
 }

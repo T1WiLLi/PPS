@@ -1,11 +1,13 @@
 package pewpew.smash.game.gamemode;
 
+import lombok.Getter;
 import pewpew.smash.engine.Canvas;
 
 public class GameModeManager {
 
     private static GameModeManager instance;
 
+    @Getter
     private GameMode currentGameMode;
 
     public synchronized static GameModeManager getInstance() {
@@ -21,12 +23,13 @@ public class GameModeManager {
 
     public void setGameMode(GameModeType type) {
         this.currentGameMode = GameModeFactory.getGameMode(type);
-        this.currentGameMode.start();
     }
 
     public void update(double deltaTime) {
         if (currentGameMode != null) {
             currentGameMode.update(deltaTime);
+        } else {
+            System.out.println("Gamemode null");
         }
     }
 

@@ -4,11 +4,13 @@ import java.awt.Color;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.network.User;
 
+@ToString(callSuper = true)
 public class Player extends MovableEntity {
     private int prevX, prevY;
     private float prevRotation;
@@ -23,6 +25,7 @@ public class Player extends MovableEntity {
 
     public Player(int id) {
         setDimensions(20, 20);
+        teleport(100, 100);
         setSpeed(2);
         this.id = id;
     }
@@ -38,12 +41,12 @@ public class Player extends MovableEntity {
     }
 
     @Override
-    public void updateServer(double deltaTime) {
+    public void updateServer() {
         prevX = getX();
         prevY = getY();
         prevRotation = getRotation();
         setDirection(GamePad.getInstance().getDirection());
-        move(deltaTime);
+        move(1);
     }
 
     @Override
