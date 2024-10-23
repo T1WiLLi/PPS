@@ -10,19 +10,19 @@ public class MovementController extends KeyController {
 
     public MovementController() {
         super();
-        movementKeyMap = new HashMap<>(Map.of(
-                "up", KeyEvent.VK_W,
-                "down", KeyEvent.VK_S,
-                "left", KeyEvent.VK_A,
-                "right", KeyEvent.VK_D));
-        bindMovementKeys();
+        movementKeyMap = new HashMap<>();
     }
 
     public void updateBindings(Map<String, String> movement, Map<String, String> misc) {
         clearKeys();
-        movementKeyMap.clear();
-        bindKeysFromMap(movement);
-        bindKeysFromMap(misc);
+        if (movement != null && !movement.isEmpty()) {
+            movementKeyMap.clear();
+            bindKeysFromMap(movement);
+        }
+        if (misc != null && !misc.isEmpty()) {
+            bindKeysFromMap(misc);
+        }
+        bindKeys(new int[] { KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3 });
     }
 
     public boolean isKeyPressed(String action) {
@@ -31,10 +31,14 @@ public class MovementController extends KeyController {
     }
 
     public Direction getDirection() {
-        boolean up = isKeyPressed("up");
-        boolean down = isKeyPressed("down");
-        boolean left = isKeyPressed("left");
-        boolean right = isKeyPressed("right");
+        boolean up = isKeyPressed("upKey");
+        boolean down = isKeyPressed("downKey");
+        boolean left = isKeyPressed("leftKey");
+        boolean right = isKeyPressed("rightKey");
+
+        if (!up && !down && !left && !right) {
+            return Direction.NONE;
+        }
 
         if (up && left) {
             return Direction.UP_LEFT;
@@ -53,12 +57,7 @@ public class MovementController extends KeyController {
         } else if (right) {
             return Direction.RIGHT;
         }
-
         return null;
-    }
-
-    private void bindMovementKeys() {
-        movementKeyMap.values().forEach(this::bindKey);
     }
 
     private void bindKeysFromMap(Map<String, String> keyMap) {

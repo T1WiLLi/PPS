@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 
-import pewpew.smash.database.models.Player;
+import pewpew.smash.database.models.PlayerModel;
 import pewpew.smash.database.services.AuthService;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.GameTime;
@@ -120,7 +120,7 @@ public class ConnectionOverlay extends Overlay {
         if (!usernameField.getText().trim().isEmpty() && !passwordField.getText().trim().isEmpty()) {
             errorMessage = "";
 
-            Player player = new AuthService().authenticate(usernameField.getText().trim(),
+            PlayerModel player = new AuthService().authenticate(usernameField.getText().trim(),
                     passwordField.getText().trim());
             if (player != null) {
                 User.getInstance().build(player.getUsername(), player.getRank(), player.getAchievements());

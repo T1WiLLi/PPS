@@ -5,7 +5,8 @@ public enum AudioClip {
     BUTTON_PRESSED("ButtonPressed"),
     CHECKED("checked"),
     MAIN_THEME("MainTheme"),
-    SWAPPED("swapped");
+    SWAPPED("swapped"),
+    WALKING_GRASS("sfx/WalkingGrass");
 
     private final String fileName;
 

@@ -1,7 +1,6 @@
 package pewpew.smash.game.states;
 
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.RenderingEngine;
@@ -32,10 +31,6 @@ public class StateManager {
         }
     }
 
-    public State getCurrentState() {
-        return this.currentState;
-    }
-
     public void update(double deltaTime) {
         if (currentState != null) {
             currentState.update(deltaTime);
@@ -45,30 +40,6 @@ public class StateManager {
     public void render(Canvas canvas) {
         if (currentState != null) {
             currentState.render(canvas);
-        }
-    }
-
-    public void handleMousePress(MouseEvent e) {
-        if (currentState != null) {
-            currentState.handleMousePress(e);
-        }
-    }
-
-    public void handleMouseRelease(MouseEvent e) {
-        if (currentState != null) {
-            currentState.handleMouseRelease(e);
-        }
-    }
-
-    public void handleMouseMove(MouseEvent e) {
-        if (currentState != null) {
-            currentState.handleMouseMove(e);
-        }
-    }
-
-    public void handleMouseDrag(MouseEvent e) {
-        if (currentState != null) {
-            currentState.handleMouseDrag(e);
         }
     }
 

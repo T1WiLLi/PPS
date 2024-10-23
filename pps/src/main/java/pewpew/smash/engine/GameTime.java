@@ -1,14 +1,17 @@
 package pewpew.smash.engine;
 
+import lombok.Getter;
 import lombok.Setter;
 
 public class GameTime {
 
     @Setter
     private int FPS_TARGET = 120;
+    @Getter
     private int UPS_TARGET = 240;
 
-    private static volatile GameTime instance;
+    private static volatile GameTime gameInstance;
+    private static volatile GameTime serverInstance;
 
     private static volatile int currentFps;
     private static volatile int currentUps;
@@ -18,10 +21,10 @@ public class GameTime {
     private static volatile long upsTimeDelta;
     private static volatile long gameStartTime;
 
-    private long lastUpdateTime;
-    private long lastRenderTime;
-    private long accumulatedTime;
-    private double deltaTime;
+    private volatile long lastUpdateTime;
+    private volatile long lastRenderTime;
+    private volatile long accumulatedTime;
+    private volatile double deltaTime;
     private final long UPDATE_INTERVAL;
 
     private GameTime() {
@@ -33,27 +36,36 @@ public class GameTime {
         deltaTime = 0.0;
     }
 
-    public static GameTime getInstance() {
-        if (instance == null) {
+    public synchronized static GameTime getInstance() {
+        if (gameInstance == null) {
             synchronized (GameTime.class) {
-                if (instance == null) {
-                    instance = new GameTime();
+                if (gameInstance == null) {
+                    gameInstance = new GameTime();
                 }
             }
         }
-        return instance;
+        return gameInstance;
+    }
+
+    public synchronized static GameTime getServerInstance() {
+        if (serverInstance == null) {
+            synchronized (GameTime.class) {
+                if (serverInstance == null) {
+                    serverInstance = new GameTime();
+                }
+            }
+        }
+        return serverInstance;
     }
 
     public double getDeltaTime() {
         return deltaTime;
     }
 
-    public boolean shouldUpdate() {
+    public synchronized boolean shouldUpdate() {
         long currentTime = System.nanoTime();
         long elapsedTime = currentTime - lastUpdateTime;
         lastUpdateTime = currentTime;
-
-        deltaTime = elapsedTime / 1_000_000_000.0;
 
         accumulatedTime += elapsedTime;
         if (accumulatedTime >= UPDATE_INTERVAL) {
