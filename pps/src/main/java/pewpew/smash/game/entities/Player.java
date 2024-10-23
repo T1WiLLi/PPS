@@ -29,6 +29,7 @@ public class Player extends MovableEntity {
         setDimensions(20, 20);
         teleport(100, 100);
         setSpeed(2);
+        this.rotation = 0f;
         this.id = id;
     }
 
@@ -39,16 +40,15 @@ public class Player extends MovableEntity {
 
     @Override
     public void updateClient() {
-        this.fists.teleport(getX(), getY());
-        this.fists.updateClient();
+        this.fists.updatePosition(getX(), getY(), getRotation());
     }
 
     @Override
     public void updateServer() {
+        move(1);
         this.prevX = getX();
         this.prevY = getY();
         this.prevRotation = getRotation();
-        move(1);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class Player extends MovableEntity {
         canvas.renderString(User.getInstance().getUsername() + "-" + id, x - width, y - height, Color.WHITE);
     }
 
-    public boolean hasPositionChanged() {
-        return getX() != prevX || getY() != prevY || getRotation() != prevRotation;
+    public boolean hasStateChanged() {
+        return (getX() != prevX || getY() != prevY) || getRotation() != prevRotation;
     }
 }

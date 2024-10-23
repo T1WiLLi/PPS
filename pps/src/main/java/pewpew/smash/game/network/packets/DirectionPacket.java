@@ -9,7 +9,11 @@ public class DirectionPacket extends BasePacket {
     @Getter
     private Direction direction;
 
-    public DirectionPacket(Direction direction) {
+    @Getter
+    private float rotation;
+
+    public DirectionPacket(Direction direction, float rotation) {
         this.direction = direction;
+        this.rotation = rotation;
     }
 }
