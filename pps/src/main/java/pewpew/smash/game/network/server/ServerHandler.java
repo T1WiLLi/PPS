@@ -63,7 +63,11 @@ public class ServerHandler extends Handler implements Runnable {
             this.server.sendToAllExceptTCP(connection.getID(), joinedPacket);
         } else if (packet instanceof DirectionPacket) {
             DirectionPacket directionPacket = (DirectionPacket) packet;
-            this.entityManager.getPlayerEntity(connection.getID()).setDirection(directionPacket.getDirection());
+            Player player = this.entityManager.getPlayerEntity(connection.getID());
+            if (player != null) {
+                player.setDirection(directionPacket.getDirection());
+                player.setRotation(directionPacket.getRotation());
+            }
         }
     }
 
@@ -71,6 +75,7 @@ public class ServerHandler extends Handler implements Runnable {
     protected void onConnect(Connection connection) {
         Player player = new Player(connection.getID());
         player.teleport(100, 100);
+        player.setRotation(0);
 
         this.entityManager.getPlayerEntities().forEach(existingPlayer -> {
             PlayerJoinedPacket existingPlayerPacket = new PlayerJoinedPacket(
@@ -111,7 +116,7 @@ public class ServerHandler extends Handler implements Runnable {
     }
 
     private void update(double deltaTime) {
-        this.entityUpdater.update();
+        this.entityManager.getPlayerEntities().forEach(Player::updateServer);
     }
 
     // Do other state update, such as hp, collision, bullet, ammo, inventory , etc.

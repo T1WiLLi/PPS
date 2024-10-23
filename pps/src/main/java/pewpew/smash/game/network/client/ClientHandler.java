@@ -1,11 +1,13 @@
 package pewpew.smash.game.network.client;
 
 import java.io.IOException;
+
 import com.esotericsoftware.kryonet.Connection;
 import lombok.Getter;
 import pewpew.smash.engine.controls.Direction;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.input.GamePad;
+import pewpew.smash.game.input.MouseHandler;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
@@ -97,6 +99,9 @@ public class ClientHandler extends Handler {
 
     private void sendDirection() {
         Direction direction = GamePad.getInstance().getDirection();
-        this.client.sendToUDP(new DirectionPacket(direction));
+        double rotation = MouseHandler.getAngle(
+                entityManager.getPlayerEntity(User.getInstance().getLocalID().get()).getX(),
+                entityManager.getPlayerEntity(User.getInstance().getLocalID().get()).getY());
+        this.client.sendToUDP(new DirectionPacket(direction, (float) rotation));
     }
 }

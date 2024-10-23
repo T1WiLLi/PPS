@@ -38,11 +38,9 @@ public class EntityUpdater {
 
     public void sendPlayerPositions(ServerWrapper server) {
         entityManager.getPlayerEntities().forEach(player -> {
-            if (player.hasPositionChanged()) {
-                PositionPacket packet = new PositionPacket(player.getId(), player.getX(), player.getY(),
-                        player.getRotation());
-                server.sendToAllUDP(packet);
-            }
+            PositionPacket packet = new PositionPacket(player.getId(), player.getX(), player.getY(),
+                    player.getRotation());
+            server.sendToAllUDP(packet);
         });
     }
 

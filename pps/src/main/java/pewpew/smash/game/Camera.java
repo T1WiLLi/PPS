@@ -3,14 +3,25 @@ package pewpew.smash.game;
 import pewpew.smash.engine.entities.StaticEntity;
 
 public class Camera {
+    private static Camera instance;
+
     private float x, y;
     private final int MAP_WIDTH = 2000;
     private final int MAP_HEIGHT = 2000;
     private float zoom = 1.0f;
 
+    public static float getOffsetX() {
+        return instance != null ? instance.x : 0;
+    }
+
+    public static float getOffsetY() {
+        return instance != null ? instance.y : 0;
+    }
+
     public Camera() {
         this.x = 0;
         this.y = 0;
+        instance = this;
     }
 
     public void setZoom(float zoom) {
