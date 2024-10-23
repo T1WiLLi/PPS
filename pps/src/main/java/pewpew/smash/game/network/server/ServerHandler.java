@@ -32,6 +32,7 @@ public class ServerHandler extends Handler implements Runnable {
         this.entityManager = new EntityManager();
         this.entityUpdater = new EntityUpdater(entityManager);
         this.worldManager = new ServerWorldManager();
+        this.worldManager.displayWorld();
         this.gameTime = GameTime.getServerInstance();
         registersClasses(this.server.getKryo());
     }
@@ -79,6 +80,7 @@ public class ServerHandler extends Handler implements Runnable {
         });
         this.entityManager.addPlayerEntity(player.getId(), player);
         this.worldManager.sendWorldDataToClient(server, connection.getID());
+        this.entityUpdater.sendAllPlayerPositions(server, connection.getID());
     }
 
     @Override
@@ -109,7 +111,7 @@ public class ServerHandler extends Handler implements Runnable {
     }
 
     private void update(double deltaTime) {
-        entityManager.getPlayerEntities().forEach(Player::updateServer);
+        this.entityUpdater.update();
     }
 
     // Do other state update, such as hp, collision, bullet, ammo, inventory , etc.
