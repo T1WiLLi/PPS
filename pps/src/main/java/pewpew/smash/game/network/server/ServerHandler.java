@@ -22,6 +22,8 @@ public class ServerHandler extends Handler implements Runnable {
     private ServerWrapper server;
     private EntityManager entityManager;
     private EntityUpdater entityUpdater;
+    private ServerWorldManager worldManager;
+
     private GameTime gameTime;
 
     public ServerHandler(int port) {
@@ -29,6 +31,7 @@ public class ServerHandler extends Handler implements Runnable {
         this.executor = Executors.newSingleThreadExecutor();
         this.entityManager = new EntityManager();
         this.entityUpdater = new EntityUpdater(entityManager);
+        this.worldManager = new ServerWorldManager();
         this.gameTime = GameTime.getInstance();
         registersClasses(this.server.getKryo());
     }
@@ -74,8 +77,8 @@ public class ServerHandler extends Handler implements Runnable {
                     existingPlayer.getUsername());
             this.server.sendToTCP(connection.getID(), existingPlayerPacket);
         });
-
         this.entityManager.addPlayerEntity(player.getId(), player);
+        this.worldManager.sendWorldDataToClient(server, connection.getID());
     }
 
     @Override
