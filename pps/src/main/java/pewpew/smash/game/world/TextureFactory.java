@@ -11,7 +11,7 @@ public class TextureFactory {
     private static final TextureFactory instance = new TextureFactory();
 
     private static final int MAX_TEXTURES = 256;
-    private static final int MAX_TEXTURE_SIZE = 16;
+    private static final int MAX_TEXTURE_SIZE = 64;
 
     private Map<TextureType, Texture> textures = new HashMap<>(MAX_TEXTURES);
 
