@@ -32,7 +32,7 @@ public class ServerHandler extends Handler implements Runnable {
         this.entityManager = new EntityManager();
         this.entityUpdater = new EntityUpdater(entityManager);
         this.worldManager = new ServerWorldManager();
-        this.gameTime = GameTime.getInstance();
+        this.gameTime = GameTime.getServerInstance();
         registersClasses(this.server.getKryo());
     }
 
