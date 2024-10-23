@@ -29,7 +29,7 @@
     "generalVolume" : 1.0,
     "sfxVolume" : 0.18125000596046448,
     "music" : false,
-    "sfx" : true,
-    "ui" : true
+    "sfx" : false,
+    "ui" : false
   }
 }

@@ -11,19 +11,19 @@ public class GamePad extends MovementController {
     }
 
     public boolean isUpKeyPressed() {
-        return isKeyPressed("up");
+        return isKeyPressed("upKey");
     }
 
     public boolean isDownKeyPressed() {
-        return isKeyPressed("down");
+        return isKeyPressed("downKey");
     }
 
     public boolean isLeftKeyPressed() {
-        return isKeyPressed("left");
+        return isKeyPressed("leftKey");
     }
 
     public boolean isRightKeyPressed() {
-        return isKeyPressed("right");
+        return isKeyPressed("rightKey");
     }
 
     public boolean isUseKeyPressed() {

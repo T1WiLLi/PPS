@@ -46,6 +46,10 @@ public class Canvas {
     }
 
     // Image Rendering Methods
+    public void renderImage(BufferedImage img, int x, int y) {
+        graphics2D.drawImage(img, null, x, y);
+    }
+
     public void renderImage(BufferedImage img, int x, int y, int width, int height) {
         if (img != null) {
             graphics2D.drawImage(img, x, y, width, height, null);
@@ -70,9 +74,9 @@ public class Canvas {
         graphics2D.drawRect(x, y, width, height);
     }
 
-    public void renderCircle(int centerX, int centerY, int radius, Color color) {
+    public void renderCircle(int x, int y, int radius, Color color) {
         setGraphicsProperties(color, 1);
-        graphics2D.fillOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+        graphics2D.fillOval(x, y, radius * 2, radius * 2);
     }
 
     public void renderPolygon(Polygon polygon, Color color) {

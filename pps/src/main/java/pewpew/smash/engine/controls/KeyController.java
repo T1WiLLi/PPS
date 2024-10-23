@@ -2,7 +2,7 @@ package pewpew.smash.engine.controls;
 
 import java.util.Map;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import java.awt.event.KeyEvent;
 
@@ -11,7 +11,7 @@ public abstract class KeyController {
     private final Map<Integer, Boolean> pressedKeys;
 
     public KeyController() {
-        this.pressedKeys = new HashMap<>();
+        this.pressedKeys = new ConcurrentHashMap<>();
     }
 
     protected void bindKeys(int[] keys) {
@@ -32,15 +32,15 @@ public abstract class KeyController {
         pressedKeys.remove(key);
     }
 
-    protected boolean isKeyPressed(int key) {
+    public synchronized boolean isKeyPressed(int key) {
         return pressedKeys.getOrDefault(key, false);
     }
 
-    public void keyPressed(KeyEvent e) {
+    public synchronized void keyPressed(KeyEvent e) {
         pressedKeys.computeIfPresent(e.getKeyCode(), (k, v) -> true);
     }
 
-    public void keyReleased(KeyEvent e) {
+    public synchronized void keyReleased(KeyEvent e) {
         pressedKeys.computeIfPresent(e.getKeyCode(), (k, v) -> false);
     }
 }

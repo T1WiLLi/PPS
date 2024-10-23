@@ -40,11 +40,7 @@ public abstract class UiElement {
     }
 
     protected void updateScaledBounds() {
-        this.bounds.setBounds(
-                ScaleUtils.scaleX(this.xPos),
-                ScaleUtils.scaleY(this.yPos),
-                ScaleUtils.scaleWidth(this.width),
-                ScaleUtils.scaleHeight(this.height));
+        this.bounds.setBounds(ScaleUtils.getScaledBounds(this.bounds));
     }
 
     private void loadBounds() {

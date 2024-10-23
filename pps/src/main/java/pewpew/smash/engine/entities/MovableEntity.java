@@ -10,7 +10,7 @@ import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.Direction;
 
 @Getter
-@ToString
+@ToString(callSuper = true)
 public abstract class MovableEntity extends UpdatableEntity {
 
     @Setter
@@ -18,31 +18,10 @@ public abstract class MovableEntity extends UpdatableEntity {
     private boolean hasMoved;
     private int speed;
 
-    public void move() {
+    public void move(double deltaTime) {
         hasMoved = true;
-        x += direction.getVelocityX(speed);
-        y += direction.getVelocityY(speed);
-    }
-
-    public void move(Direction direction) {
-        this.direction = direction;
-        move();
-    }
-
-    public void moveUp() {
-        this.move(Direction.UP);
-    }
-
-    public void moveDown() {
-        this.move(Direction.DOWN);
-    }
-
-    public void moveLeft() {
-        this.move(Direction.LEFT);
-    }
-
-    public void moveRight() {
-        this.move(Direction.RIGHT);
+        x += direction.getVelocityX((int) (speed));
+        y += direction.getVelocityY((int) (speed));
     }
 
     public void setSpeed(int speed) {
