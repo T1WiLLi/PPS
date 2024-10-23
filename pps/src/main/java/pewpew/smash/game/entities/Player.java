@@ -11,6 +11,12 @@ import pewpew.smash.game.network.User;
 
 @ToString(callSuper = true)
 public class Player extends MovableEntity {
+
+    private Fists fists;
+
+    @Setter
+    @Getter
+    private float rotation;
     private int prevX, prevY;
     private float prevRotation;
 
@@ -18,11 +24,8 @@ public class Player extends MovableEntity {
     @Getter
     private String username;
 
-    @Setter
-    @Getter
-    private float rotation;
-
     public Player(int id) {
+        this.fists = new Fists(this);
         setDimensions(20, 20);
         teleport(100, 100);
         setSpeed(2);
@@ -36,21 +39,26 @@ public class Player extends MovableEntity {
 
     @Override
     public void updateClient() {
-
+        this.fists.teleport(getX(), getY());
+        this.fists.updateClient();
     }
 
     @Override
     public void updateServer() {
-        prevX = getX();
-        prevY = getY();
-        prevRotation = getRotation();
+        this.prevX = getX();
+        this.prevY = getY();
+        this.prevRotation = getRotation();
         move(1);
     }
 
     @Override
     public void render(Canvas canvas) {
-        canvas.renderCircle(x, y, 10, Color.RED);
-        canvas.renderString(User.getInstance().getUsername() + "-" + id, x - 10, y - 10, Color.WHITE);
+        canvas.renderCircle(x, y, width, new Color(168, 168, 168));
+        canvas.renderCircle(x + 4, y + 4, width - 4, new Color(229, 194, 152));
+
+        this.fists.render(canvas);
+
+        canvas.renderString(User.getInstance().getUsername() + "-" + id, x - width, y - height, Color.WHITE);
     }
 
     public boolean hasPositionChanged() {
