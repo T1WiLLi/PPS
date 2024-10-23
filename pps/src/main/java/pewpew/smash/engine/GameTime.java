@@ -1,14 +1,17 @@
 package pewpew.smash.engine;
 
+import lombok.Getter;
 import lombok.Setter;
 
 public class GameTime {
 
     @Setter
     private int FPS_TARGET = 120;
+    @Getter
     private int UPS_TARGET = 240;
 
-    private static volatile GameTime instance;
+    private static volatile GameTime gameInstance;
+    private static volatile GameTime serverInstance;
 
     private static volatile int currentFps;
     private static volatile int currentUps;
@@ -34,14 +37,25 @@ public class GameTime {
     }
 
     public synchronized static GameTime getInstance() {
-        if (instance == null) {
+        if (gameInstance == null) {
             synchronized (GameTime.class) {
-                if (instance == null) {
-                    instance = new GameTime();
+                if (gameInstance == null) {
+                    gameInstance = new GameTime();
                 }
             }
         }
-        return instance;
+        return gameInstance;
+    }
+
+    public synchronized static GameTime getServerInstance() {
+        if (serverInstance == null) {
+            synchronized (GameTime.class) {
+                if (serverInstance == null) {
+                    serverInstance = new GameTime();
+                }
+            }
+        }
+        return serverInstance;
     }
 
     public double getDeltaTime() {

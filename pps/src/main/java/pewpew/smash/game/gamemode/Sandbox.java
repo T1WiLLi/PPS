@@ -1,5 +1,7 @@
 package pewpew.smash.game.gamemode;
 
+import java.awt.event.KeyEvent;
+
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.network.NetworkManager;
 import pewpew.smash.game.network.User;
@@ -7,6 +9,7 @@ import pewpew.smash.game.network.client.EntityRenderer;
 import pewpew.smash.game.world.WorldGenerator;
 import pewpew.smash.game.Camera;
 import pewpew.smash.game.entities.Player;
+import pewpew.smash.game.input.GamePad;
 
 import java.awt.image.BufferedImage;
 
@@ -56,6 +59,16 @@ public class Sandbox implements GameMode {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_1)) {
+            camera.setZoom(1);
+        } else if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_2)) {
+            camera.setZoom(0.75f);
+        } else if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_3)) {
+            camera.setZoom(0.5f);
+        } else if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_4)) {
+            camera.setZoom(0.10f);
         }
     }
 
