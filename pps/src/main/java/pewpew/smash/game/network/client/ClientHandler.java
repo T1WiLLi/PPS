@@ -91,6 +91,7 @@ public class ClientHandler extends Handler {
     }
 
     public void update() {
+        this.entityManager.getPlayerEntities().forEach(Player::updateClient);
         sendDirection();
     }
 
