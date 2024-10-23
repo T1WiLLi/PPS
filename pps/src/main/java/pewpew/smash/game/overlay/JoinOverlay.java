@@ -3,6 +3,10 @@ package pewpew.smash.game.overlay;
 import java.awt.Color;
 
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.game.gamemode.GameModeManager;
+import pewpew.smash.game.gamemode.GameModeType;
+import pewpew.smash.game.states.GameStateType;
+import pewpew.smash.game.states.StateManager;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.ui.TextField;
 import pewpew.smash.game.utils.FontFactory;
@@ -83,6 +87,10 @@ public class JoinOverlay extends Overlay {
     }
 
     private void validateInputs() {
+        StateManager.getInstance().setState(GameStateType.PLAYING);
+        GameModeManager.getInstance().setGameMode(GameModeType.SANDBOX);
+        GameModeManager.getInstance().getCurrentGameMode().build(new String[] { "127.0.0.1", "12345", "false" });
+        close();
         if (ipInput.getText().isEmpty() || portInput.getText().isEmpty()) {
             errorMessage = "Both IP and Port fields must be filled.";
         } else {

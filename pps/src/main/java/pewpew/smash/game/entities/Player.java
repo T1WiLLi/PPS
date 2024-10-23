@@ -7,7 +7,6 @@ import lombok.Setter;
 import lombok.ToString;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.entities.MovableEntity;
-import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.network.User;
 
 @ToString(callSuper = true)
@@ -45,14 +44,13 @@ public class Player extends MovableEntity {
         prevX = getX();
         prevY = getY();
         prevRotation = getRotation();
-        setDirection(GamePad.getInstance().getDirection());
         move(1);
     }
 
     @Override
     public void render(Canvas canvas) {
         canvas.renderCircle(x, y, 10, Color.RED);
-        canvas.renderString(User.getInstance().getUsername(), x - 10, y - 10, Color.WHITE);
+        canvas.renderString(User.getInstance().getUsername() + "-" + id, x - 10, y - 10, Color.WHITE);
     }
 
     public boolean hasPositionChanged() {

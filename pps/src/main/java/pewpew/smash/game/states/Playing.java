@@ -3,6 +3,7 @@ package pewpew.smash.game.states;
 import java.awt.event.KeyEvent;
 
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.game.GameManager;
 import pewpew.smash.game.gamemode.GameModeManager;
 import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.overlay.OverlayManager;
@@ -32,6 +33,9 @@ public class Playing implements State {
 
     @Override
     public void handleKeyPress(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            GameManager.getInstance().conclude();
+        }
         this.gamePad.keyPressed(e);
     }
 
