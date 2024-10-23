@@ -16,6 +16,11 @@ public class ClientHandler extends Handler {
     private final EntityManager entityManager;
     private final ClientWrapper client;
 
+    @Getter
+    private byte[][] worldData;
+    @Getter
+    private boolean isWorldDataReceived;
+
     public ClientHandler(String host, int port) {
         this.client = new ClientWrapper(host, port, port);
         this.entityManager = new EntityManager();
@@ -47,6 +52,9 @@ public class ClientHandler extends Handler {
             }
         } else if (packet instanceof PlayerLeftPacket playerLeft) {
             this.entityManager.removePlayerEntity(playerLeft.getId());
+        } else if (packet instanceof WorldDataPacket) {
+            this.worldData = ((WorldDataPacket) packet).getWorldData();
+            this.isWorldDataReceived = true;
         }
     }
 

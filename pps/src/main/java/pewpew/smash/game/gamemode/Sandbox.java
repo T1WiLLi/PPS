@@ -4,12 +4,16 @@ import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.network.NetworkManager;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.client.EntityRenderer;
+import pewpew.smash.game.world.WorldGenerator;
 import pewpew.smash.game.Camera;
 import pewpew.smash.game.entities.Player;
+
+import java.awt.image.BufferedImage;
 
 public class Sandbox implements GameMode {
     private NetworkManager networkManager;
     private EntityRenderer entityRenderer;
+    private BufferedImage worldImage;
     private Camera camera;
 
     public Sandbox() {
@@ -39,7 +43,9 @@ public class Sandbox implements GameMode {
 
     @Override
     public void update(double deltaTime) {
-        System.out.println("Updating !");
+        if (networkManager.isWorldDataReceived() && this.worldImage == null) {
+            this.worldImage = WorldGenerator.getWorldImage(networkManager.getWorldData());
+        }
 
         try {
             networkManager.update();
@@ -47,8 +53,6 @@ public class Sandbox implements GameMode {
             Player player = networkManager.getEntityManager().getPlayerEntity(User.getInstance().getLocalID().get());
             if (player != null) {
                 camera.centerOn(player);
-            } else {
-                System.out.println("Player is null");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,15 +61,10 @@ public class Sandbox implements GameMode {
 
     @Override
     public void render(Canvas canvas) {
-        networkManager.getEntityManager().getPlayerEntity(User.getInstance().getLocalID().get()).render(canvas);
-
-        try {
-            canvas.scale(camera.getX(), camera.getY());
-            entityRenderer.render(canvas, camera);
-            canvas.resetScale();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        canvas.scale(camera.getZoom(), camera.getZoom());
+        canvas.renderImage(this.worldImage, (int) -this.camera.getX(), (int) -this.camera.getY());
+        entityRenderer.render(canvas, camera);
+        canvas.resetScale();
     }
 
     @Override

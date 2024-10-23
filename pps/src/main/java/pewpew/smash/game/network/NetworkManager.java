@@ -39,6 +39,20 @@ public class NetworkManager {
         return client.getEntityManager();
     }
 
+    public boolean isWorldDataReceived() {
+        if (client == null) {
+            throw new IllegalStateException("NetworkManager not initialized");
+        }
+        return client.isWorldDataReceived();
+    }
+
+    public byte[][] getWorldData() {
+        if (client == null) {
+            throw new IllegalStateException("NetworkManager not initialized");
+        }
+        return client.getWorldData();
+    }
+
     public void update() {
         if (client != null) {
             client.update();
