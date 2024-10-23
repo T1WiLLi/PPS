@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.stream.IntStream;
 
+import java.awt.Color;
+
 import pewpew.smash.game.utils.HelpMethods;
 
 public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
@@ -138,23 +140,32 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
         for (int y = 0; y < worldHeight; y++) {
             for (int x = 0; x < worldWidth; x++) {
                 byte tileType = world[x][y];
-                BufferedImage tileTexture;
 
                 if (tileType == GRASS) {
-                    tileTexture = textureFactory.getTexture(TextureType.GRASS, (x + y) % 3);
+                    g.setColor(new Color(34, 139, 34));
+                    g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
                 } else if (tileType == WATER) {
                     int distance = distanceToLand[x][y];
-                    tileTexture = textureFactory.generateWaterTexture(distance);
+                    BufferedImage waterTexture = textureFactory.generateWaterTexture(distance);
+                    g.drawImage(waterTexture, x * tileSize, y * tileSize, null);
                 } else if (tileType == SAND) {
-                    tileTexture = textureFactory.getTexture(TextureType.SAND, (x + y) % 3);
+                    g.setColor(new Color(238, 214, 175));
+                    g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
                 } else {
-                    tileTexture = null;
-                }
-
-                if (tileTexture != null) {
-                    g.drawImage(tileTexture, x * tileSize, y * tileSize, null);
+                    g.setColor(Color.BLACK);
+                    g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
                 }
             }
+        }
+
+        g.setColor(new Color(168, 168, 168, 128));
+
+        for (int x = 0; x <= worldWidth; x += 25) {
+            g.drawLine(x * tileSize, 0, x * tileSize, worldHeight * tileSize);
+        }
+
+        for (int y = 0; y <= worldHeight; y += 25) {
+            g.drawLine(0, y * tileSize, worldWidth * tileSize, y * tileSize);
         }
 
         g.dispose();
