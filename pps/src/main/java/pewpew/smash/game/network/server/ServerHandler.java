@@ -85,7 +85,6 @@ public class ServerHandler extends Handler implements Runnable {
         });
         this.entityManager.addPlayerEntity(player.getId(), player);
         this.worldManager.sendWorldDataToClient(server, connection.getID());
-        this.entityUpdater.sendAllPlayerPositions(server, connection.getID());
     }
 
     @Override

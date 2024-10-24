@@ -4,12 +4,20 @@ import java.awt.Color;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.entities.UpdatableEntity;
+import pewpew.smash.game.input.MouseHandler;
 
 public class Fists extends UpdatableEntity {
     private int leftFistX, leftFistY;
     private int rightFistX, rightFistY;
     private int centerX, centerY;
     private int radius = 18;
+
+    private boolean isLeftFistAttacking = false;
+    private boolean isRightFistAttacking = false;
+    private boolean isReturning = false;
+    private float attackProgress = 0.0f;
+    private float attackSpeed = 0.025f;
+    private int attackDistance = 15;
 
     public Fists(Player player) {
         setDimensions(6, 6);
@@ -18,7 +26,9 @@ public class Fists extends UpdatableEntity {
 
     @Override
     public void updateClient() {
-        // No client-side updates needed
+        if (MouseHandler.isMousePressed()) {
+            attack();
+        }
     }
 
     @Override
@@ -52,10 +62,55 @@ public class Fists extends UpdatableEntity {
         double leftAngle = angleRad - Math.PI / 4;
         double rightAngle = angleRad + Math.PI / 4;
 
-        leftFistX = (int) (centerX + radius * Math.cos(leftAngle));
-        leftFistY = (int) (centerY + radius * Math.sin(leftAngle));
+        // Apply attack movement in the forward direction if in progress
+        int forwardOffset = (int) (attackDistance * attackProgress);
 
-        rightFistX = (int) (centerX + radius * Math.cos(rightAngle));
-        rightFistY = (int) (centerY + radius * Math.sin(rightAngle));
+        // Calculate the forward direction based on the player's rotation
+        int forwardX = (int) (forwardOffset * Math.cos(angleRad));
+        int forwardY = (int) (forwardOffset * Math.sin(angleRad));
+
+        // Update the positions of the fists based on the forward movement
+        leftFistX = (int) (centerX + radius * Math.cos(leftAngle)) + (isLeftFistAttacking ? forwardX : 0);
+        leftFistY = (int) (centerY + radius * Math.sin(leftAngle)) + (isLeftFistAttacking ? forwardY : 0);
+
+        rightFistX = (int) (centerX + radius * Math.cos(rightAngle)) + (isRightFistAttacking ? forwardX : 0);
+        rightFistY = (int) (centerY + radius * Math.sin(rightAngle)) + (isRightFistAttacking ? forwardY : 0);
+    }
+
+    private void attack() {
+        if (isLeftFistAttacking) {
+            if (!isReturning) {
+                attackProgress += attackSpeed;
+                if (attackProgress >= 1.0f) {
+                    attackProgress = 1.0f;
+                    isReturning = true;
+                }
+            } else {
+                attackProgress -= attackSpeed;
+                if (attackProgress <= 0.0f) {
+                    attackProgress = 0.0f;
+                    isLeftFistAttacking = false;
+                    isReturning = false;
+                    isRightFistAttacking = true;
+                }
+            }
+        } else if (isRightFistAttacking) {
+            if (!isReturning) {
+                attackProgress += attackSpeed;
+                if (attackProgress >= 1.0f) {
+                    attackProgress = 1.0f;
+                    isReturning = true;
+                }
+            } else {
+                attackProgress -= attackSpeed;
+                if (attackProgress <= 0.0f) {
+                    attackProgress = 0.0f;
+                    isRightFistAttacking = false;
+                    isReturning = false;
+                }
+            }
+        } else {
+            isLeftFistAttacking = true;
+        }
     }
 }

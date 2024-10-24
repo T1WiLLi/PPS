@@ -3,11 +3,13 @@ package pewpew.smash.game.network;
 import com.esotericsoftware.kryo.Kryo;
 
 import pewpew.smash.engine.controls.Direction;
+import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.network.packets.BasePacket;
 import pewpew.smash.game.network.packets.BroadcastMessagePacket;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
+import pewpew.smash.game.network.packets.PlayerStatePacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
 import pewpew.smash.game.network.packets.PositionPacket;
 import pewpew.smash.game.network.packets.WorldDataPacket;
@@ -29,10 +31,12 @@ public class KryoRegister {
         kryo.register(PlayerUsernamePacket.class);
         kryo.register(PositionPacket.class);
         kryo.register(WorldDataPacket.class);
+        kryo.register(PlayerStatePacket.class);
     }
 
     private void registerObjects(Kryo kryo) {
         kryo.register(Direction.class);
+        kryo.register(PlayerState.class);
     }
 
     private void registerStructures(Kryo kryo) {
