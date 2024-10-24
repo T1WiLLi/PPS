@@ -105,7 +105,7 @@ public class Slider extends UiElement {
     @Override
     protected void handleMouseInput() {
         mouseOver = HelpMethods.isIn(bounds);
-        if (mouseOver && MouseController.isMousePressed()) {
+        if (mouseOver && MouseController.isLeftMousePressed()) {
             isDragging = true;
         }
     }
@@ -113,7 +113,7 @@ public class Slider extends UiElement {
     @Override
     protected void handleMouseMove() {
         if (isDragging) {
-            if (MouseController.isMousePressed()) {
+            if (MouseController.isLeftMousePressed()) {
                 updateValueFromMouse(MouseController.getMouseX());
             } else {
                 isDragging = false;

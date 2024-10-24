@@ -74,6 +74,11 @@ public class Canvas {
         graphics2D.drawRect(x, y, width, height);
     }
 
+    public void renderCircleBorder(Ellipse2D circle, int strokeWidth, Color color) {
+        setGraphicsProperties(color, strokeWidth);
+        graphics2D.draw(circle);
+    }
+
     public void renderCircle(int x, int y, int radius, Color color) {
         setGraphicsProperties(color, 1);
         graphics2D.fillOval(x, y, radius * 2, radius * 2);
