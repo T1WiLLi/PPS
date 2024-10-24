@@ -1,6 +1,7 @@
 package pewpew.smash.engine.entities;
 
 import java.awt.Rectangle;
+import java.awt.Shape;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,8 @@ public abstract class StaticEntity {
 
     public abstract void render(Canvas canvas);
 
+    public abstract Shape getHitbox();
+
     public void teleport(int x, int y) {
         this.x = x;
         this.y = y;
@@ -27,8 +30,8 @@ public abstract class StaticEntity {
         this.height = height;
     }
 
-    public boolean intersectWith(StaticEntity other) {
-        return getBounds().intersects(other.getBounds());
+    public boolean isColliding(StaticEntity entity, StaticEntity other) {
+        return entity.getHitbox().intersects(other.getHitbox().getBounds2D());
     }
 
     protected Rectangle getBounds() {

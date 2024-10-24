@@ -1,8 +1,8 @@
 package pewpew.smash.game.entities;
 
 import java.awt.Color;
-import java.awt.geom.Ellipse2D;
 import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -67,7 +67,8 @@ public class Player extends MovableEntity {
         canvas.renderString(User.getInstance().getUsername() + "-" + id, x - width, y - height, Color.WHITE);
     }
 
-    public Ellipse2D getHitbox() {
+    @Override
+    public Shape getHitbox() {
         return new Ellipse2D.Float(getX(), getY(), width * 2, width * 2);
     }
 }
