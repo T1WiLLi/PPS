@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import pewpew.smash.engine.entities.MovableEntity;
+import pewpew.smash.engine.entities.StaticEntity;
 import pewpew.smash.engine.entities.UpdatableEntity;
 import pewpew.smash.game.entities.Player;
 
@@ -68,6 +69,19 @@ public class EntityManager {
 
     public boolean containsPlayerEntity(int id) {
         return playerEntitiesMap.containsKey(id);
+    }
+
+    public List<StaticEntity> getAllEntities() {
+        readLock.lock();
+        try {
+            List<StaticEntity> allEntities = new ArrayList<>();
+            allEntities.addAll(updatableEntitiesMap.values());
+            allEntities.addAll(movableEntitiesMap.values());
+            allEntities.addAll(playerEntitiesMap.values());
+            return allEntities;
+        } finally {
+            readLock.unlock();
+        }
     }
 
     public void clearAllEntities() {

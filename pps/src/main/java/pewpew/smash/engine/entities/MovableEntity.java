@@ -18,8 +18,13 @@ public abstract class MovableEntity extends UpdatableEntity {
     private boolean hasMoved;
     private int speed;
 
+    @Getter
+    private int prevX, prevY;
+
     public void move(double deltaTime) {
         hasMoved = true;
+        prevX = x;
+        prevY = y;
         x += direction.getVelocityX((int) (speed));
         y += direction.getVelocityY((int) (speed));
     }
