@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.engine.GameTime;
 import pewpew.smash.game.GameManager;
 import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.audio.AudioPlayer;
@@ -45,11 +46,14 @@ public class Menu implements State {
     public void render(Canvas canvas) {
         if (overlayManager.hasActiveOverlays()) {
             overlayManager.render(canvas);
-            return;
+        } else {
+            renderBackground(canvas);
+            renderButtons(canvas);
+            renderBanner(canvas);
         }
-        renderBackground(canvas);
-        renderButtons(canvas);
-        renderBanner(canvas);
+
+        canvas.renderString("FPS: " + GameTime.getCurrentFps(), 10, 20, Color.WHITE);
+        canvas.renderString("UPS: " + GameTime.getCurrentUps(), 10, 40, Color.WHITE);
     }
 
     @Override

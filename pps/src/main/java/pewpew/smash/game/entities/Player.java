@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.entities.MovableEntity;
+import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.network.User;
 
 @ToString(callSuper = true)
@@ -17,12 +18,14 @@ public class Player extends MovableEntity {
     @Setter
     @Getter
     private float rotation;
-    private int prevX, prevY;
-    private float prevRotation;
 
     @Setter
     @Getter
     private String username;
+
+    @Setter
+    @Getter
+    private int health;
 
     public Player(int id) {
         this.fists = new Fists(this);
@@ -31,6 +34,9 @@ public class Player extends MovableEntity {
         setSpeed(2);
         this.rotation = 0f;
         this.id = id;
+        this.health = 100;
+
+        HudManager.getInstance().setPlayer(this);
     }
 
     public Player(int id, String username) {
@@ -40,15 +46,13 @@ public class Player extends MovableEntity {
 
     @Override
     public void updateClient() {
+        this.fists.updateClient();
         this.fists.updatePosition(getX(), getY(), getRotation());
     }
 
     @Override
     public void updateServer() {
         move(1);
-        this.prevX = getX();
-        this.prevY = getY();
-        this.prevRotation = getRotation();
     }
 
     @Override
@@ -59,9 +63,5 @@ public class Player extends MovableEntity {
         this.fists.render(canvas);
 
         canvas.renderString(User.getInstance().getUsername() + "-" + id, x - width, y - height, Color.WHITE);
-    }
-
-    public boolean hasStateChanged() {
-        return (getX() != prevX || getY() != prevY) || getRotation() != prevRotation;
     }
 }

@@ -44,14 +44,6 @@ public class EntityUpdater {
         });
     }
 
-    public void sendAllPlayerPositions(ServerWrapper server, int targetClientID) {
-        entityManager.getPlayerEntities().forEach(player -> {
-            PositionPacket packet = new PositionPacket(player.getId(), player.getX(), player.getY(),
-                    player.getRotation());
-            server.sendToAllUDP(packet);
-        });
-    }
-
     private ViewBounds calculateCombinedPlayerFOV() {
         double scaleX = ScaleUtils.getScaleX();
         double scaleY = ScaleUtils.getScaleY();
