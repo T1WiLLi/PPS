@@ -8,14 +8,23 @@ import lombok.Getter;
 public abstract class MouseController extends MouseAdapter {
     @Getter
     private static int mouseX = 0, mouseY = 0;
-    private static boolean mousePressed = false;
+    private static boolean leftMousePressed = false;
+    private static boolean rightMousePressed = false;
 
-    public static boolean isMousePressed() {
-        return mousePressed;
+    public static boolean isLeftMousePressed() {
+        return leftMousePressed;
     }
 
-    public static void consumeEvent() {
-        mousePressed = false;
+    public static boolean isRightMousePressed() {
+        return rightMousePressed;
+    }
+
+    public static void consumeLeftClick() {
+        leftMousePressed = false;
+    }
+
+    public static void consumeRightClick() {
+        rightMousePressed = false;
     }
 
     @Override
@@ -30,12 +39,20 @@ public abstract class MouseController extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        mousePressed = true;
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            leftMousePressed = true;
+        } else if (e.getButton() == MouseEvent.BUTTON3) {
+            rightMousePressed = true;
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        mousePressed = false;
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            leftMousePressed = false;
+        } else if (e.getButton() == MouseEvent.BUTTON3) {
+            rightMousePressed = false;
+        }
     }
 
     private void updateMousePosition(MouseEvent e) {

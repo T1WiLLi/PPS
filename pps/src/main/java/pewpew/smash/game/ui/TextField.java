@@ -61,7 +61,7 @@ public class TextField extends UiElement {
 
     @Override
     protected void handleMouseInput() {
-        if (MouseController.isMousePressed()) {
+        if (MouseController.isLeftMousePressed()) {
             if (HelpMethods.isIn(bounds)) {
                 setFocused(true);
             } else {

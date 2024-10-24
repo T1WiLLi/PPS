@@ -15,9 +15,10 @@ public class Fists extends UpdatableEntity {
     private boolean isLeftFistAttacking = false;
     private boolean isRightFistAttacking = false;
     private boolean isReturning = false;
+    private boolean isAttacking = false;
     private float attackProgress = 0.0f;
     private float attackSpeed = 0.025f;
-    private int attackDistance = 15;
+    private int attackDistance = 18;
 
     public Fists(Player player) {
         setDimensions(6, 6);
@@ -26,7 +27,11 @@ public class Fists extends UpdatableEntity {
 
     @Override
     public void updateClient() {
-        if (MouseHandler.isMousePressed()) {
+        if (MouseHandler.isLeftMousePressed() && !isAttacking) {
+            isAttacking = true;
+            isLeftFistAttacking = true;
+        }
+        if (isAttacking) {
             attack();
         }
     }
@@ -62,14 +67,11 @@ public class Fists extends UpdatableEntity {
         double leftAngle = angleRad - Math.PI / 4;
         double rightAngle = angleRad + Math.PI / 4;
 
-        // Apply attack movement in the forward direction if in progress
         int forwardOffset = (int) (attackDistance * attackProgress);
 
-        // Calculate the forward direction based on the player's rotation
         int forwardX = (int) (forwardOffset * Math.cos(angleRad));
         int forwardY = (int) (forwardOffset * Math.sin(angleRad));
 
-        // Update the positions of the fists based on the forward movement
         leftFistX = (int) (centerX + radius * Math.cos(leftAngle)) + (isLeftFistAttacking ? forwardX : 0);
         leftFistY = (int) (centerY + radius * Math.sin(leftAngle)) + (isLeftFistAttacking ? forwardY : 0);
 
@@ -107,10 +109,9 @@ public class Fists extends UpdatableEntity {
                     attackProgress = 0.0f;
                     isRightFistAttacking = false;
                     isReturning = false;
+                    isAttacking = false;
                 }
             }
-        } else {
-            isLeftFistAttacking = true;
         }
     }
 }

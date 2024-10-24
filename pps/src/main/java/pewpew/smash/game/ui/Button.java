@@ -45,13 +45,13 @@ public class Button extends UiElement {
 
         index = 0;
         updateState();
-        if (mouseOver && MouseController.isMousePressed()) {
+        if (mouseOver && MouseController.isLeftMousePressed()) {
             mousePressed = true;
         }
         if (mouseOver && mousePressed) {
             playButtonPressedSound();
             onClick.run();
-            MouseController.consumeEvent();
+            MouseController.consumeLeftClick();
             resetState();
         }
     }
@@ -64,7 +64,7 @@ public class Button extends UiElement {
     @Override
     protected void handleMouseInput() {
         if (HelpMethods.isIn(bounds)) {
-            setMousePressed(MouseController.isMousePressed());
+            setMousePressed(MouseController.isLeftMousePressed());
         } else {
             setMousePressed(false);
         }

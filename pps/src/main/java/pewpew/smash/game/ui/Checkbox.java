@@ -47,10 +47,10 @@ public class Checkbox extends UiElement {
 
     @Override
     public void handleMouseInput() {
-        if (HelpMethods.isIn(bounds) && MouseController.isMousePressed()) {
+        if (HelpMethods.isIn(bounds) && MouseController.isLeftMousePressed()) {
             checked = !checked;
             onCheck.run();
-            MouseController.consumeEvent();
+            MouseController.consumeLeftClick();
             AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
         }
     }

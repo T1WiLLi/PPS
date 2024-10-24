@@ -66,10 +66,10 @@ public class Cycler extends UiElement {
 
     @Override
     protected void handleMouseInput() {
-        if (HelpMethods.isIn(bounds) && MouseController.isMousePressed() && !isAnimating) {
+        if (HelpMethods.isIn(bounds) && MouseController.isLeftMousePressed() && !isAnimating) {
             nextCycle();
             onCycle.run();
-            MouseController.consumeEvent();
+            MouseController.consumeLeftClick();
             AudioPlayer.getInstance().play(AudioClip.SWAPPED, 0.95f, false, SoundType.UI);
         }
     }
