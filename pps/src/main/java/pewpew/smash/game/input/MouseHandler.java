@@ -32,9 +32,12 @@ public class MouseHandler extends MouseController {
         super.mouseDragged(e);
     }
 
-    public static double getAngle(double x, double y) {
-        double angle = Math.toDegrees(Math.atan2(MouseController.getMouseY() - (y - Camera.getOffsetY()),
-                MouseController.getMouseX() - (x - Camera.getOffsetX())));
-        return (angle + 360) % 360;
+    public static double getAngle(double entityX, double entityY) {
+        return (Math.toDegrees(
+                Math.atan2(MouseController.getMouseY() - (entityY - Camera.getOffsetY())
+                        * Camera.getZoom(), MouseController.getMouseX()
+                                - (entityX
+                                        - Camera.getOffsetX()) * Camera.getZoom()))
+                + 360) % 360;
     }
 }

@@ -1,14 +1,15 @@
 package pewpew.smash.game.entities;
 
+import java.awt.Color;
+
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.entities.UpdatableEntity;
 
-import java.awt.Color;
-
 public class Fists extends UpdatableEntity {
-
     private int leftFistX, leftFistY;
     private int rightFistX, rightFistY;
+    private int centerX, centerY;
+    private int radius = 18;
 
     public Fists(Player player) {
         setDimensions(6, 6);
@@ -17,12 +18,12 @@ public class Fists extends UpdatableEntity {
 
     @Override
     public void updateClient() {
-        // Nothings
+        // No client-side updates needed
     }
 
     @Override
     public void updateServer() {
-        // Nothings
+        // No server-side updates needed
     }
 
     @Override
@@ -32,7 +33,10 @@ public class Fists extends UpdatableEntity {
     }
 
     public void updatePosition(int playerX, int playerY, float rotation) {
-        teleport(playerX, playerY);
+        this.centerX = playerX + 10;
+        this.centerY = playerY + 10;
+
+        teleport(centerX, centerY);
         updateFistPositions(rotation);
     }
 
@@ -43,13 +47,15 @@ public class Fists extends UpdatableEntity {
     }
 
     private void updateFistPositions(float rotation) {
-        int fistDistance = 20;
         double angleRad = Math.toRadians(rotation);
 
-        leftFistX = (int) (getX() + fistDistance * Math.cos(angleRad - Math.PI / 4));
-        leftFistY = (int) (getY() + fistDistance * Math.sin(angleRad - Math.PI / 4));
+        double leftAngle = angleRad - Math.PI / 4;
+        double rightAngle = angleRad + Math.PI / 4;
 
-        rightFistX = (int) (getX() + fistDistance * Math.cos(angleRad + Math.PI / 4));
-        rightFistY = (int) (getY() + fistDistance * Math.sin(angleRad + Math.PI / 4));
+        leftFistX = (int) (centerX + radius * Math.cos(leftAngle));
+        leftFistY = (int) (centerY + radius * Math.sin(leftAngle));
+
+        rightFistX = (int) (centerX + radius * Math.cos(rightAngle));
+        rightFistY = (int) (centerY + radius * Math.sin(rightAngle));
     }
 }
