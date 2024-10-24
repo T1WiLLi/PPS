@@ -2,11 +2,10 @@ package pewpew.smash.game.network.server;
 
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.engine.entities.StaticEntity;
-import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.manager.EntityManager;
 
+import java.awt.Shape;
 import java.util.Collection;
-import java.awt.geom.Ellipse2D;
 
 public class ServerCollisionManager {
 
@@ -14,7 +13,6 @@ public class ServerCollisionManager {
     private static final int WORLD_MIN_Y = 0;
     private static final int WORLD_MAX_X = 1980;
     private static final int WORLD_MAX_Y = 1980;
-    private static final int DELTA_RADIUS = 100;
 
     private EntityManager entityManager;
 
@@ -32,8 +30,8 @@ public class ServerCollisionManager {
                 if (entity == other)
                     continue;
 
-                if (areEntitiesClose(entity, other, DELTA_RADIUS)) {
-                    if (isColliding(entity, other)) {
+                if (areEntitiesClose(entity, other)) {
+                    if (entity.isColliding(entity, other)) {
                         handleCollision(entity, other);
                     }
                 }
@@ -53,20 +51,12 @@ public class ServerCollisionManager {
         }
     }
 
-    private boolean areEntitiesClose(StaticEntity entity, StaticEntity other, int radius) {
-        int dx = entity.getX() - other.getX();
-        int dy = entity.getY() - other.getY();
-        return (dx * dx + dy * dy) <= (radius * radius);
-    }
+    private boolean areEntitiesClose(StaticEntity entity, StaticEntity other) {
+        Shape hitbox1 = entity.getHitbox();
+        Shape hitbox2 = other.getHitbox();
 
-    private boolean isColliding(StaticEntity entity, StaticEntity other) {
-        if (entity instanceof Player && other instanceof Player) {
-            Ellipse2D hitbox1 = ((Player) entity).getHitbox();
-            Ellipse2D hitbox2 = ((Player) other).getHitbox();
-            return hitbox1.intersects(hitbox2.getBounds2D());
-        }
-
-        return false;
+        return hitbox1.getBounds2D().intersects(hitbox2.getBounds2D()) ||
+                hitbox1.intersects(hitbox2.getBounds2D());
     }
 
     private void handleCollision(StaticEntity entity, StaticEntity other) {

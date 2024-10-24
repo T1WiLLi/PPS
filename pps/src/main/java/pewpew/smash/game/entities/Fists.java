@@ -1,6 +1,7 @@
 package pewpew.smash.game.entities;
 
 import java.awt.Color;
+import java.awt.Shape;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.entities.UpdatableEntity;
@@ -53,6 +54,10 @@ public class Fists extends UpdatableEntity {
 
         teleport(centerX, centerY);
         updateFistPositions(rotation);
+    }
+
+    public Shape getHitbox() {
+        return null;
     }
 
     private void renderFist(Canvas canvas, int x, int y) {
