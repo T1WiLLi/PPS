@@ -74,7 +74,7 @@ public class Sandbox implements GameMode {
 
     @Override
     public void render(Canvas canvas) {
-        canvas.scale(camera.getZoom(), camera.getZoom());
+        canvas.scale(Camera.getZoom(), Camera.getZoom());
         canvas.renderImage(this.worldImage, (int) -this.camera.getX(), (int) -this.camera.getY());
         entityRenderer.render(canvas, camera);
         canvas.resetScale();

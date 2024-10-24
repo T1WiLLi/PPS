@@ -5,11 +5,9 @@ import lombok.NoArgsConstructor;
 import pewpew.smash.engine.controls.Direction;
 
 @NoArgsConstructor
+@Getter
 public class DirectionPacket extends BasePacket {
-    @Getter
     private Direction direction;
-
-    @Getter
     private float rotation;
 
     public DirectionPacket(Direction direction, float rotation) {

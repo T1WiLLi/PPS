@@ -18,6 +18,10 @@ public class Camera {
         return instance != null ? instance.y : 0;
     }
 
+    public static float getZoom() {
+        return instance != null ? instance.zoom : 1.0f;
+    }
+
     public Camera() {
         this.x = 0;
         this.y = 0;
@@ -55,10 +59,6 @@ public class Camera {
         } else if (y > MAP_HEIGHT - getViewportHeight()) {
             y = MAP_HEIGHT - getViewportHeight();
         }
-    }
-
-    public float getZoom() {
-        return zoom;
     }
 
     public float getX() {

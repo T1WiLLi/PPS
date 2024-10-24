@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
+@Getter
 public class PlayerLeftPacket extends BasePacket {
-    @Getter
     private int id;
 
     public PlayerLeftPacket(int id) {

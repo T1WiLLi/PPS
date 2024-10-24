@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class WorldDataPacket extends BasePacket {
-    @Getter
     private byte[][] worldData;
 }
