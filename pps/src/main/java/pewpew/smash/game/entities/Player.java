@@ -67,7 +67,7 @@ public class Player extends MovableEntity {
         canvas.renderString(User.getInstance().getUsername() + "-" + id, x - width, y - height, Color.WHITE);
     }
 
-    public Shape getHitbox() {
+    public Ellipse2D getHitbox() {
         return new Ellipse2D.Float(getX(), getY(), width * 2, width * 2);
     }
 }

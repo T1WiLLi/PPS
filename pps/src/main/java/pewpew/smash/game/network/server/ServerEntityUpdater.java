@@ -8,13 +8,13 @@ import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.PositionPacket;
 import pewpew.smash.game.utils.ScaleUtils;
 
-public class EntityUpdater {
+public class ServerEntityUpdater {
     private final EntityManager entityManager;
     private static final double FOV_BUFFER = 0.05;
     private static final int BASE_WIDTH = 800;
     private static final int BASE_HEIGHT = 600;
 
-    public EntityUpdater(EntityManager entityManager) {
+    public ServerEntityUpdater(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 

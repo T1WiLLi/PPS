@@ -21,8 +21,9 @@ public class ServerHandler extends Handler implements Runnable {
     private ExecutorService executor;
     private ServerWrapper server;
     private EntityManager entityManager;
-    private EntityUpdater entityUpdater;
+    private ServerEntityUpdater entityUpdater;
     private ServerWorldManager worldManager;
+    private ServerCollisionManager collisionManager;
 
     private GameTime gameTime;
 
@@ -30,7 +31,8 @@ public class ServerHandler extends Handler implements Runnable {
         this.server = new ServerWrapper(port, port);
         this.executor = Executors.newSingleThreadExecutor();
         this.entityManager = new EntityManager();
-        this.entityUpdater = new EntityUpdater(entityManager);
+        this.entityUpdater = new ServerEntityUpdater(entityManager);
+        this.collisionManager = new ServerCollisionManager(entityManager);
         this.worldManager = new ServerWorldManager();
         this.worldManager.displayWorld();
         this.gameTime = GameTime.getServerInstance();
@@ -116,6 +118,7 @@ public class ServerHandler extends Handler implements Runnable {
 
     private void update(double deltaTime) {
         this.entityManager.getPlayerEntities().forEach(Player::updateServer);
+        this.collisionManager.checkCollisions();
     }
 
     // Do other state update, such as hp, collision, bullet, ammo, inventory , etc.
