@@ -14,7 +14,7 @@ public class AboutOverlay extends Overlay {
     private Button backButton;
     private AboutConfig aboutConfig;
     private float scrollPosition = 600f;
-    private float scrollSpeed = 0.3f;
+    private float scrollSpeed = 0.1f;
 
     public AboutOverlay(int x, int y, int width, int height) {
         super(x, y, width, height);

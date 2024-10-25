@@ -160,11 +160,11 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
 
         g.setColor(new Color(168, 168, 168, 128));
 
-        for (int x = 0; x <= worldWidth; x += 25) {
+        for (int x = 0; x <= worldWidth; x += 50) {
             g.drawLine(x * tileSize, 0, x * tileSize, worldHeight * tileSize);
         }
 
-        for (int y = 0; y <= worldHeight; y += 25) {
+        for (int y = 0; y <= worldHeight; y += 50) {
             g.drawLine(0, y * tileSize, worldWidth * tileSize, y * tileSize);
         }
 
