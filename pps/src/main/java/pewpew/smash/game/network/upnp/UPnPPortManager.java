@@ -36,7 +36,7 @@ public class UPnPPortManager implements AutoCloseable {
         return isAvailable;
     }
 
-    public boolean openPort(int externalPort, int internalPort, String description) {
+    public boolean openPort(int externalPort, int internalPort) {
         if (!isAvailable) {
             LOGGER.warning("Cannot open port: UPnP is not available");
             return false;
@@ -56,14 +56,14 @@ public class UPnPPortManager implements AutoCloseable {
                     internalPort,
                     gateway.getLocalAddress().getHostAddress(),
                     "TCP",
-                    description);
+                    "PewPewSmash:Battle Royale");
 
             udpSuccess = gateway.addPortMapping(
                     externalPort,
                     internalPort,
                     gateway.getLocalAddress().getHostAddress(),
                     "UDP",
-                    description);
+                    "PewPewSmash:Battle Royale");
 
             if (tcpSuccess && udpSuccess) {
                 List<String> protocols = new ArrayList<>();

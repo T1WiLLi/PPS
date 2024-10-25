@@ -57,7 +57,7 @@ public class UPnPPortManagerTest {
     @EnabledIf("isUPnPAvailable")
     void testOpenPort() throws Exception {
         int port = findFreePort();
-        boolean result = portManager.openPort(port, port, "UPnPTest");
+        boolean result = portManager.openPort(port, port);
         assertTrue(result, "Port mapping should succeed");
 
         GatewayDevice gateway = portManager.getGateway();
@@ -77,7 +77,7 @@ public class UPnPPortManagerTest {
     void testOpenPortWithDifferentInternalPort() throws Exception {
         int externalPort = findFreePort();
         int internalPort = findFreePort();
-        boolean result = portManager.openPort(externalPort, internalPort, "UPnPTest");
+        boolean result = portManager.openPort(externalPort, internalPort);
         assertTrue(result, "Port mapping with different internal port should succeed");
 
         GatewayDevice gateway = portManager.getGateway();
@@ -95,10 +95,10 @@ public class UPnPPortManagerTest {
     @EnabledIf("isUPnPAvailable")
     void testOpenPortTwiceFails() throws Exception {
         int port = findFreePort();
-        boolean firstResult = portManager.openPort(port, port, "UPnPTest1");
+        boolean firstResult = portManager.openPort(port, port);
         assertTrue(firstResult, "First port mapping should succeed");
 
-        boolean secondResult = portManager.openPort(port, port, "UPnPTest2");
+        boolean secondResult = portManager.openPort(port, port);
         assertFalse(secondResult, "Second port mapping should fail");
 
         portManager.closePort(port);
@@ -109,7 +109,7 @@ public class UPnPPortManagerTest {
     @EnabledIf("isUPnPAvailable")
     void testClosePort() throws Exception {
         int port = findFreePort();
-        portManager.openPort(port, port, "UPnPTest");
+        portManager.openPort(port, port);
 
         boolean result = portManager.closePort(port);
         assertTrue(result, "Port closing should succeed");
@@ -129,7 +129,7 @@ public class UPnPPortManagerTest {
     void testAutoCloseable() throws Exception {
         int port = findFreePort();
         try (UPnPPortManager localManager = UPnPPortManager.getInstance()) {
-            localManager.openPort(port, port, "UPnPTest");
+            localManager.openPort(port, port);
         }
 
         GatewayDevice gateway = portManager.getGateway();

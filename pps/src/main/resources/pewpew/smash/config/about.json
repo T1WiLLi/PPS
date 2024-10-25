@@ -8,7 +8,15 @@
           "artists": [
             {
               "author": "William Beaudin",
-              "assets": []
+              "assets": [
+                "Programmation: William Beaudin",
+                "Original Idea (For Surviv.io): Justin Kim and Nick Clark",
+                "IDE Used : Visual Studio Code",
+                "Programming Language: Java",
+                "Technology used include, but not limited to: Kryonet, JUnit, lombok, Java Swing, Jackson, weUPnP",
+                "Disclaimer: PewPewSmash is not in any way affiliated with Surviv.io or its developers.",
+                "This project was made for educationnal purpose only"
+              ]
             }
           ]
         },
@@ -17,7 +25,9 @@
           "artists": [
             {
               "author": "Doctrina-Engine",
-              "assets": []
+              "assets": [
+                "Featuring: KryoNet for networking"
+              ]
             }
           ]
         },
@@ -57,7 +67,7 @@
           "title": "Release Date",
           "artists": [
             {
-              "author": "2024-12-31",
+              "author": "2024-12-15",
               "assets": []
             }
           ]
@@ -140,7 +150,9 @@
                 "login",
                 "quit",
                 "save",
-                "set"
+                "set",
+                "host",
+                "join"
               ]
             }
           ]
@@ -156,7 +168,8 @@
                 "PewPewSmashLogo",
                 "PewPewSmashLogo2",
                 "menu background",
-                "login-panel"
+                "login-panel",
+                "account background"
                 ]
             },
             {
@@ -164,7 +177,8 @@
               "website": "https://survivio.fandom.com/wiki/Creator_Kit",
               "license": "Attribution 4.0 International",
               "assets": [
-                "Wallpaper/survivio_wallpaper_02.png"
+                "Wallpaper/survivio_wallpaper_02.png (Overlay)",
+                "Wallpaper/survivo_wallpaper_04.png (Loading)"
                 ]
             },
             {

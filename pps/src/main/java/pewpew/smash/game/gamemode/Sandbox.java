@@ -61,14 +61,14 @@ public class Sandbox implements GameMode {
             e.printStackTrace();
         }
 
-        if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_1)) {
+        if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_F1)) {
             camera.setZoom(1);
-        } else if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_2)) {
+        } else if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_F2)) {
             camera.setZoom(0.75f);
-        } else if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_3)) {
+        } else if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_F3)) {
             camera.setZoom(0.5f);
-        } else if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_4)) {
-            camera.setZoom(0.10f);
+        } else if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_F4)) {
+            camera.setZoom(0.25f);
         }
     }
 
