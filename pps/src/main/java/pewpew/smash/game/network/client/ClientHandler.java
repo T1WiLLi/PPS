@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.esotericsoftware.kryonet.Connection;
 import lombok.Getter;
 import pewpew.smash.engine.controls.Direction;
+import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.input.MouseHandler;
@@ -95,6 +96,7 @@ public class ClientHandler extends Handler {
     public void update() {
         this.entityManager.getPlayerEntities().forEach(Player::updateClient);
         sendDirection();
+        sendMouseInput();
     }
 
     private void sendDirection() {
@@ -103,5 +105,10 @@ public class ClientHandler extends Handler {
                 entityManager.getPlayerEntity(User.getInstance().getLocalID().get()).getX(),
                 entityManager.getPlayerEntity(User.getInstance().getLocalID().get()).getY());
         this.client.sendToUDP(new DirectionPacket(direction, (float) rotation));
+    }
+
+    private void sendMouseInput() {
+        MouseInput input = MouseInput.getCurrentInput();
+        this.client.sendToUDP(new MouseInputPacket(input));
     }
 }

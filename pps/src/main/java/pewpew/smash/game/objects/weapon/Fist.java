@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.awt.Color;
 
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.game.objects.MeleeWeapon;
 
 public class Fist extends MeleeWeapon {
@@ -24,8 +25,24 @@ public class Fist extends MeleeWeapon {
     }
 
     @Override
-    public void updateServer() {
+    public void updateClient() {
+        if (getOwner() != null) {
+            updatePosition((int) getOwner().getX(), (int) getOwner().getY(), getOwner().getRotation());
+        }
+    }
 
+    @Override
+    public void updateServer() {
+        if (getOwner().getMouseInput() == MouseInput.LEFT_CLICK && !isAttacking) {
+            isAttacking = true;
+            isLeftFistAttacking = true;
+        }
+
+        if (isAttacking) {
+            attack();
+        }
+
+        updatePosition(getOwner().getX(), getOwner().getY(), getOwner().getRotation());
     }
 
     @Override
@@ -81,7 +98,7 @@ public class Fist extends MeleeWeapon {
         return null;
     }
 
-    public void updatePosition(int playerX, int playerY, float rotation) {
+    private void updatePosition(int playerX, int playerY, float rotation) {
         this.centerX = playerX + 10;
         this.centerY = playerY + 10;
 

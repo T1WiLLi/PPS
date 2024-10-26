@@ -13,6 +13,8 @@ public abstract class Weapon extends Item {
     protected int range;
     protected double attackSpeed;
 
+    public abstract void updateClient();
+
     public abstract void updateServer();
 
     public Weapon(String name, String description, BufferedImage preview) {

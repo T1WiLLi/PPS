@@ -12,6 +12,7 @@ import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.DirectionPacket;
+import pewpew.smash.game.network.packets.MouseInputPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
@@ -70,6 +71,9 @@ public class ServerHandler extends Handler implements Runnable {
                 player.setDirection(directionPacket.getDirection());
                 player.setRotation(directionPacket.getRotation());
             }
+        } else if (packet instanceof MouseInputPacket) {
+            MouseInputPacket mouseInputPacket = (MouseInputPacket) packet;
+            this.entityManager.getPlayerEntity(connection.getID()).setMouseInput(mouseInputPacket.getInput());
         }
     }
 

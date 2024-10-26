@@ -8,14 +8,27 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.network.User;
+import pewpew.smash.game.objects.ItemFactory;
+import pewpew.smash.game.objects.Weapon;
+import pewpew.smash.game.objects.WeaponType;
+import pewpew.smash.game.objects.weapon.Fist;
 
 @ToString(callSuper = true)
 public class Player extends MovableEntity {
 
-    private Fists fists;
+    @Setter
+    @Getter
+    private Weapon equippedWeapon;
+
+    private Fist fists;
+
+    @Setter
+    @Getter
+    private MouseInput mouseInput = MouseInput.NONE;
 
     @Setter
     @Getter
@@ -30,7 +43,6 @@ public class Player extends MovableEntity {
     private int health;
 
     public Player(int id) {
-        this.fists = new Fists(this);
         setDimensions(20, 20);
         teleport(100, 100);
         setSpeed(2);
@@ -38,6 +50,9 @@ public class Player extends MovableEntity {
         this.id = id;
         this.health = 100;
 
+        this.fists = ItemFactory.createItem(WeaponType.FIST);
+        this.fists.pickup(this);
+        this.equippedWeapon = fists;
         HudManager.getInstance().setPlayer(this);
     }
 
@@ -49,12 +64,12 @@ public class Player extends MovableEntity {
     @Override
     public void updateClient() {
         this.fists.updateClient();
-        this.fists.updatePosition(getX(), getY(), getRotation());
     }
 
     @Override
     public void updateServer() {
         move(1);
+        this.fists.updateServer();
     }
 
     @Override

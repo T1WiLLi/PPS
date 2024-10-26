@@ -123,7 +123,7 @@ public class Launcher {
     private static void incrementLoadingProgress() {
         for (int i = 0; i < 10; i++) {
             loadingProgress.incrementAndGet();
-            sleep(50);
+            sleep(10);
         }
     }
 
