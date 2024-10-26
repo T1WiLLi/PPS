@@ -1,81 +1,148 @@
 package pewpew.smash.game.entities;
 
-import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Optional;
 
-public class Inventory<K, V> implements Map<K, V> {
+import pewpew.smash.game.objects.Consumable;
+import pewpew.smash.game.objects.Item;
+import pewpew.smash.game.objects.Weapon;
+import pewpew.smash.game.objects.special.AmmoStack;
 
-    @Override
+public class Inventory<K, V> {
+    private static final int MAX_SLOTS = 9;
+    private final HashMap<Integer, InventorySlot> slots;
+
+    private static class InventorySlot {
+        Item item;
+        int quantity;
+
+        InventorySlot(Item item, int quantity) {
+            this.item = item;
+            this.quantity = quantity;
+        }
+    }
+
+    public static class SerializedItem {
+        public enum ItemType {
+            CONSUMABLE,
+            WEAPON,
+            AMMO_STACK
+        }
+
+        public ItemType type;
+        public String itemIdentifier;
+        public int quantity;
+        public Map<String, Integer> extraData;
+
+        public SerializedItem(ItemType type, String itemIdentifier, int quantity) {
+            this.type = type;
+            this.itemIdentifier = itemIdentifier;
+            this.quantity = quantity;
+            this.extraData = new HashMap<>();
+        }
+    }
+
+    public Inventory() {
+        this.slots = new HashMap<>();
+    }
+
+    public boolean addItem(Item item) {
+        if (item instanceof Consumable) {
+            Optional<Integer> stackSlot = findStackableSlot(item);
+            if (stackSlot.isPresent()) {
+                slots.get(stackSlot.get()).quantity++;
+                return true;
+            }
+        }
+
+        Optional<Integer> emptySlot = findFirstEmptySlot();
+        if (emptySlot.isPresent()) {
+            slots.put(emptySlot.get(), new InventorySlot(item, 1));
+            return true;
+        }
+        return false; // Inv is full :(
+    }
+
+    public Optional<Item> removeItem(int slotNumber) {
+        InventorySlot slot = slots.get(slotNumber);
+        if (slot != null) {
+            Item removedItem = slot.item;
+            if (slot.quantity > 1) {
+                slot.quantity--;
+            } else {
+                slots.remove(slotNumber);
+            }
+            return Optional.of(removedItem);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Item> getItem(int slotNumber) {
+        InventorySlot slot = slots.get(slotNumber);
+        return slot != null ? Optional.of(slot.item) : Optional.empty();
+    }
+
+    public int getQuantity(int slotNumber) {
+        InventorySlot slot = slots.get(slotNumber);
+        return slot != null ? slot.quantity : 0;
+    }
+
+    public boolean isSlotEmpty(int slotNumber) {
+        return !slots.containsKey(slotNumber);
+    }
+
+    public Map<Integer, InventorySlot> getOccupiedSlots() {
+        return new HashMap<>(slots);
+    }
+
+    public boolean hasSpace() {
+        return slots.size() < MAX_SLOTS;
+    }
+
     public int size() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'size'");
+        return slots.size();
     }
 
-    @Override
     public boolean isEmpty() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isEmpty'");
+        return slots.isEmpty();
     }
 
-    @Override
-    public boolean containsKey(Object key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'containsKey'");
-    }
-
-    @Override
-    public boolean containsValue(Object value) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'containsValue'");
-    }
-
-    @Override
-    public V get(Object key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'get'");
-    }
-
-    @Override
-    public V put(K key, V value) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'put'");
-    }
-
-    @Override
-    public V remove(Object key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'remove'");
-    }
-
-    @Override
-    public void putAll(Map<? extends K, ? extends V> m) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'putAll'");
-    }
-
-    @Override
     public void clear() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'clear'");
+        slots.clear();
     }
 
-    @Override
-    public Set<K> keySet() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'keySet'");
+    private Optional<Integer> findStackableSlot(Item newItem) {
+        for (Map.Entry<Integer, InventorySlot> entry : slots.entrySet()) {
+            if (canStack(entry.getValue().item, newItem)) {
+                return Optional.of(entry.getKey());
+            }
+        }
+        return Optional.empty();
     }
 
-    @Override
-    public Collection<V> values() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'values'");
+    private Optional<Integer> findFirstEmptySlot() {
+        for (int i = 0; i < MAX_SLOTS; i++) {
+            if (!slots.containsKey(i)) {
+                return Optional.of(i);
+            }
+        }
+        return Optional.empty();
     }
 
-    @Override
-    public Set<Entry<K, V>> entrySet() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'entrySet'");
-    }
+    private boolean canStack(Item existing, Item newItem) {
+        if (existing instanceof Weapon || newItem instanceof Weapon) {
+            return false;
+        }
 
+        if (existing instanceof AmmoStack || newItem instanceof AmmoStack) {
+            return false;
+        }
+
+        if (existing instanceof Consumable && newItem instanceof Consumable) {
+            return existing.getName().equals(newItem.getName());
+        }
+
+        return false;
+    }
 }
