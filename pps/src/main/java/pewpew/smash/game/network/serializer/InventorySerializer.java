@@ -1,4 +1,4 @@
-package pewpew.smash.game.utils;
+package pewpew.smash.game.network.serializer;
 
 import java.util.HashMap;
 import java.util.Map;

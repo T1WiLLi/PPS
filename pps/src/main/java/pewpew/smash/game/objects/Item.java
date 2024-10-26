@@ -7,7 +7,7 @@ import lombok.ToString;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.entities.Player;
 
-@ToString
+@ToString(exclude = { "owner" })
 @Getter
 public abstract class Item {
 

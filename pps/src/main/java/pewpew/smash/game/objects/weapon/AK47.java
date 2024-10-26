@@ -18,6 +18,11 @@ public class AK47 extends RangedWeapon {
     }
 
     @Override
+    public void updateClient() {
+
+    }
+
+    @Override
     public void updateServer() {
 
     }

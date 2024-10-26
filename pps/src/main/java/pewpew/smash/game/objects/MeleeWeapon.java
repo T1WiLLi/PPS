@@ -4,10 +4,12 @@ import java.awt.Shape;
 import java.awt.image.BufferedImage;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @ToString(callSuper = true)
 @Getter
+@Setter
 public abstract class MeleeWeapon extends Weapon {
 
     protected boolean isAttacking;
