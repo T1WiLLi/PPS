@@ -44,11 +44,15 @@ public abstract class Item {
         this.height = height;
     }
 
+    // We would probably want to override this function in the actual class (while
+    // still calling the super)
     public Item pickup() {
         isOnScreen = false;
         return this;
     }
 
+    // We would probably want to override this function in the actual class (while
+    // still calling the super)
     public void drop(int newX, int newY) {
         this.x = newX;
         this.y = newY;

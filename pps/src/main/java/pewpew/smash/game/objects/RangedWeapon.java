@@ -21,7 +21,7 @@ public abstract class RangedWeapon extends Weapon {
         super(name, description, preview);
     }
 
-    public void buildWeapon(int damage, int range, double attackSpeed, double reloadSpeed, int ammoCapacity) {
+    public void buildWeapon(int damage, double attackSpeed, int range, double reloadSpeed, int ammoCapacity) {
         super.buildWeapon(damage, attackSpeed, range);
         this.reloadSpeed = reloadSpeed;
         this.ammoCapacity = ammoCapacity;

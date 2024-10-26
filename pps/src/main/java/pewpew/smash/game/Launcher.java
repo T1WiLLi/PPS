@@ -10,6 +10,7 @@ import pewpew.smash.engine.RenderingEngine;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.gamemode.GameModeFactory;
+import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.overlay.OverlayFactory;
 import pewpew.smash.game.settings.SettingsManager;
 import pewpew.smash.game.states.StateFactory;
@@ -19,7 +20,7 @@ import pewpew.smash.game.utils.ResourcesLoader;
 import pewpew.smash.game.world.TextureFactory;
 
 public class Launcher {
-    private static final int TOTAL_RESOURCES = 60;
+    private static final int TOTAL_RESOURCES = 70;
     private static AtomicInteger loadingProgress = new AtomicInteger(0);
     private static BufferedImage background;
 
@@ -80,6 +81,7 @@ public class Launcher {
         loadGameModes();
         loadOverlays();
         loadTextures();
+        loadItemPreview();
     }
 
     private static void loadSettings() {
@@ -110,6 +112,11 @@ public class Launcher {
 
     private static void loadTextures() {
         TextureFactory.getInstance().preloadTextures();
+        incrementLoadingProgress();
+    }
+
+    private static void loadItemPreview() {
+        ItemFactory.preloadItemPreviews();
         incrementLoadingProgress();
     }
 

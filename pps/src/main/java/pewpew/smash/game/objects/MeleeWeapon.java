@@ -13,6 +13,8 @@ public abstract class MeleeWeapon extends Weapon {
     protected boolean isAttacking;
     protected float attackProgress = 0.0f;
 
+    public abstract void attack();
+
     public abstract Shape getHitbox();
 
     public MeleeWeapon(String name, String description, BufferedImage preview) {
