@@ -1,5 +1,7 @@
 package pewpew.smash.game.objects;
 
+import java.awt.image.BufferedImage;
+
 import lombok.Getter;
 import lombok.ToString;
 
@@ -15,8 +17,8 @@ public abstract class RangedWeapon extends Weapon {
 
     public abstract void shoot();
 
-    public RangedWeapon(String name, String description) {
-        super(name, description);
+    public RangedWeapon(String name, String description, BufferedImage preview) {
+        super(name, description, preview);
     }
 
     public void buildWeapon(int damage, int range, double attackSpeed, double reloadSpeed, int ammoCapacity) {
