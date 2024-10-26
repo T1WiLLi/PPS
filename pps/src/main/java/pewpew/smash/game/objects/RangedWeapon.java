@@ -3,6 +3,7 @@ package pewpew.smash.game.objects;
 import java.awt.image.BufferedImage;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @ToString(callSuper = true)
@@ -10,6 +11,7 @@ import lombok.ToString;
 public abstract class RangedWeapon extends Weapon {
 
     protected int ammoCapacity;
+    @Setter
     protected int currentAmmo;
     protected double reloadSpeed;
 
