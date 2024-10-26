@@ -1,6 +1,7 @@
 package pewpew.smash.game.objects;
 
 import java.awt.Shape;
+import java.awt.image.BufferedImage;
 
 import lombok.Getter;
 import lombok.ToString;
@@ -14,8 +15,8 @@ public abstract class MeleeWeapon extends Weapon {
 
     public abstract Shape getHitbox();
 
-    public MeleeWeapon(String name, String description) {
-        super(name, description);
+    public MeleeWeapon(String name, String description, BufferedImage preview) {
+        super(name, description, preview);
     }
 
     public void buildWeapon(int damage, double attackSpeed, int range) {

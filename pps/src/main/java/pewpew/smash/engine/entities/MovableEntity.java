@@ -15,14 +15,12 @@ public abstract class MovableEntity extends UpdatableEntity {
 
     @Setter
     private Direction direction = Direction.UP;
-    private boolean hasMoved;
     private int speed;
 
     @Getter
     private int prevX, prevY;
 
     public void move(double deltaTime) {
-        hasMoved = true;
         prevX = x;
         prevY = y;
         x += direction.getVelocityX((int) (speed));
@@ -37,7 +35,7 @@ public abstract class MovableEntity extends UpdatableEntity {
     }
 
     public boolean hasMoved() {
-        return this.hasMoved;
+        return x != prevX || y != prevY;
     }
 
     public void renderHitbox(Canvas canvas) {

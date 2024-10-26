@@ -1,5 +1,7 @@
 package pewpew.smash.game.objects;
 
+import java.awt.image.BufferedImage;
+
 import lombok.Getter;
 import lombok.ToString;
 
@@ -15,8 +17,8 @@ public abstract class Weapon extends Item {
 
     public abstract void attack();
 
-    public Weapon(String name, String description) {
-        super(name, description);
+    public Weapon(String name, String description, BufferedImage preview) {
+        super(name, description, preview);
     }
 
     protected void buildWeapon(int damage, double attackSpeed, int range) {

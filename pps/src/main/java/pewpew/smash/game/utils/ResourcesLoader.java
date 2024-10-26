@@ -27,6 +27,7 @@ public class ResourcesLoader {
     public static final String BACKGROUND_PATH = BASE_PATH + "assets/background";
     public static final String RANK_PATH = BASE_PATH + "assets/rank";
     public static final String UI_PATH = BASE_PATH + "assets/ui";
+    public static final String PREVIEW_PATH = SPRITE_PATH + "/previews";
 
     // Audio
     public static final String AUDIO_PATH = BASE_PATH + "audio";

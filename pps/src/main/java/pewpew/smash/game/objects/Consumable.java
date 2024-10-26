@@ -1,5 +1,7 @@
 package pewpew.smash.game.objects;
 
+import java.awt.image.BufferedImage;
+
 import lombok.Getter;
 import lombok.ToString;
 
@@ -12,8 +14,8 @@ public abstract class Consumable extends Item {
 
     public abstract void consume();
 
-    public Consumable(String name, String description) {
-        super(name, description);
+    public Consumable(String name, String description, BufferedImage preview) {
+        super(name, description, preview);
     }
 
     protected void buildConsumable(int healingAmount, double timeToConsume) {
