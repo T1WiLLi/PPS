@@ -9,7 +9,6 @@ public class Medikit extends Consumable {
 
     public Medikit(String name, String description, BufferedImage preview) {
         super(name, description, preview);
-
     }
 
     @Override

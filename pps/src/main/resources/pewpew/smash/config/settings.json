@@ -1,6 +1,6 @@
 {
   "video" : {
-    "fps" : 120,
+    "fps" : 30,
     "antiAliasing" : true,
     "textAliasing" : true,
     "renderQuality" : "quality"

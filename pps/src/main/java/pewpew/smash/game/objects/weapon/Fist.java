@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.objects.MeleeWeapon;
-import pewpew.smash.game.objects.RangedWeapon;
 
 public class Fist extends MeleeWeapon {
 
