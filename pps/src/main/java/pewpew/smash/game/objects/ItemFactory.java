@@ -7,6 +7,7 @@ import java.util.Map;
 import pewpew.smash.game.objects.consumable.Bandage;
 import pewpew.smash.game.objects.consumable.Medikit;
 import pewpew.smash.game.objects.consumable.Pill;
+import pewpew.smash.game.objects.special.Scope;
 import pewpew.smash.game.objects.weapon.AK47;
 import pewpew.smash.game.objects.weapon.Fist;
 import pewpew.smash.game.utils.ResourcesLoader;
@@ -15,6 +16,7 @@ import pewpew.smash.game.utils.ResourcesLoader;
 public class ItemFactory {
     private static final Map<WeaponType, BufferedImage> weaponsPreviews = new EnumMap<>(WeaponType.class);
     private static final Map<ConsumableType, BufferedImage> consumablesPreviews = new EnumMap<>(ConsumableType.class);
+    private static final Map<SpecialType, BufferedImage> specialItems = new EnumMap<>(SpecialType.class);
 
     public static void preloadItemPreviews() {
         for (WeaponType type : WeaponType.values()) {
@@ -26,6 +28,10 @@ public class ItemFactory {
 
         for (ConsumableType type : ConsumableType.values()) {
             consumablesPreviews.put(type, loadPreview(ResourcesLoader.PREVIEW_PATH, type));
+        }
+
+        for (SpecialType type : SpecialType.values()) {
+            specialItems.put(type, loadPreview(ResourcesLoader.HUD_PATH, type));
         }
     }
 
@@ -56,6 +62,24 @@ public class ItemFactory {
             case BANDAGE -> createConsumable(type, preview);
             case PILL -> createConsumable(type, preview);
             default -> throw new IllegalArgumentException("Unknown consumable type");
+        };
+
+        if (createdItem instanceof Item) {
+            return (T) createdItem;
+        } else {
+            throw new ClassCastException("Failed to create item of type: " + type);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Item> T createItem(SpecialType type) {
+        BufferedImage preview = specialItems.get(type);
+
+        Item createdItem = switch (type) {
+            case SCOPE_X1 -> new Scope(type.getName(), type.getDescription(), type.getValue(), preview);
+            case SCOPE_X2 -> new Scope(type.getName(), type.getDescription(), type.getValue(), preview);
+            case SCOPE_X3 -> new Scope(type.getName(), type.getDescription(), type.getValue(), preview);
+            case SCOPE_X4 -> new Scope(type.getName(), type.getDescription(), type.getValue(), preview);
         };
 
         if (createdItem instanceof Item) {
