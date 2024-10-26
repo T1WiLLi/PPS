@@ -11,6 +11,7 @@ import lombok.ToString;
 public abstract class MeleeWeapon extends Weapon {
 
     protected boolean isAttacking;
+    protected boolean isReturning;
     protected float attackProgress = 0.0f;
 
     public abstract void attack();
