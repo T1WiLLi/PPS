@@ -10,7 +10,7 @@ public class Scope extends Item {
 
     private float zoomValue;
 
-    public Scope(String name, String description, BufferedImage preview) {
+    public Scope(String name, String description, float zoomValue, BufferedImage preview) {
         super(name, description, preview);
     }
 
