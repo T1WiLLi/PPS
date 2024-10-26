@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import lombok.Getter;
 import lombok.ToString;
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.game.entities.Player;
 
 @ToString
 @Getter
@@ -21,6 +22,8 @@ public abstract class Item {
 
     @Getter
     private boolean isOnScreen;
+
+    private Player owner;
 
     // Render when using the actual item in the game world
     public abstract void render(Canvas canvas);
@@ -46,7 +49,8 @@ public abstract class Item {
 
     // We would probably want to override this function in the actual class (while
     // still calling the super)
-    public Item pickup() {
+    public Item pickup(Player newOwner) {
+        this.owner = newOwner;
         isOnScreen = false;
         return this;
     }
@@ -54,6 +58,7 @@ public abstract class Item {
     // We would probably want to override this function in the actual class (while
     // still calling the super)
     public void drop(int newX, int newY) {
+        this.owner = null;
         this.x = newX;
         this.y = newY;
         isOnScreen = true;
