@@ -128,9 +128,14 @@ public class ServerHandler extends Handler implements Runnable {
     // Do other state update, such as hp, collision, bullet, ammo, inventory , etc.
     private void sendStateUpdate() {
         sendPlayerPos();
+        sendPlayerMouseInput();
     }
 
     private void sendPlayerPos() {
         this.entityUpdater.sendPlayerPositions(this.server);
+    }
+
+    private void sendPlayerMouseInput() {
+        this.entityUpdater.sendPlayerMouseInput(this.server);
     }
 }

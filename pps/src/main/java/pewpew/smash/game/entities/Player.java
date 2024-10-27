@@ -69,7 +69,6 @@ public class Player extends MovableEntity {
     @Override
     public void updateServer() {
         move(1);
-        this.fists.updateServer();
     }
 
     @Override
