@@ -158,7 +158,8 @@ public class ClientHandler extends Handler {
         Player localPlayer = entityManager.getPlayerEntity(User.getInstance().getLocalID().get());
         if (localPlayer != null) {
             Direction direction = GamePad.getInstance().getDirection();
-            double rotation = MouseHandler.getAngle(localPlayer.getX(), localPlayer.getY());
+            double rotation = MouseHandler.getAngle(localPlayer.getX() + localPlayer.getWidth() / 2,
+                    localPlayer.getY() + localPlayer.getHeight() / 2);
             this.client.sendToUDP(new DirectionPacket(direction, (float) rotation));
         }
     }

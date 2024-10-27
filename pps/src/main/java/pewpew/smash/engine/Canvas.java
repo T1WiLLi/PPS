@@ -81,7 +81,7 @@ public class Canvas {
 
     public void renderCircle(int x, int y, int radius, Color color) {
         setGraphicsProperties(color, 1);
-        graphics2D.fillOval(x, y, radius * 2, radius * 2);
+        graphics2D.fillOval(x, y, radius, radius);
     }
 
     public void renderPolygon(Polygon polygon, Color color) {

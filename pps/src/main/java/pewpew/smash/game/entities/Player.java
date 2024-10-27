@@ -43,7 +43,7 @@ public class Player extends MovableEntity {
     private int health;
 
     public Player(int id) {
-        setDimensions(20, 20);
+        setDimensions(40, 40);
         teleport(100, 100);
         setSpeed(2);
         this.rotation = 0f;
@@ -74,15 +74,15 @@ public class Player extends MovableEntity {
     @Override
     public void render(Canvas canvas) {
         canvas.renderCircle(x, y, width, new Color(168, 168, 168));
-        canvas.renderCircle(x + 4, y + 4, width - 4, new Color(229, 194, 152));
+        canvas.renderCircle(x + 2, y + 2, width - 4, new Color(229, 194, 152));
 
         this.fists.render(canvas);
 
-        canvas.renderString(User.getInstance().getUsername() + "-" + id, x - width, y - height, Color.WHITE);
+        canvas.renderString(User.getInstance().getUsername() + "-" + id, x - width / 2, y - height / 2, Color.WHITE);
     }
 
     @Override
     public Shape getHitbox() {
-        return new Ellipse2D.Float(getX(), getY(), width * 2, width * 2);
+        return new Ellipse2D.Float(getX(), getY(), width, width);
     }
 }

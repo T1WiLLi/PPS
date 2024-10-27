@@ -2,6 +2,7 @@ package pewpew.smash.game.objects.weapon;
 
 import java.awt.Shape;
 import java.awt.image.BufferedImage;
+import java.awt.Polygon;
 
 import java.awt.Color;
 
@@ -16,12 +17,15 @@ public class Fist extends MeleeWeapon {
     private int centerX, centerY;
     private int radius = 18;
 
+    private Polygon damageZone;
+
     private boolean isLeftFistAttacking = false;
     private boolean isRightFistAttacking = false;
 
     public Fist(String name, String description, BufferedImage preview) {
         super(name, description, preview);
         setDimensions(6, 6);
+        this.damageZone = new Polygon();
     }
 
     @Override
@@ -35,7 +39,9 @@ public class Fist extends MeleeWeapon {
             attack();
         }
 
-        updatePosition(getOwner().getX(), getOwner().getY(), getOwner().getRotation());
+        updatePosition(getOwner().getX() + getOwner().getWidth() / 2, getOwner().getY() + getOwner().getHeight() / 2,
+                getOwner().getRotation());
+        updateDamageZone();
     }
 
     @Override
@@ -47,6 +53,9 @@ public class Fist extends MeleeWeapon {
     public void render(Canvas canvas) {
         renderFist(canvas, leftFistX, leftFistY);
         renderFist(canvas, rightFistX, rightFistY);
+
+        // Color damageZoneColor = new Color(255, 0, 0, 125);
+        // canvas.renderPolygon(damageZone, damageZoneColor);
     }
 
     @Override
@@ -82,17 +91,17 @@ public class Fist extends MeleeWeapon {
     }
 
     private void updatePosition(int playerX, int playerY, float rotation) {
-        this.centerX = playerX + 10;
-        this.centerY = playerY + 10;
+        this.centerX = playerX;
+        this.centerY = playerY;
 
         teleport(centerX, centerY);
         updateFistPositions(rotation);
     }
 
     private void renderFist(Canvas canvas, int x, int y) {
-        int fistRadius = 8;
+        int fistRadius = 16;
         canvas.renderCircle(x, y, fistRadius, Color.BLACK);
-        canvas.renderCircle(x + 2, y + 2, fistRadius - 2, new Color(229, 194, 152));
+        canvas.renderCircle(x + 1, y + 1, fistRadius - 2, new Color(229, 194, 152));
     }
 
     private void updateFistPositions(float rotation) {
@@ -106,10 +115,45 @@ public class Fist extends MeleeWeapon {
         int forwardX = (int) (forwardOffset * Math.cos(angleRad));
         int forwardY = (int) (forwardOffset * Math.sin(angleRad));
 
-        leftFistX = (int) (centerX + radius * Math.cos(leftAngle)) + (isLeftFistAttacking ? forwardX : 0);
-        leftFistY = (int) (centerY + radius * Math.sin(leftAngle)) + (isLeftFistAttacking ? forwardY : 0);
+        leftFistX = (int) (centerX - 6 + radius * Math.cos(leftAngle)) + (isLeftFistAttacking ? forwardX : 0);
+        leftFistY = (int) (centerY - 6 + radius * Math.sin(leftAngle)) + (isLeftFistAttacking ? forwardY : 0);
 
-        rightFistX = (int) (centerX + radius * Math.cos(rightAngle)) + (isRightFistAttacking ? forwardX : 0);
-        rightFistY = (int) (centerY + radius * Math.sin(rightAngle)) + (isRightFistAttacking ? forwardY : 0);
+        rightFistX = (int) (centerX - 6 + radius * Math.cos(rightAngle)) + (isRightFistAttacking ? forwardX : 0);
+        rightFistY = (int) (centerY - 6 + radius * Math.sin(rightAngle)) + (isRightFistAttacking ? forwardY : 0);
     }
+
+    private void updateDamageZone() {
+        float rotation = getOwner().getRotation();
+        double angleRad = Math.toRadians(rotation);
+
+        int centerX = getOwner().getX() + getOwner().getWidth() / 2;
+        int centerY = getOwner().getY() + getOwner().getHeight() / 2;
+
+        double dx = Math.cos(angleRad);
+        double dy = Math.sin(angleRad);
+
+        double nx = -dy;
+        double ny = dx;
+
+        double range = this.range * 1.6;
+
+        double baseWidth = radius * 2;
+
+        double baseCenterX = centerX + range * dx;
+        double baseCenterY = centerY + range * dy;
+
+        double halfBaseWidth = baseWidth / 1.5;
+
+        int basePoint1X = (int) (baseCenterX + halfBaseWidth * nx);
+        int basePoint1Y = (int) (baseCenterY + halfBaseWidth * ny);
+
+        int basePoint2X = (int) (baseCenterX - halfBaseWidth * nx);
+        int basePoint2Y = (int) (baseCenterY - halfBaseWidth * ny);
+
+        damageZone.reset();
+        damageZone.addPoint(centerX, centerY); // Tip of the triangle (player's position)
+        damageZone.addPoint(basePoint1X, basePoint1Y); // First base point
+        damageZone.addPoint(basePoint2X, basePoint2Y); // Second base point
+    }
+
 }
