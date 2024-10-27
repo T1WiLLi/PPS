@@ -5,8 +5,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.esotericsoftware.kryonet.Connection;
 import lombok.Getter;
+import lombok.Setter;
 import pewpew.smash.engine.controls.Direction;
 import pewpew.smash.engine.controls.MouseInput;
+import pewpew.smash.game.Alert.AlertManager;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.input.MouseHandler;
@@ -25,6 +27,10 @@ public class ClientHandler extends Handler {
     private byte[][] worldData;
     @Getter
     private boolean isWorldDataReceived;
+
+    @Setter
+    @Getter
+    private boolean isIntentionalDisconnect;
 
     public ClientHandler(String host, int port) {
         this.client = new ClientWrapper(host, port, port);
@@ -127,11 +133,15 @@ public class ClientHandler extends Handler {
     protected void onDisconnect(Connection connection) {
         pendingPlayers.clear();
         entityManager.clearAllEntities();
+        if (!isIntentionalDisconnect) {
+            AlertManager.getInstance().showDisconnectAlert();
+        }
     }
 
     @Override
     public void stop() {
         try {
+            isIntentionalDisconnect = true;
             this.client.stop();
         } catch (IOException e) {
             e.printStackTrace();
