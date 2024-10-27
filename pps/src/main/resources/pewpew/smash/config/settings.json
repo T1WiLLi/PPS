@@ -26,10 +26,10 @@
     }
   },
   "audio" : {
-    "generalVolume" : 1.0,
-    "sfxVolume" : 0.18125000596046448,
+    "generalVolume" : 0.18125000596046448,
+    "sfxVolume" : 1.0,
     "music" : false,
-    "sfx" : false,
-    "ui" : false
+    "sfx" : true,
+    "ui" : true
   }
 }

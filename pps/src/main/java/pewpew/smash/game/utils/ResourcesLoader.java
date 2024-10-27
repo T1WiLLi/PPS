@@ -32,6 +32,7 @@ public class ResourcesLoader {
 
     // Audio
     public static final String AUDIO_PATH = BASE_PATH + "audio";
+    public static final String SFX_PATH = AUDIO_PATH + "/sfx";
 
     // JSON
     public static final String CONFIG_PATH = BASE_PATH + "config";
