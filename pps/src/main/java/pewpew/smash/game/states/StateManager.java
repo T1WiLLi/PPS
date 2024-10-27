@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.RenderingEngine;
 import pewpew.smash.game.GameManager;
+import pewpew.smash.game.Alert.AlertManager;
 
 public class StateManager {
 
@@ -47,6 +48,8 @@ public class StateManager {
         if (e.getKeyCode() == KeyEvent.VK_F11) {
             RenderingEngine.getInstance().getScreen().toggleFullscreen();
             return;
+        } else if (e.getKeyCode() == KeyEvent.VK_1) {
+            AlertManager.getInstance().showServerCrashAlert();
         }
 
         if (currentState != null) {

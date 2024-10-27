@@ -15,11 +15,17 @@ public class StateFactory {
 
     public static void preLoadStates() {
         for (GameStateType stateType : GameStateType.values()) {
-            cachedStates.computeIfAbsent(stateType, type -> stateSuppliers.getOrDefault(type, () -> null).get());
+            if (stateType != GameStateType.PLAYING) {
+                cachedStates.computeIfAbsent(stateType, type -> stateSuppliers.getOrDefault(type, () -> null).get());
+            }
         }
     }
 
     public static State getState(GameStateType stateType) {
-        return cachedStates.get(stateType);
+        if (stateType == GameStateType.PLAYING) {
+            return stateSuppliers.getOrDefault(stateType, () -> null).get();
+        } else {
+            return cachedStates.get(stateType);
+        }
     }
 }
