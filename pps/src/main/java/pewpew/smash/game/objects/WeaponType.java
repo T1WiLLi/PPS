@@ -19,7 +19,7 @@ public enum WeaponType {
 
     private final int damage;
     private final int range;
-    private final double attackSpeed; // Amount of times the player must wait in second to shoot again
+    private final double attackSpeed;
     private final Optional<Double> reloadSpeed;
     private final Optional<Integer> ammoCapacity;
 
