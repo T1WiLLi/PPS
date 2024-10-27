@@ -1,6 +1,7 @@
 package pewpew.smash.game.network.client;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.esotericsoftware.kryonet.Connection;
 import lombok.Getter;
@@ -18,6 +19,7 @@ public class ClientHandler extends Handler {
     @Getter
     private final EntityManager entityManager;
     private final ClientWrapper client;
+    private final ConcurrentHashMap<Integer, String> pendingPlayers;
 
     @Getter
     private byte[][] worldData;
@@ -27,6 +29,7 @@ public class ClientHandler extends Handler {
     public ClientHandler(String host, int port) {
         this.client = new ClientWrapper(host, port, port);
         this.entityManager = new EntityManager();
+        this.pendingPlayers = new ConcurrentHashMap<>();
         registersClasses(this.client.getKryo());
     }
 
@@ -37,51 +40,93 @@ public class ClientHandler extends Handler {
     }
 
     @Override
-    protected void handlePacket(Connection connection, Object packet) {
-        if (packet instanceof PositionPacket position) {
-            Player player = this.entityManager.getPlayerEntity(position.getId());
-            if (player != null) {
-                player.teleport(position.getX(), position.getY());
-                player.setRotation(position.getR());
-            } else {
-                System.out.println("No player found: " + position.getId());
-                System.out.println("Current Entities: " + this.entityManager.size());
-                this.entityManager.getPlayerEntities().forEach(System.out::println);
+    protected synchronized void handlePacket(Connection connection, Object packet) {
+        try {
+            if (packet instanceof PositionPacket position) {
+                handlePositionPacket(position);
+            } else if (packet instanceof MouseActionPacket mouseActionPacket) {
+                handleMouseActionPacket(mouseActionPacket);
+            } else if (packet instanceof PlayerJoinedPacket playerJoined) {
+                handlePlayerJoinedPacket(playerJoined);
+            } else if (packet instanceof PlayerLeftPacket playerLeft) {
+                handlePlayerLeftPacket(playerLeft);
+            } else if (packet instanceof WorldDataPacket worldDataPacket) {
+                handleWorldDataPacket(worldDataPacket);
             }
-        } else if (packet instanceof PlayerJoinedPacket playerJoined) {
-            if (this.entityManager.getPlayerEntity(playerJoined.getId()) == null) {
-                Player player = new Player(playerJoined.getId(), playerJoined.getUsername());
-                this.entityManager.addPlayerEntity(player.getId(), player);
-            }
-        } else if (packet instanceof PlayerLeftPacket playerLeft) {
-            this.entityManager.removePlayerEntity(playerLeft.getId());
-        } else if (packet instanceof WorldDataPacket) {
-            this.worldData = ((WorldDataPacket) packet).getWorldData();
-            this.isWorldDataReceived = true;
+        } catch (Exception e) {
+            System.err.println("Error handling packet: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    @Override
-    protected void onConnect(Connection connection) {
-        System.out.println("Connecting to the server ... ");
-        synchronized (this.entityManager) {
-            User.getInstance().setID(connection.getID());
-            String username = User.getInstance().getUsername().equals("Guest")
-                    ? User.getInstance().getUsername() + "-" + connection.getID()
-                    : User.getInstance().getUsername();
-
-            Player player = new Player(connection.getID(), username);
-            this.entityManager.addPlayerEntity(player.getId(), player);
-            this.client.sendToTCP(new PlayerUsernamePacket(username));
-
-            System.out.println("Connected to the server with ID: " + connection.getID());
-            System.out.println("Player added to EntityManager: " + player);
+    private void handlePositionPacket(PositionPacket position) {
+        Player player = this.entityManager.getPlayerEntity(position.getId());
+        if (player != null) {
+            player.teleport(position.getX(), position.getY());
+            player.setRotation(position.getR());
+        } else {
+            // If player doesn't exist yet, store the position for later
+            System.out.println("Queuing position update for player: " + position.getId());
+            String username = pendingPlayers.get(position.getId());
+            if (username != null) {
+                Player newPlayer = new Player(position.getId(), username);
+                newPlayer.teleport(position.getX(), position.getY());
+                newPlayer.setRotation(position.getR());
+                this.entityManager.addPlayerEntity(newPlayer.getId(), newPlayer);
+            }
         }
+    }
+
+    private void handleMouseActionPacket(MouseActionPacket mouseActionPacket) {
+        Player player = this.entityManager.getPlayerEntity(mouseActionPacket.getPlayerID());
+        if (player != null) {
+            player.setMouseInput(mouseActionPacket.getMouseInput());
+        } else {
+            System.out
+                    .println("Cannot process mouse action for non-existent player: " + mouseActionPacket.getPlayerID());
+        }
+    }
+
+    private void handlePlayerJoinedPacket(PlayerJoinedPacket playerJoined) {
+        if (this.entityManager.getPlayerEntity(playerJoined.getId()) == null) {
+            pendingPlayers.put(playerJoined.getId(), playerJoined.getUsername());
+            Player player = new Player(playerJoined.getId(), playerJoined.getUsername());
+            this.entityManager.addPlayerEntity(player.getId(), player);
+            System.out.println("Player joined: " + player.getId() + " - " + player.getUsername());
+        }
+    }
+
+    private void handlePlayerLeftPacket(PlayerLeftPacket playerLeft) {
+        pendingPlayers.remove(playerLeft.getId());
+        this.entityManager.removePlayerEntity(playerLeft.getId());
+        System.out.println("Player left: " + playerLeft.getId());
+    }
+
+    private void handleWorldDataPacket(WorldDataPacket worldDataPacket) {
+        this.worldData = worldDataPacket.getWorldData();
+        this.isWorldDataReceived = true;
+    }
+
+    @Override
+    protected synchronized void onConnect(Connection connection) {
+        System.out.println("Connecting to the server ... ");
+        User.getInstance().setID(connection.getID());
+        String username = User.getInstance().getUsername().equals("Guest")
+                ? User.getInstance().getUsername() + "-" + connection.getID()
+                : User.getInstance().getUsername();
+
+        Player player = new Player(connection.getID(), username);
+        this.entityManager.addPlayerEntity(player.getId(), player);
+        this.client.sendToTCP(new PlayerUsernamePacket(username));
+
+        System.out.println("Connected to the server with ID: " + connection.getID());
+        System.out.println("Player added to EntityManager: " + player);
     }
 
     @Override
     protected void onDisconnect(Connection connection) {
-        // Handle disconnect logic if needed
+        pendingPlayers.clear();
+        entityManager.clearAllEntities();
     }
 
     @Override
@@ -93,18 +138,19 @@ public class ClientHandler extends Handler {
         }
     }
 
-    public void update() {
+    public synchronized void update() {
         this.entityManager.getPlayerEntities().forEach(Player::updateClient);
         sendDirection();
         sendMouseInput();
     }
 
     private void sendDirection() {
-        Direction direction = GamePad.getInstance().getDirection();
-        double rotation = MouseHandler.getAngle(
-                entityManager.getPlayerEntity(User.getInstance().getLocalID().get()).getX(),
-                entityManager.getPlayerEntity(User.getInstance().getLocalID().get()).getY());
-        this.client.sendToUDP(new DirectionPacket(direction, (float) rotation));
+        Player localPlayer = entityManager.getPlayerEntity(User.getInstance().getLocalID().get());
+        if (localPlayer != null) {
+            Direction direction = GamePad.getInstance().getDirection();
+            double rotation = MouseHandler.getAngle(localPlayer.getX(), localPlayer.getY());
+            this.client.sendToUDP(new DirectionPacket(direction, (float) rotation));
+        }
     }
 
     private void sendMouseInput() {

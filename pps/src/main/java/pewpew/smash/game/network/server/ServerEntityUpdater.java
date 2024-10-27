@@ -5,6 +5,7 @@ import java.util.Iterator;
 import pewpew.smash.engine.entities.StaticEntity;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.manager.EntityManager;
+import pewpew.smash.game.network.packets.MouseActionPacket;
 import pewpew.smash.game.network.packets.PositionPacket;
 import pewpew.smash.game.utils.ScaleUtils;
 
@@ -40,6 +41,13 @@ public class ServerEntityUpdater {
         entityManager.getPlayerEntities().forEach(player -> {
             PositionPacket packet = new PositionPacket(player.getId(), player.getX(), player.getY(),
                     player.getRotation());
+            server.sendToAllUDP(packet);
+        });
+    }
+
+    public void sendPlayerMouseInput(ServerWrapper server) {
+        entityManager.getPlayerEntities().forEach(player -> {
+            MouseActionPacket packet = new MouseActionPacket(player.getId(), player.getMouseInput());
             server.sendToAllUDP(packet);
         });
     }

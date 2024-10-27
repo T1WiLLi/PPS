@@ -26,13 +26,6 @@ public class Fist extends MeleeWeapon {
 
     @Override
     public void updateClient() {
-        if (getOwner() != null) {
-            updatePosition((int) getOwner().getX(), (int) getOwner().getY(), getOwner().getRotation());
-        }
-    }
-
-    @Override
-    public void updateServer() {
         if (getOwner().getMouseInput() == MouseInput.LEFT_CLICK && !isAttacking) {
             isAttacking = true;
             isLeftFistAttacking = true;
@@ -46,6 +39,11 @@ public class Fist extends MeleeWeapon {
     }
 
     @Override
+    public void updateServer() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
     public void render(Canvas canvas) {
         renderFist(canvas, leftFistX, leftFistY);
         renderFist(canvas, rightFistX, rightFistY);
@@ -53,42 +51,27 @@ public class Fist extends MeleeWeapon {
 
     @Override
     public void preview(Canvas canvas) {
+        throw new UnsupportedOperationException("Not supported yet.");
 
     }
 
     @Override
     public void attack() {
-        if (isLeftFistAttacking) {
-            if (!isReturning) {
-                attackProgress += attackSpeed;
-                if (attackProgress >= 1.0f) {
-                    attackProgress = 1.0f;
-                    isReturning = true;
-                }
+        attackProgress += (isReturning ? -attackSpeed : attackSpeed);
+
+        if (attackProgress >= 1.0f) {
+            attackProgress = 1.0f;
+            isReturning = true;
+        } else if (attackProgress <= 0.0f) {
+            attackProgress = 0.0f;
+            isReturning = false;
+
+            if (isLeftFistAttacking) {
+                isLeftFistAttacking = false;
+                isRightFistAttacking = true;
             } else {
-                attackProgress -= attackSpeed;
-                if (attackProgress <= 0.0f) {
-                    attackProgress = 0.0f;
-                    isLeftFistAttacking = false;
-                    isReturning = false;
-                    isRightFistAttacking = true;
-                }
-            }
-        } else if (isRightFistAttacking) {
-            if (!isReturning) {
-                attackProgress += attackSpeed;
-                if (attackProgress >= 1.0f) {
-                    attackProgress = 1.0f;
-                    isReturning = true;
-                }
-            } else {
-                attackProgress -= attackSpeed;
-                if (attackProgress <= 0.0f) {
-                    attackProgress = 0.0f;
-                    isRightFistAttacking = false;
-                    isReturning = false;
-                    isAttacking = false;
-                }
+                isRightFistAttacking = false;
+                isAttacking = false;
             }
         }
     }
