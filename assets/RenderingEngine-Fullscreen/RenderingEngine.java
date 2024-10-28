@@ -36,7 +36,6 @@ public class RenderingEngine {
     }
 
     public Canvas buildCanvas() {
-
         Graphics2D buffer = bufferedImage.createGraphics();
         buffer.setRenderingHints(buildRenderingHints());
         return new Canvas(buffer);

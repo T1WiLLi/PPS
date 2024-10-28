@@ -45,20 +45,13 @@ public class RenderingEngine {
     }
 
     public Canvas getCanvas() {
-        this.buffer = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = this.buffer.createGraphics();
         graphics.setRenderingHints(getHints());
         return new Canvas(graphics);
     }
 
     public void renderCanvasOnScreen() {
-        Graphics2D graphics;
-        do {
-            graphics = (Graphics2D) this.panel.getGraphics();
-        } while (graphics == null);
-        graphics.setRenderingHints(getHints());
-        System.out.println("Scale X: " + this.scale[0] + " Scale Y: " + this.scale[1]);
-        graphics.scale(scale[0], scale[1]);
+        Graphics2D graphics = (Graphics2D) this.panel.getGraphics();
         graphics.drawImage(this.buffer, 0, 0, null);
         Toolkit.getDefaultToolkit().sync();
         graphics.dispose();
@@ -90,6 +83,7 @@ public class RenderingEngine {
         screen = new Screen();
         screen.setTitle("PewPewSmash");
         screen.setSize(800, 600);
+        buffer = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
     }
 
     private void initPanel() {
@@ -116,7 +110,7 @@ public class RenderingEngine {
         RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, antiAliasingHint);
         hints.put(RenderingHints.KEY_RENDERING, renderingQualityHint);
         hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, textAliasingHint);
-        hints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        hints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         hints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
         hints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
         hints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
