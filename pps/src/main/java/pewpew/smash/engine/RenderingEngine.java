@@ -9,6 +9,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+
 import javax.swing.JPanel;
 
 import lombok.Getter;
@@ -53,9 +56,8 @@ public class RenderingEngine {
         do {
             graphics = (Graphics2D) this.panel.getGraphics();
         } while (graphics == null);
-        scale[0] = (double) this.panel.getWidth() / this.buffer.getWidth();
-        scale[1] = (double) this.panel.getHeight() / this.buffer.getHeight();
         graphics.setRenderingHints(getHints());
+        System.out.println("Scale X: " + this.scale[0] + " Scale Y: " + this.scale[1]);
         graphics.scale(scale[0], scale[1]);
         graphics.drawImage(this.buffer, 0, 0, null);
         Toolkit.getDefaultToolkit().sync();
@@ -95,7 +97,19 @@ public class RenderingEngine {
         panel.setBackground(Color.BLUE);
         panel.setFocusable(true);
         panel.setDoubleBuffered(true);
+
+        panel.addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent evt) {
+                updateScale();
+            }
+        });
+
         screen.setPanel(panel);
+    }
+
+    private void updateScale() {
+        scale[0] = (double) panel.getWidth() / 800;
+        scale[1] = (double) panel.getHeight() / 600;
     }
 
     private RenderingHints getHints() {
