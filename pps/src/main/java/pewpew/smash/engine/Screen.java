@@ -1,14 +1,11 @@
 package pewpew.smash.engine;
 
 import javax.swing.*;
-
 import pewpew.smash.game.utils.ResourcesLoader;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Screen {
-
     private GraphicsDevice device;
     private JFrame frame;
     private DisplayMode windowedDisplayMode;
@@ -99,7 +96,6 @@ public class Screen {
 
     private void setIcon() {
         Image icon = ResourcesLoader.getImage(ResourcesLoader.MISC_PATH, "icon");
-
         if (Taskbar.isTaskbarSupported()) {
             Taskbar taskbar = Taskbar.getTaskbar();
             try {

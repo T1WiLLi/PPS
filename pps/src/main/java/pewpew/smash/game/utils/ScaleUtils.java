@@ -3,18 +3,7 @@ package pewpew.smash.game.utils;
 import pewpew.smash.engine.RenderingEngine;
 import pewpew.smash.game.constants.Constants;
 
-import java.awt.Rectangle;
-
 public class ScaleUtils {
-
-    public static Rectangle getScaledBounds(Rectangle bounds) {
-        return new Rectangle(
-                scaleX(bounds.x),
-                scaleY(bounds.y),
-                scaleButtonWidth(),
-                scaleButtonHeight());
-    }
-
     public static int scaleX(int x) {
         double scaleX = RenderingEngine.getInstance().getScale()[0];
         return (int) (x * scaleX);

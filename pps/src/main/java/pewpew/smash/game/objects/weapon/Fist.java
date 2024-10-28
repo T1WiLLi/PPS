@@ -54,8 +54,8 @@ public class Fist extends MeleeWeapon {
         renderFist(canvas, leftFistX, leftFistY);
         renderFist(canvas, rightFistX, rightFistY);
 
-        // Color damageZoneColor = new Color(255, 0, 0, 125);
-        // canvas.renderPolygon(damageZone, damageZoneColor);
+        Color damageZoneColor = new Color(255, 0, 0, 125);
+        canvas.renderPolygon(damageZone, damageZoneColor);
     }
 
     @Override
