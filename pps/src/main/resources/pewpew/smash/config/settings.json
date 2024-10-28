@@ -3,7 +3,7 @@
     "fps" : 120,
     "antiAliasing" : true,
     "textAliasing" : true,
-    "renderQuality" : "quality"
+    "renderQuality" : "fast"
   },
   "key" : {
     "movement" : {
