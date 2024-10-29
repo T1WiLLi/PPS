@@ -27,16 +27,12 @@ public class SettingsManager {
     }
 
     public void saveSettings() {
-        SettingsConfig temp = loadSettings();
-
-        if (!this.settings.equals(temp)) {
-            updateGameSettings();
-            try {
-                ConfigReader.writeConfig(new File("pps/src/main/resources/pewpew/smash/config/settings.json"),
-                        settings);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        updateGameSettings();
+        try {
+            ConfigReader.writeConfig(new File("pps/src/main/resources/pewpew/smash/config/settings.json"),
+                    settings);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
