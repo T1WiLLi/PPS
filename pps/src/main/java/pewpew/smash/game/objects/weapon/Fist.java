@@ -142,7 +142,7 @@ public class Fist extends MeleeWeapon {
         double baseCenterX = centerX + range * dx;
         double baseCenterY = centerY + range * dy;
 
-        double halfBaseWidth = baseWidth / 1.5;
+        double halfBaseWidth = baseWidth / 1.4;
 
         int basePoint1X = (int) (baseCenterX + halfBaseWidth * nx);
         int basePoint1Y = (int) (baseCenterY + halfBaseWidth * ny);
@@ -155,5 +155,4 @@ public class Fist extends MeleeWeapon {
         damageZone.addPoint(basePoint1X, basePoint1Y); // First base point
         damageZone.addPoint(basePoint2X, basePoint2Y); // Second base point
     }
-
 }

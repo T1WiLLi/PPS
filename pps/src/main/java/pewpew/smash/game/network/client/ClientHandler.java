@@ -71,7 +71,6 @@ public class ClientHandler extends Handler {
             player.teleport(position.getX(), position.getY());
             player.setRotation(position.getR());
         } else {
-            // If player doesn't exist yet, store the position for later
             System.out.println("Queuing position update for player: " + position.getId());
             String username = pendingPlayers.get(position.getId());
             if (username != null) {
