@@ -10,7 +10,6 @@ import lombok.ToString;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.engine.entities.MovableEntity;
-import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.objects.ItemFactory;
@@ -43,7 +42,6 @@ public class Player extends MovableEntity {
         this.fists = ItemFactory.createItem(WeaponType.FIST);
         this.fists.pickup(this);
         this.equippedWeapon = fists;
-        HudManager.getInstance().setPlayer(this);
     }
 
     public Player(int id, String username) {
