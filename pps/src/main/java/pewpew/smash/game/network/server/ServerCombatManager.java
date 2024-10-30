@@ -62,7 +62,7 @@ public class ServerCombatManager {
                 continue;
             }
 
-            if (damageZone.intersects(target.getX(), target.getY(), target.getWidth(), target.getHealth())) {
+            if (damageZone.intersects(target.getX(), target.getY(), target.getWidth(), target.getHeight())) {
                 System.out.println("In zone, would get damage!");
                 handleDamage(attacker, target, server);
             } else {
