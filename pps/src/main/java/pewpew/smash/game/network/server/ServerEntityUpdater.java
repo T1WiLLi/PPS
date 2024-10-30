@@ -11,16 +11,19 @@ import pewpew.smash.game.utils.ScaleUtils;
 
 public class ServerEntityUpdater {
     private final EntityManager entityManager;
+    private final ServerCombatManager combatManager;
     private static final double FOV_BUFFER = 0.05;
     private static final int BASE_WIDTH = 800;
     private static final int BASE_HEIGHT = 600;
 
     public ServerEntityUpdater(EntityManager entityManager) {
         this.entityManager = entityManager;
+        this.combatManager = new ServerCombatManager(entityManager);
     }
 
-    public void update() {
+    public void update(ServerWrapper server) {
         entityManager.getPlayerEntities().forEach(player -> player.updateServer());
+        combatManager.checkMeleeCombat(server);
 
         ViewBounds combinedFOV = calculateCombinedPlayerFOV();
 

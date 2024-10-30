@@ -37,7 +37,7 @@ public class WeaponStateSerializer {
             stateData.put("reloadSpeed", rangedWeapon.getReloadSpeed());
         }
 
-        return new WeaponStatePacket(player.getId(), weaponType, stateData);
+        return new WeaponStatePacket(weaponType, stateData);
     }
 
     public static void deserializeWeaponState(WeaponStatePacket weaponState, Player player) {
@@ -72,7 +72,6 @@ public class WeaponStateSerializer {
                     (int) stateData.get("ammoCapacity"));
             rangedWeapon.setCurrentAmmo((int) stateData.get("currentAmmo"));
         }
-
     }
 
     private static WeaponType getWeaponType(Weapon weapon) {

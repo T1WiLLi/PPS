@@ -6,8 +6,6 @@ import pewpew.smash.engine.Game;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.input.KeyHandler;
 import pewpew.smash.game.input.MouseHandler;
-import pewpew.smash.game.network.upnp.NetworkUtils;
-import pewpew.smash.game.network.upnp.UPnPPortManager;
 import pewpew.smash.game.settings.SettingsManager;
 import pewpew.smash.game.states.GameStateType;
 import pewpew.smash.game.states.StateManager;
@@ -19,12 +17,6 @@ public class PewPewSmash extends Game {
 
     @Override
     public void init() {
-        System.out.println("IP: " + NetworkUtils.getExternalIP());
-        try {
-            UPnPPortManager.getInstance().openPort(12345, 12345);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         GameManager.getInstance().setGame(this);
 
         this.stateManager = StateManager.getInstance();
