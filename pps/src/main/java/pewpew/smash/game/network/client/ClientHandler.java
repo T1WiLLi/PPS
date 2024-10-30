@@ -6,23 +6,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.esotericsoftware.kryonet.Connection;
 import lombok.Getter;
 import lombok.Setter;
-import pewpew.smash.engine.controls.Direction;
-import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.game.Alert.AlertManager;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.hud.HudManager;
-import pewpew.smash.game.input.GamePad;
-import pewpew.smash.game.input.MouseHandler;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.network.packets.*;
-import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 
 public class ClientHandler extends Handler {
     @Getter
     private final EntityManager entityManager;
+    private final ClientUpdater clientUpdater;
     private final ClientWrapper client;
     private final ConcurrentHashMap<Integer, String> pendingPlayers;
 
@@ -38,6 +34,7 @@ public class ClientHandler extends Handler {
     public ClientHandler(String host, int port) {
         this.client = new ClientWrapper(host, port, port);
         this.entityManager = new EntityManager();
+        this.clientUpdater = new ClientUpdater(this.entityManager);
         this.pendingPlayers = new ConcurrentHashMap<>();
         registersClasses(this.client.getKryo());
     }
@@ -157,34 +154,6 @@ public class ClientHandler extends Handler {
     }
 
     public synchronized void update() {
-        this.entityManager.getPlayerEntities().forEach(Player::updateClient);
-        sendDirection();
-        sendMouseInput();
-        sendWeaponState();
-    }
-
-    private void sendDirection() {
-        Player localPlayer = entityManager.getPlayerEntity(User.getInstance().getLocalID().get());
-        if (localPlayer != null) {
-            Direction direction = GamePad.getInstance().getDirection();
-            double rotation = MouseHandler.getAngle(localPlayer.getX() + localPlayer.getWidth() / 2,
-                    localPlayer.getY() + localPlayer.getHeight() / 2);
-            this.client.sendToUDP(new DirectionPacket(direction, (float) rotation));
-        }
-    }
-
-    private void sendMouseInput() {
-        MouseInput input = MouseInput.getCurrentInput();
-        this.client.sendToUDP(new MouseInputPacket(input));
-    }
-
-    private void sendWeaponState() {
-        Player localPlayer = entityManager.getPlayerEntity(User.getInstance().getLocalID().get());
-        if (localPlayer != null) {
-            WeaponStatePacket packet = WeaponStateSerializer.serializeWeaponState(localPlayer);
-            if (packet != null) {
-                this.client.sendToUDP(packet);
-            }
-        }
+        this.clientUpdater.update(this.client);
     }
 }

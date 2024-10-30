@@ -17,7 +17,7 @@ import pewpew.smash.game.objects.special.AmmoStack;
 
 public class InventorySerializer {
 
-    public static Map<Integer, SerializedItem> serialize(Inventory<?, ?> inventory) {
+    public static Map<Integer, SerializedItem> serialize(Inventory inventory) {
         Map<Integer, SerializedItem> serialized = new HashMap<>();
 
         for (int i = 0; i < 9; i++) {
@@ -34,8 +34,8 @@ public class InventorySerializer {
         return serialized;
     }
 
-    public static Inventory<?, ?> deserialize(Map<Integer, SerializedItem> serializedData) {
-        Inventory<?, ?> inventory = new Inventory<>();
+    public static Inventory deserialize(Map<Integer, SerializedItem> serializedData) {
+        Inventory inventory = new Inventory();
 
         for (Map.Entry<Integer, SerializedItem> entry : serializedData.entrySet()) {
             Item item = deserializeItem(entry.getValue());

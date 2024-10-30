@@ -9,7 +9,7 @@ import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.special.AmmoStack;
 
-public class Inventory<K, V> {
+public class Inventory {
     private static final int MAX_SLOTS = 9;
     private final HashMap<Integer, InventorySlot> slots;
 
