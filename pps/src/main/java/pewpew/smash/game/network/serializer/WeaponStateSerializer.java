@@ -12,9 +12,16 @@ import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.WeaponType;
 
 public class WeaponStateSerializer {
+
+    private static WeaponStateSnapshot lastSentState = null;
+
     public static WeaponStatePacket serializeWeaponState(Player player) {
         Weapon weapon = player.getEquippedWeapon();
         if (weapon == null) {
+            if (lastSentState != null) {
+                lastSentState = null;
+                return new WeaponStatePacket(null, null);
+            }
             return null;
         }
 
@@ -37,7 +44,14 @@ public class WeaponStateSerializer {
             stateData.put("reloadSpeed", rangedWeapon.getReloadSpeed());
         }
 
-        return new WeaponStatePacket(weaponType, stateData);
+        WeaponStateSnapshot currentState = new WeaponStateSnapshot(weaponType, stateData);
+
+        if (lastSentState == null || !lastSentState.equals(currentState)) {
+            lastSentState = currentState;
+            return new WeaponStatePacket(weaponType, stateData);
+        }
+
+        return null;
     }
 
     public static void deserializeWeaponState(WeaponStatePacket weaponState, Player player) {
