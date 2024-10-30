@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @FunctionalOverlay({ "HandleKeyPress" })
 public class OptionsOverlay extends Overlay {
 
@@ -247,8 +250,10 @@ public class OptionsOverlay extends Overlay {
                         .setRenderQuality(renderQualityCycler.getCurrentCycle().toLowerCase()));
     }
 
+    @Getter
     private static class KeyBindButton extends Button {
         private final String action;
+        @Setter
         private String currentKey;
 
         public KeyBindButton(int x, int y, int width, int height, BufferedImage spriteSheet,
@@ -256,18 +261,6 @@ public class OptionsOverlay extends Overlay {
             super(x, y, width, height, spriteSheet, () -> onClick.accept(action, currentKey));
             this.action = action;
             this.currentKey = currentKey;
-        }
-
-        public String getAction() {
-            return action;
-        }
-
-        public String getCurrentKey() {
-            return currentKey;
-        }
-
-        public void setCurrentKey(String key) {
-            this.currentKey = key;
         }
     }
 }
