@@ -183,7 +183,11 @@ public class ClientHandler extends Handler {
         Player localPlayer = entityManager.getPlayerEntity(User.getInstance().getLocalID().get());
         if (localPlayer != null) {
             WeaponStatePacket packet = WeaponStateSerializer.serializeWeaponState(localPlayer);
-            this.client.sendToUDP(packet);
+            if (packet != null) {
+                this.client.sendToUDP(packet);
+            } else {
+                System.out.println("Packet is null");
+            }
         }
     }
 }

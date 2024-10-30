@@ -10,6 +10,7 @@ import java.awt.Polygon;
 
 import java.util.Collection;
 
+// TODO : FIX POLYGON INTERSECT COLLISION
 public class ServerCombatManager {
     private final EntityManager entityManager;
 
@@ -26,8 +27,6 @@ public class ServerCombatManager {
                 if (weapon.isAttacking()) {
                     Polygon damageZone = getDamageZone(player, weapon);
                     checkDamage(player, damageZone, server);
-                } else {
-                    System.out.println("Melee weapon is not attacking");
                 }
             }
         });
@@ -39,26 +38,14 @@ public class ServerCombatManager {
         int centerX = player.getX() + player.getWidth() / 2;
         int centerY = player.getY() + player.getHeight() / 2;
 
-        double dx = Math.cos(angleRad);
-        double dy = Math.sin(angleRad);
+        double baseCenterX = centerX + (weapon.getRange() * 1.6) * Math.cos(angleRad);
+        double baseCenterY = centerY + (weapon.getRange() * 1.6) * Math.sin(angleRad);
 
-        double nx = -dy;
-        double ny = dx;
+        int basePoint1X = (int) (baseCenterX + ((20 * 2) / 1.4) * -Math.sin(angleRad));
+        int basePoint1Y = (int) (baseCenterY + ((20 * 2) / 1.4) * Math.cos(angleRad));
 
-        double range = weapon.getRange() * 1.6;
-
-        double baseWidth = 20 * 2;
-
-        double baseCenterX = centerX + range * dx;
-        double baseCenterY = centerY + range * dy;
-
-        double halfBaseWidth = baseWidth / 1.4;
-
-        int basePoint1X = (int) (baseCenterX + halfBaseWidth * nx);
-        int basePoint1Y = (int) (baseCenterY + halfBaseWidth * ny);
-
-        int basePoint2X = (int) (baseCenterX - halfBaseWidth * nx);
-        int basePoint2Y = (int) (baseCenterY - halfBaseWidth * ny);
+        int basePoint2X = (int) (baseCenterX - ((20 * 2) / 1.4) * -Math.sin(angleRad));
+        int basePoint2Y = (int) (baseCenterY - ((20 * 2) / 1.4) * Math.cos(angleRad));
 
         Polygon zone = new Polygon();
         zone.addPoint(centerX, centerY);
