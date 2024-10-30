@@ -23,6 +23,7 @@ public class BarDisplayer {
         canvas.renderRectangle(x, y, filled, height, Color.RED);
 
         FontFactory.IMPACT_SMALL.applyFont(canvas);
-        canvas.renderString(value + "/100", x + 5, y + 5, Color.WHITE);
+        canvas.renderString(value + "/100", x + 10, y + 20, Color.WHITE);
+        FontFactory.resetFont(canvas);
     }
 }

@@ -2,6 +2,8 @@ package pewpew.smash.game.network.server;
 
 import java.awt.Polygon;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.manager.EntityManager;
@@ -11,6 +13,7 @@ import pewpew.smash.game.objects.MeleeWeapon;
 
 public class ServerCombatManager {
     private final EntityManager entityManager;
+    private final Map<Player, Boolean> damageDealtMap = new HashMap<>();
 
     public ServerCombatManager(EntityManager entityManager) {
         this.entityManager = entityManager;
@@ -24,7 +27,11 @@ public class ServerCombatManager {
                 MeleeWeapon weapon = (MeleeWeapon) player.getEquippedWeapon();
                 if (weapon.isAttacking()) {
                     Polygon damageZone = getDamageZone(player, weapon);
-                    checkDamage(player, damageZone, server);
+                    if (!damageDealtMap.getOrDefault(player, false)) {
+                        checkDamage(player, damageZone, server);
+                    }
+                } else {
+                    damageDealtMap.put(player, false); // Reset when not attacking
                 }
             }
         });
@@ -67,8 +74,9 @@ public class ServerCombatManager {
 
     private void handleDamage(Player attacker, Player target, ServerWrapper server) {
         int damage = attacker.getEquippedWeapon().getDamage();
-
         target.setHealth(target.getHealth() - damage);
+
+        damageDealtMap.put(attacker, true);
 
         // Prepare a packet to send to the client
         PlayerState newState = new PlayerState(target.getId(), target.getHealth());
