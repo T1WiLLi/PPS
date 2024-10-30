@@ -10,6 +10,7 @@ import pewpew.smash.engine.controls.Direction;
 import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.game.Alert.AlertManager;
 import pewpew.smash.game.entities.Player;
+import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.input.MouseHandler;
 import pewpew.smash.game.network.Handler;
@@ -133,9 +134,7 @@ public class ClientHandler extends Handler {
         Player player = new Player(connection.getID(), username);
         this.entityManager.addPlayerEntity(player.getId(), player);
         this.client.sendToTCP(new PlayerUsernamePacket(username));
-
-        System.out.println("Connected to the server with ID: " + connection.getID());
-        System.out.println("Player added to EntityManager: " + player);
+        HudManager.getInstance().setPlayer(player);
     }
 
     @Override
@@ -185,8 +184,6 @@ public class ClientHandler extends Handler {
             WeaponStatePacket packet = WeaponStateSerializer.serializeWeaponState(localPlayer);
             if (packet != null) {
                 this.client.sendToUDP(packet);
-            } else {
-                System.out.println("Packet is null");
             }
         }
     }
