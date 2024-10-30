@@ -49,7 +49,11 @@ public class RenderingEngine {
     }
 
     public void renderCanvasOnScreen() {
-        Graphics2D graphics = (Graphics2D) this.panel.getGraphics();
+        Graphics2D graphics = null;
+        while (graphics == null) {
+            graphics = (Graphics2D) this.panel.getGraphics();
+        }
+        graphics.scale(scale[0], scale[1]);
         graphics.drawImage(this.buffer, 0, 0, null);
         Toolkit.getDefaultToolkit().sync();
         graphics.dispose();
@@ -81,7 +85,7 @@ public class RenderingEngine {
         screen = new Screen();
         screen.setTitle("PewPewSmash");
         screen.setSize(800, 600);
-        buffer = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
+        buffer = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
     }
 
     private void initPanel() {
@@ -96,6 +100,7 @@ public class RenderingEngine {
         });
 
         screen.setPanel(panel);
+        updateScale();
     }
 
     private void updateScale() {
