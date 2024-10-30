@@ -1,16 +1,14 @@
 package pewpew.smash.game.network.server;
 
+import java.awt.Polygon;
+import java.util.Collection;
+
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.network.packets.PlayerStatePacket;
 import pewpew.smash.game.objects.MeleeWeapon;
 
-import java.awt.Polygon;
-
-import java.util.Collection;
-
-// TODO : FIX POLYGON INTERSECT COLLISION
 public class ServerCombatManager {
     private final EntityManager entityManager;
 
@@ -58,15 +56,11 @@ public class ServerCombatManager {
         Collection<Player> players = this.entityManager.getPlayerEntities();
 
         for (Player target : players) {
-            if (target == attacker) {
-                continue;
-            }
-
-            if (damageZone.intersects(target.getX(), target.getY(), target.getWidth(), target.getHeight())) {
-                System.out.println("In zone, would get damage!");
-                handleDamage(attacker, target, server);
-            } else {
-                System.out.println("Not in zone, no damage!");
+            if (target != attacker) {
+                // Try to get intersection with the target.getHitbox()
+                if (damageZone.intersects(target.getX(), target.getY(), target.getWidth(), target.getHeight())) {
+                    handleDamage(attacker, target, server);
+                }
             }
         }
     }

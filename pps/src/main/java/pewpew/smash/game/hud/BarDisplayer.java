@@ -3,6 +3,7 @@ package pewpew.smash.game.hud;
 import java.awt.Color;
 
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.game.utils.FontFactory;
 
 public class BarDisplayer {
 
@@ -20,5 +21,8 @@ public class BarDisplayer {
 
         canvas.renderRectangle(x, y, width, height, Color.GRAY);
         canvas.renderRectangle(x, y, filled, height, Color.RED);
+
+        FontFactory.IMPACT_SMALL.applyFont(canvas);
+        canvas.renderString(value + "/100", x + 5, y + 5, Color.WHITE);
     }
 }
