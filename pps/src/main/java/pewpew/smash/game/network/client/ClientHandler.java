@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.esotericsoftware.kryonet.Connection;
 import lombok.Getter;
 import lombok.Setter;
+import pewpew.smash.game.SpectatorManager;
 import pewpew.smash.game.Alert.AlertManager;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.hud.HudManager;
@@ -31,6 +32,11 @@ public class ClientHandler extends Handler {
     @Getter
     private boolean isIntentionalDisconnect;
 
+    private String currentBroadcastedMessage = "";
+
+    @Getter
+    private int spectatingPlayerId = Integer.MIN_VALUE;
+
     public ClientHandler(String host, int port) {
         this.client = new ClientWrapper(host, port, port);
         this.entityManager = new EntityManager();
@@ -54,6 +60,10 @@ public class ClientHandler extends Handler {
                 handleMouseActionPacket(mouseActionPacket);
             } else if (packet instanceof PlayerStatePacket) {
                 handlePlayerStatePacket((PlayerStatePacket) packet);
+            } else if (packet instanceof PlayerDeathPacket) {
+                handlePlayerDeathPacket((PlayerDeathPacket) packet);
+            } else if (packet instanceof BroadcastMessagePacket) {
+                handleBroadcastMessagePacket((BroadcastMessagePacket) packet);
             } else if (packet instanceof PlayerJoinedPacket playerJoined) {
                 handlePlayerJoinedPacket(playerJoined);
             } else if (packet instanceof PlayerLeftPacket playerLeft) {
@@ -100,6 +110,24 @@ public class ClientHandler extends Handler {
         player.applyState(newState);
     }
 
+    private void handlePlayerDeathPacket(PlayerDeathPacket packet) {
+        int deadPlayerId = packet.getDeadPlayerID();
+        int killerPlayerId = packet.getKillerPlayerID();
+
+        if (deadPlayerId == User.getInstance().getLocalID().get()) {
+            User.getInstance().setDead(true);
+            SpectatorManager.getInstance().startSpectating(killerPlayerId);
+        } else if (SpectatorManager.getInstance().isSpectating() &&
+                deadPlayerId == SpectatorManager.getInstance().getSpectatingPlayerId()) {
+            SpectatorManager.getInstance().startSpectating(killerPlayerId);
+        }
+        entityManager.removePlayerEntity(deadPlayerId);
+    }
+
+    private void handleBroadcastMessagePacket(BroadcastMessagePacket packet) {
+        this.currentBroadcastedMessage = packet.getMessage();
+    }
+
     private void handlePlayerJoinedPacket(PlayerJoinedPacket playerJoined) {
         if (this.entityManager.getPlayerEntity(playerJoined.getId()) == null) {
             pendingPlayers.put(playerJoined.getId(), playerJoined.getUsername());
@@ -109,10 +137,15 @@ public class ClientHandler extends Handler {
         }
     }
 
-    private void handlePlayerLeftPacket(PlayerLeftPacket playerLeft) {
-        pendingPlayers.remove(playerLeft.getId());
-        this.entityManager.removePlayerEntity(playerLeft.getId());
-        System.out.println("Player left: " + playerLeft.getId());
+    private void handlePlayerLeftPacket(PlayerLeftPacket packet) {
+        Player player = entityManager.getPlayerEntity(packet.getId());
+        if (player != null) {
+            currentBroadcastedMessage = player.getUsername() + " has left the game.";
+            entityManager.removePlayerEntity(packet.getId());
+        } else {
+            System.err.println("Warning: Attempted to process a player left event for a non-existent player with ID "
+                    + packet.getId());
+        }
     }
 
     private void handleWorldDataPacket(WorldDataPacket worldDataPacket) {
@@ -138,6 +171,7 @@ public class ClientHandler extends Handler {
     protected void onDisconnect(Connection connection) {
         pendingPlayers.clear();
         entityManager.clearAllEntities();
+        System.out.println("DISCONNECTED");
         if (!isIntentionalDisconnect) {
             AlertManager.getInstance().showDisconnectAlert();
         }
@@ -155,5 +189,16 @@ public class ClientHandler extends Handler {
 
     public synchronized void update() {
         this.clientUpdater.update(this.client);
+    }
+
+    public synchronized String getCurrentBroadcastedMessage() {
+        return this.currentBroadcastedMessage;
+    }
+
+    public Player getSpectatingTarget() {
+        if (entityManager.containsPlayerEntity(spectatingPlayerId)) {
+            return entityManager.getPlayerEntity(spectatingPlayerId);
+        }
+        return null;
     }
 }

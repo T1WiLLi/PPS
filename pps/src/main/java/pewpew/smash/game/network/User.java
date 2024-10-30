@@ -19,6 +19,7 @@ public final class User {
     private boolean isConnected = false;
 
     private AtomicInteger localID = new AtomicInteger(Integer.MIN_VALUE);
+    private boolean isDead = false;
 
     private String username = "Guest";
     private Rank rank = new Rank(-1, "none", "none", "none", 0, 0, 0);

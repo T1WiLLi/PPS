@@ -13,6 +13,8 @@ public class EntityManager {
     private final Map<Integer, MovableEntity> movableEntitiesMap;
     private final Map<Integer, Player> playerEntitiesMap;
 
+    private final Map<Integer, Player> deadPlayersMap;
+
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
     private final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
@@ -21,6 +23,7 @@ public class EntityManager {
         this.updatableEntitiesMap = new ConcurrentHashMap<>();
         this.movableEntitiesMap = new ConcurrentHashMap<>();
         this.playerEntitiesMap = new ConcurrentHashMap<>();
+        this.deadPlayersMap = new ConcurrentHashMap<>();
     }
 
     public synchronized void addUpdatableEntity(int id, UpdatableEntity entity) {
@@ -44,7 +47,11 @@ public class EntityManager {
     }
 
     public synchronized Player removePlayerEntity(int id) {
-        return playerEntitiesMap.remove(id);
+        Player removedPlayer = playerEntitiesMap.remove(id);
+        if (removedPlayer != null) {
+            deadPlayersMap.put(id, removedPlayer);
+        }
+        return removedPlayer;
     }
 
     public synchronized UpdatableEntity getUpdatableEntity(int id) {
@@ -56,7 +63,11 @@ public class EntityManager {
     }
 
     public synchronized Player getPlayerEntity(int id) {
-        return playerEntitiesMap.get(id);
+        Player player = playerEntitiesMap.get(id);
+        if (player == null) {
+            player = deadPlayersMap.get(id);
+        }
+        return player;
     }
 
     public boolean containsUpdatableEntity(int id) {
@@ -90,6 +101,7 @@ public class EntityManager {
             updatableEntitiesMap.clear();
             movableEntitiesMap.clear();
             playerEntitiesMap.clear();
+            deadPlayersMap.clear();
         } finally {
             writeLock.unlock();
         }
@@ -117,6 +129,17 @@ public class EntityManager {
         readLock.lock();
         try {
             return new ArrayList<>(playerEntitiesMap.values());
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    public List<Player> getAllPlayers() {
+        readLock.lock();
+        try {
+            List<Player> allPlayers = new ArrayList<>(playerEntitiesMap.values());
+            allPlayers.addAll(deadPlayersMap.values());
+            return allPlayers;
         } finally {
             readLock.unlock();
         }

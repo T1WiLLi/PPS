@@ -8,6 +8,7 @@ import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.client.EntityRenderer;
 import pewpew.smash.game.world.WorldGenerator;
 import pewpew.smash.game.Camera;
+import pewpew.smash.game.SpectatorManager;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.input.GamePad;
 
@@ -20,7 +21,7 @@ public class Sandbox implements GameMode {
     private Camera camera;
 
     public Sandbox() {
-        this.camera = new Camera();
+        this.camera = Camera.getInstance();
     }
 
     @Override
@@ -36,6 +37,7 @@ public class Sandbox implements GameMode {
 
             networkManager = new NetworkManager();
             networkManager.initialize(host, port, isHosting);
+            SpectatorManager.getInstance().initialize(networkManager.getEntityManager());
             entityRenderer = new EntityRenderer(networkManager.getEntityManager());
             System.out.println("Sandbox initialized");
         } catch (Exception e) {
@@ -53,14 +55,24 @@ public class Sandbox implements GameMode {
         try {
             networkManager.update();
 
-            Player player = networkManager.getEntityManager().getPlayerEntity(User.getInstance().getLocalID().get());
-            if (player != null) {
-                camera.centerOn(player);
+            if (User.getInstance().isDead()) {
+                SpectatorManager.getInstance().update();
+            } else {
+                Player localPlayer = networkManager.getEntityManager()
+                        .getPlayerEntity(User.getInstance().getLocalID().get());
+                if (localPlayer != null) {
+                    camera.centerOn(localPlayer);
+                }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        handleZoomControls();
+    }
+
+    private void handleZoomControls() {
         if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_F1)) {
             camera.setZoom(1);
         } else if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_F2)) {
@@ -77,6 +89,12 @@ public class Sandbox implements GameMode {
         canvas.scale(Camera.getZoom(), Camera.getZoom());
         canvas.renderImage(this.worldImage, (int) -this.camera.getX(), (int) -this.camera.getY());
         entityRenderer.render(canvas, camera);
+
+        if (User.getInstance().isDead()) {
+            SpectatorManager.getInstance().render(canvas);
+        }
+
+        canvas.renderString(networkManager.getBroadcastMessage(), 25, 550);
         canvas.resetScale();
     }
 

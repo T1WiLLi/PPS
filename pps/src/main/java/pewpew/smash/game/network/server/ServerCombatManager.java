@@ -80,13 +80,12 @@ public class ServerCombatManager {
 
         damageDealtMap.put(attacker, true);
 
+        PlayerState newState = new PlayerState(target.getId(), target.getHealth());
+        PlayerStatePacket packet = new PlayerStatePacket(newState);
+        server.sendToUDP(target.getId(), packet);
+
         if (target.getHealth() <= 0) {
             handlePlayerDeath(attacker, target, server);
-        } else {
-            // Prepare and send a packet to update the client
-            PlayerState newState = new PlayerState(target.getId(), target.getHealth());
-            PlayerStatePacket packet = new PlayerStatePacket(newState);
-            server.sendToUDP(target.getId(), packet);
         }
     }
 
