@@ -82,7 +82,7 @@ public class ServerCombatManager {
         PlayerState newState = new PlayerState(target.getId(), target.getHealth());
         PlayerStatePacket packet = new PlayerStatePacket(newState);
 
-        // We only send the newState to the client if the target is the player
+        // We only send the newState to the client if the target is the player0
         server.sendToUDP(target.getId(), packet);
     }
 
