@@ -9,6 +9,5 @@ import pewpew.smash.game.network.model.PlayerState;
 @AllArgsConstructor
 @Getter
 public class PlayerStatePacket extends BasePacket {
-    private int id;
     private PlayerState state;
 }

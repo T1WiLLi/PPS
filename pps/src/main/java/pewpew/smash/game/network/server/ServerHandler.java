@@ -16,6 +16,8 @@ import pewpew.smash.game.network.packets.MouseInputPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
+import pewpew.smash.game.network.packets.WeaponStatePacket;
+import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 
 public class ServerHandler extends Handler implements Runnable {
 
@@ -74,6 +76,10 @@ public class ServerHandler extends Handler implements Runnable {
         } else if (packet instanceof MouseInputPacket) {
             MouseInputPacket mouseInputPacket = (MouseInputPacket) packet;
             this.entityManager.getPlayerEntity(connection.getID()).setMouseInput(mouseInputPacket.getInput());
+        } else if (packet instanceof WeaponStatePacket) {
+            WeaponStatePacket weaponStatePacket = (WeaponStatePacket) packet;
+            Player player = this.entityManager.getPlayerEntity(connection.getID());
+            WeaponStateSerializer.deserializeWeaponState(weaponStatePacket, player);
         }
     }
 
@@ -121,7 +127,7 @@ public class ServerHandler extends Handler implements Runnable {
     }
 
     private void update(double deltaTime) {
-        this.entityManager.getPlayerEntities().forEach(Player::updateServer);
+        this.entityUpdater.update(this.server);
         this.collisionManager.checkCollisions();
     }
 

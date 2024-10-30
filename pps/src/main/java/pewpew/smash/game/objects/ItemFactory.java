@@ -12,7 +12,6 @@ import pewpew.smash.game.objects.weapon.AK47;
 import pewpew.smash.game.objects.weapon.Fist;
 import pewpew.smash.game.utils.ResourcesLoader;
 
-// TODO: Don't forget to change the name of the picture to match the type in the ENUM
 public class ItemFactory {
     private static final Map<WeaponType, BufferedImage> weaponsPreviews = new EnumMap<>(WeaponType.class);
     private static final Map<ConsumableType, BufferedImage> consumablesPreviews = new EnumMap<>(ConsumableType.class);

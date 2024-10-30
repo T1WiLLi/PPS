@@ -12,34 +12,24 @@ import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.network.User;
+import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.WeaponType;
 import pewpew.smash.game.objects.weapon.Fist;
 
 @ToString(callSuper = true)
+@Getter
+@Setter
 public class Player extends MovableEntity {
 
-    @Setter
-    @Getter
     private Weapon equippedWeapon;
-
     private Fist fists;
-
-    @Setter
-    @Getter
     private MouseInput mouseInput = MouseInput.NONE;
 
-    @Setter
-    @Getter
     private float rotation;
 
-    @Setter
-    @Getter
     private String username;
-
-    @Setter
-    @Getter
     private int health;
 
     public Player(int id) {
@@ -84,5 +74,9 @@ public class Player extends MovableEntity {
     @Override
     public Shape getHitbox() {
         return new Ellipse2D.Float(getX(), getY(), width, width);
+    }
+
+    public void applyState(PlayerState newState) {
+        this.health = newState.getHealth();
     }
 }

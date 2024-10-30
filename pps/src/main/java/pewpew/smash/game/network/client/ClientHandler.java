@@ -15,7 +15,9 @@ import pewpew.smash.game.input.MouseHandler;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
+import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.network.packets.*;
+import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 
 public class ClientHandler extends Handler {
     @Getter
@@ -52,6 +54,8 @@ public class ClientHandler extends Handler {
                 handlePositionPacket(position);
             } else if (packet instanceof MouseActionPacket mouseActionPacket) {
                 handleMouseActionPacket(mouseActionPacket);
+            } else if (packet instanceof PlayerStatePacket) {
+                handlePlayerStatePacket((PlayerStatePacket) packet);
             } else if (packet instanceof PlayerJoinedPacket playerJoined) {
                 handlePlayerJoinedPacket(playerJoined);
             } else if (packet instanceof PlayerLeftPacket playerLeft) {
@@ -90,6 +94,12 @@ public class ClientHandler extends Handler {
             System.out
                     .println("Cannot process mouse action for non-existent player: " + mouseActionPacket.getPlayerID());
         }
+    }
+
+    private void handlePlayerStatePacket(PlayerStatePacket packet) {
+        PlayerState newState = packet.getState();
+        Player player = this.entityManager.getPlayerEntity(newState.getId());
+        player.applyState(newState);
     }
 
     private void handlePlayerJoinedPacket(PlayerJoinedPacket playerJoined) {
@@ -151,6 +161,7 @@ public class ClientHandler extends Handler {
         this.entityManager.getPlayerEntities().forEach(Player::updateClient);
         sendDirection();
         sendMouseInput();
+        sendWeaponState();
     }
 
     private void sendDirection() {
@@ -166,5 +177,13 @@ public class ClientHandler extends Handler {
     private void sendMouseInput() {
         MouseInput input = MouseInput.getCurrentInput();
         this.client.sendToUDP(new MouseInputPacket(input));
+    }
+
+    private void sendWeaponState() {
+        Player localPlayer = entityManager.getPlayerEntity(User.getInstance().getLocalID().get());
+        if (localPlayer != null) {
+            WeaponStatePacket packet = WeaponStateSerializer.serializeWeaponState(localPlayer);
+            this.client.sendToUDP(packet);
+        }
     }
 }

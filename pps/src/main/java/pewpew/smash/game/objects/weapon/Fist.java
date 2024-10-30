@@ -15,7 +15,7 @@ public class Fist extends MeleeWeapon {
     private int leftFistX, leftFistY;
     private int rightFistX, rightFistY;
     private int centerX, centerY;
-    private int radius = 18;
+    private int radius = 20;
 
     private Polygon damageZone;
 
@@ -123,36 +123,23 @@ public class Fist extends MeleeWeapon {
     }
 
     private void updateDamageZone() {
-        float rotation = getOwner().getRotation();
-        double angleRad = Math.toRadians(rotation);
+        double angleRad = Math.toRadians(getOwner().getRotation());
 
         int centerX = getOwner().getX() + getOwner().getWidth() / 2;
         int centerY = getOwner().getY() + getOwner().getHeight() / 2;
 
-        double dx = Math.cos(angleRad);
-        double dy = Math.sin(angleRad);
+        double baseCenterX = centerX + (this.range * 1.6) * Math.cos(angleRad);
+        double baseCenterY = centerY + (this.range * 1.6) * Math.sin(angleRad);
 
-        double nx = -dy;
-        double ny = dx;
+        int basePoint1X = (int) (baseCenterX + ((radius * 2) / 1.4) * -Math.sin(angleRad));
+        int basePoint1Y = (int) (baseCenterY + ((radius * 2) / 1.4) * Math.cos(angleRad));
 
-        double range = this.range * 1.6;
-
-        double baseWidth = radius * 2;
-
-        double baseCenterX = centerX + range * dx;
-        double baseCenterY = centerY + range * dy;
-
-        double halfBaseWidth = baseWidth / 1.4;
-
-        int basePoint1X = (int) (baseCenterX + halfBaseWidth * nx);
-        int basePoint1Y = (int) (baseCenterY + halfBaseWidth * ny);
-
-        int basePoint2X = (int) (baseCenterX - halfBaseWidth * nx);
-        int basePoint2Y = (int) (baseCenterY - halfBaseWidth * ny);
+        int basePoint2X = (int) (baseCenterX - ((radius * 2) / 1.4) * -Math.sin(angleRad));
+        int basePoint2Y = (int) (baseCenterY - ((radius * 2) / 1.4) * Math.cos(angleRad));
 
         damageZone.reset();
-        damageZone.addPoint(centerX, centerY); // Tip of the triangle (player's position)
-        damageZone.addPoint(basePoint1X, basePoint1Y); // First base point
-        damageZone.addPoint(basePoint2X, basePoint2Y); // Second base point
+        damageZone.addPoint(centerX, centerY);
+        damageZone.addPoint(basePoint1X, basePoint1Y);
+        damageZone.addPoint(basePoint2X, basePoint2Y);
     }
 }
