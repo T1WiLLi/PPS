@@ -4,9 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
-public class SpectateOnPacket extends BasePacket {
-    int idToBeSpectated;
+public class PlayerDeathPacket {
+    private int deadPlayerID;
+    private int killerPlayerID;
 }

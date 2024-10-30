@@ -8,6 +8,8 @@ import java.util.Map;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.model.PlayerState;
+import pewpew.smash.game.network.packets.BroadcastMessagePacket;
+import pewpew.smash.game.network.packets.PlayerDeathPacket;
 import pewpew.smash.game.network.packets.PlayerStatePacket;
 import pewpew.smash.game.objects.MeleeWeapon;
 
@@ -78,12 +80,26 @@ public class ServerCombatManager {
 
         damageDealtMap.put(attacker, true);
 
-        // Prepare a packet to send to the client
-        PlayerState newState = new PlayerState(target.getId(), target.getHealth());
-        PlayerStatePacket packet = new PlayerStatePacket(newState);
+        if (target.getHealth() <= 0) {
+            handlePlayerDeath(attacker, target, server);
+        } else {
+            // Prepare and send a packet to update the client
+            PlayerState newState = new PlayerState(target.getId(), target.getHealth());
+            PlayerStatePacket packet = new PlayerStatePacket(newState);
+            server.sendToUDP(target.getId(), packet);
+        }
+    }
 
-        // We only send the newState to the client if the target is the player0
-        server.sendToUDP(target.getId(), packet);
+    private void handlePlayerDeath(Player attacker, Player target, ServerWrapper server) {
+        entityManager.removePlayerEntity(target.getId());
+
+        String deathMessage = String.format("%s was killed by %s using %s", target.getUsername(),
+                attacker.getUsername(), attacker.getEquippedWeapon().getName());
+        BroadcastMessagePacket messagePacket = new BroadcastMessagePacket(deathMessage);
+        server.sendToAllTCP(messagePacket);
+
+        PlayerDeathPacket deathPacket = new PlayerDeathPacket(target.getId(), attacker.getId());
+        server.sendToAllTCP(deathPacket);
     }
 
 }
