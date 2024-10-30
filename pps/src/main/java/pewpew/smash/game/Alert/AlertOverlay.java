@@ -16,7 +16,7 @@ public class AlertOverlay extends Overlay {
     private String title;
     private String message;
     private Button confirmButton;
-    private static final Color OVERLAY_COLOR = new Color(255, 255, 255, 200);
+    private static final Color OVERLAY_COLOR = new Color(0, 0, 0, 200);
     private static final int PADDING = 20;
 
     public AlertOverlay(String title, String message) {
