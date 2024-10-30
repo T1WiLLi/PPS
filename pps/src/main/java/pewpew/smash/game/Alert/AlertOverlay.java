@@ -36,11 +36,12 @@ public class AlertOverlay extends Overlay {
         canvas.renderRectangle(this.x, this.y, this.width, this.height, OVERLAY_COLOR);
         FontFactory.IMPACT_LARGE.applyFont(canvas);
         int titleWidth = FontFactory.IMPACT_LARGE.getFontWidth(this.title, canvas);
-        canvas.renderString(this.title, this.x + (this.width - titleWidth) / 2, this.y + PADDING + 20);
+        canvas.renderString(this.title, this.x + (this.width - titleWidth) / 2, this.y + PADDING + 20, Color.WHITE);
 
         FontFactory.IMPACT_MEDIUM.applyFont(canvas);
         int messageWidth = FontFactory.IMPACT_MEDIUM.getFontWidth(this.message, canvas);
-        canvas.renderString(this.message, this.x + (this.width - messageWidth) / 2, this.y + this.height / 2);
+        canvas.renderString(this.message, this.x + (this.width - messageWidth) / 2, this.y + this.height / 2,
+                Color.WHITE);
 
         this.confirmButton.render(canvas);
         FontFactory.resetFont(canvas);

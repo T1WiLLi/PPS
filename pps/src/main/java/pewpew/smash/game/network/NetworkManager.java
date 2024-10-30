@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import java.io.IOException;
 
+import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.client.ClientHandler;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.server.ServerHandler;
@@ -51,6 +52,20 @@ public class NetworkManager {
             throw new IllegalStateException("NetworkManager not initialized");
         }
         return client.getWorldData();
+    }
+
+    public String getBroadcastMessage() {
+        if (client == null) {
+            throw new IllegalStateException("NetworkManager not initialized");
+        }
+        return client.getCurrentBroadcastedMessage();
+    }
+
+    public Player getSpectatingTarget() {
+        if (client == null) {
+            throw new IllegalStateException("NetworkManager not initialized");
+        }
+        return client.getSpectatingTarget();
     }
 
     public void update() {

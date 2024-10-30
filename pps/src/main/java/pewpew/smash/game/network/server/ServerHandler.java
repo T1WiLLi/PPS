@@ -75,7 +75,10 @@ public class ServerHandler extends Handler implements Runnable {
             }
         } else if (packet instanceof MouseInputPacket) {
             MouseInputPacket mouseInputPacket = (MouseInputPacket) packet;
-            this.entityManager.getPlayerEntity(connection.getID()).setMouseInput(mouseInputPacket.getInput());
+            Player player = this.entityManager.getPlayerEntity(connection.getID());
+            if (player != null) {
+                player.setMouseInput(mouseInputPacket.getInput());
+            }
         } else if (packet instanceof WeaponStatePacket) {
             WeaponStatePacket weaponStatePacket = (WeaponStatePacket) packet;
             Player player = this.entityManager.getPlayerEntity(connection.getID());

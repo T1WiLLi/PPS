@@ -21,9 +21,11 @@ public class ClientUpdater {
 
     public void update(ClientWrapper client) {
         this.entityManager.getPlayerEntities().forEach(Player::updateClient);
-        sendDirection(client);
-        sendMouseInput(client);
-        sendWeaponState(client);
+        if (!User.getInstance().isDead()) {
+            sendDirection(client);
+            sendMouseInput(client);
+            sendWeaponState(client);
+        }
     }
 
     private void sendDirection(ClientWrapper client) {
