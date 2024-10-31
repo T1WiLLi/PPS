@@ -133,7 +133,8 @@ public class ClientHandler extends Handler {
             pendingPlayers.put(playerJoined.getId(), playerJoined.getUsername());
             Player player = new Player(playerJoined.getId(), playerJoined.getUsername());
             this.entityManager.addPlayerEntity(player.getId(), player);
-            System.out.println("Player joined: " + player.getId() + " - " + player.getUsername());
+            this.currentBroadcastedMessage = player.getUsername() + " has joined the game.";
+
         }
     }
 
