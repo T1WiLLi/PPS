@@ -19,11 +19,6 @@ public class Scope extends Item {
 
     }
 
-    @Override
-    public void preview(Canvas canvas) {
-
-    }
-
     public void applyZoom(Camera camera) {
         camera.setZoom(this.zoomValue);
     }

@@ -19,9 +19,6 @@ public class ItemFactory {
 
     public static void preloadItemPreviews() {
         for (WeaponType type : WeaponType.values()) {
-            if (type.name().toLowerCase().equals("fist")) {
-                continue; // Fist has no preview
-            }
             weaponsPreviews.put(type, loadPreview(ResourcesLoader.PREVIEW_PATH, type));
         }
 

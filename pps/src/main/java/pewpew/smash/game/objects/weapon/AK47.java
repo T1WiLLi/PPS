@@ -91,9 +91,4 @@ public class AK47 extends RangedWeapon {
         canvas.renderCircle(x - HAND_RADIUS / 2 + 1, y - HAND_RADIUS / 2 + 1,
                 HAND_RADIUS - 2, new Color(229, 194, 152));
     }
-
-    @Override
-    public void preview(Canvas canvas) {
-        canvas.renderImage(getPreview(), getX(), getY());
-    }
 }

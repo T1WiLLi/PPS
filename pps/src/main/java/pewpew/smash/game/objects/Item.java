@@ -11,6 +11,7 @@ import pewpew.smash.game.entities.Player;
 @Getter
 public abstract class Item {
 
+    @Getter
     private BufferedImage preview;
 
     private String name;
@@ -27,9 +28,6 @@ public abstract class Item {
 
     // Render when using the actual item in the game world
     public abstract void render(Canvas canvas);
-
-    // Render when seeing from inventory or when the item is on the ground
-    public abstract void preview(Canvas canvas);
 
     public Item(String name, String description, BufferedImage preview) {
         this.name = name;

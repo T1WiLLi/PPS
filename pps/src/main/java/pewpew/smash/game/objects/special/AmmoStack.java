@@ -20,9 +20,4 @@ public class AmmoStack extends Item {
     public void render(Canvas canvas) {
 
     }
-
-    @Override
-    public void preview(Canvas canvas) {
-
-    }
 }
