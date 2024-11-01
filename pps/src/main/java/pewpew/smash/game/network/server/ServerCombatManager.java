@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import pewpew.smash.game.entities.Bullet;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.model.PlayerState;
@@ -15,13 +16,20 @@ import pewpew.smash.game.objects.MeleeWeapon;
 
 public class ServerCombatManager {
     private final EntityManager entityManager;
+    private final ServerBulletTracker bulletTracker;
     private final Map<Player, Boolean> damageDealtMap = new HashMap<>();
 
     public ServerCombatManager(EntityManager entityManager) {
         this.entityManager = entityManager;
+        this.bulletTracker = new ServerBulletTracker();
     }
 
-    public void checkMeleeCombat(ServerWrapper server) {
+    public void updateCombat(ServerWrapper server) {
+        checkMeleeCombat(server);
+        checkRangedCombat(server);
+    }
+
+    private void checkMeleeCombat(ServerWrapper server) {
         Collection<Player> players = this.entityManager.getPlayerEntities();
 
         players.forEach(player -> {
@@ -37,6 +45,21 @@ public class ServerCombatManager {
                 }
             }
         });
+    }
+
+    private void checkRangedCombat(ServerWrapper server) {
+        bulletTracker.update();
+
+        for (Bullet bullet : bulletTracker.getActiveBullet()) {
+            for (Player targetPlayer : entityManager.getPlayerEntities()) {
+                if (targetPlayer.getId() != bullet.getPlayerOwnerID()
+                        && bullet.getHitbox().intersects(targetPlayer.getX(), targetPlayer.getY(),
+                                targetPlayer.getWidth(), targetPlayer.getHeight())) {
+                    handleBulletDamage(bullet, targetPlayer, server);
+                    bulletTracker.removeBullet(bullet);
+                }
+            }
+        }
     }
 
     private Polygon getDamageZone(Player player, MeleeWeapon weapon) {
@@ -66,7 +89,6 @@ public class ServerCombatManager {
 
         for (Player target : players) {
             if (target != attacker) {
-                // Try to get intersection with the target.getHitbox()
                 if (damageZone.intersects(target.getX(), target.getY(), target.getWidth(), target.getHeight())) {
                     handleDamage(attacker, target, server);
                 }
@@ -89,6 +111,19 @@ public class ServerCombatManager {
         }
     }
 
+    private void handleBulletDamage(Bullet bullet, Player target, ServerWrapper server) {
+        int damage = bullet.getDamage();
+        target.setHealth(target.getHealth() - damage);
+
+        PlayerState newState = new PlayerState(target.getId(), target.getHealth());
+        PlayerStatePacket packet = new PlayerStatePacket(newState);
+        server.sendToUDP(target.getId(), packet);
+
+        if (target.getHealth() <= 0) {
+            handlePlayerDeath(entityManager.getPlayerEntity(bullet.getPlayerOwnerID()), target, server);
+        }
+    }
+
     private void handlePlayerDeath(Player attacker, Player target, ServerWrapper server) {
         entityManager.removePlayerEntity(target.getId());
 
@@ -100,5 +135,4 @@ public class ServerCombatManager {
         PlayerDeathPacket deathPacket = new PlayerDeathPacket(target.getId(), attacker.getId());
         server.sendToAllTCP(deathPacket);
     }
-
 }

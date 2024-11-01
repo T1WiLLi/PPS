@@ -94,7 +94,8 @@ public class ItemFactory {
                 type.getAttackSpeed(),
                 type.getRange(),
                 type.getReloadSpeed().get(),
-                type.getAmmoCapacity().get());
+                type.getAmmoCapacity().get(),
+                type.getBulletSpeed().get());
         return weapon;
     }
 
