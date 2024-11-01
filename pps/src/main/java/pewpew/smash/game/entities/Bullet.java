@@ -56,17 +56,22 @@ public class Bullet {
 
     public Bullet(Player owner) {
         this.playerOwnerID = owner.getId();
+
+        RangedWeapon equippedWeapon = (RangedWeapon) owner.getEquippedWeapon();
         this.rotation = owner.getRotation();
-        this.damage = owner.getEquippedWeapon().getDamage();
-        this.maxRange = owner.getEquippedWeapon().getRange();
+        this.damage = equippedWeapon.getDamage();
+        this.maxRange = equippedWeapon.getRange();
 
-        this.x = owner.getX() + owner.getWidth() / 2;
-        this.y = owner.getY();
-        this.speed = ((RangedWeapon) owner.getEquippedWeapon()).getBulletSpeed();
+        float weaponCenterX = owner.getX() + owner.getWidth() / 2;
+        float weaponCenterY = owner.getY() + owner.getHeight() / 2;
+        double angleRad = Math.toRadians(this.rotation);
+        this.x = weaponCenterX + (int) (equippedWeapon.getWeaponLength() / 2 * Math.cos(angleRad));
+        this.y = weaponCenterY + (int) (equippedWeapon.getWeaponLength() / 2 * Math.sin(angleRad));
 
-        double angleRad = Math.toRadians(rotation);
-        this.velocityX = (float) (Math.cos(angleRad) * speed);
-        this.velocityY = (float) (Math.sin(angleRad) * speed);
+        this.speed = equippedWeapon.getBulletSpeed();
+
+        this.velocityX = (float) (Math.cos(angleRad) * this.speed);
+        this.velocityY = (float) (Math.sin(angleRad) * this.speed);
     }
 
     public void teleport(float x, float y) {

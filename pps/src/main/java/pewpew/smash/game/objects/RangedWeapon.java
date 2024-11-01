@@ -18,10 +18,14 @@ public abstract class RangedWeapon extends Weapon {
     private double reloadTimer;
     private int bulletSpeed;
 
+    // Render gun
+    protected final int weaponLength;
+
     public abstract void shoot();
 
-    public RangedWeapon(String name, String description, BufferedImage preview) {
+    public RangedWeapon(String name, String description, BufferedImage preview, int weaponLength) {
         super(name, description, preview);
+        this.weaponLength = weaponLength;
     }
 
     public void buildWeapon(int damage, double attackSpeed, int range, double reloadSpeed, int ammoCapacity,
