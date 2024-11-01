@@ -24,6 +24,7 @@ public class MovementController extends KeyController {
         }
         bindKeys(new int[] { KeyEvent.VK_F1, KeyEvent.VK_F2, KeyEvent.VK_F3, KeyEvent.VK_F4, KeyEvent.VK_RIGHT,
                 KeyEvent.VK_LEFT });
+        bindKeys(new int[] { KeyEvent.VK_1, KeyEvent.VK_2 });
     }
 
     public boolean isKeyPressed(String action) {

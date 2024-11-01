@@ -17,6 +17,7 @@ import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
+import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 
 public class ServerHandler extends Handler implements Runnable {
@@ -80,6 +81,17 @@ public class ServerHandler extends Handler implements Runnable {
             if (player != null) {
                 player.setMouseInput(mouseInputPacket.getInput());
             }
+        } else if (packet instanceof WeaponSwitchRequestPacket) {
+            WeaponSwitchRequestPacket weaponSwitchRequestPacket = (WeaponSwitchRequestPacket) packet;
+            Player player = this.entityManager.getPlayerEntity(connection.getID());
+
+            switch (weaponSwitchRequestPacket.getKeyCode()) {
+                case 1 -> player.setEquippedWeapon(player.getFists());
+                case 2 -> player.getInventory().getPrimaryWeapon().ifPresent(player::setEquippedWeapon);
+            }
+
+            WeaponStatePacket newWeaponState = WeaponStateSerializer.serializeWeaponState(player);
+            this.server.sendToAllTCP(newWeaponState);
         } else if (packet instanceof WeaponStatePacket) {
             WeaponStatePacket weaponStatePacket = (WeaponStatePacket) packet;
             Player player = this.entityManager.getPlayerEntity(connection.getID());
@@ -97,7 +109,9 @@ public class ServerHandler extends Handler implements Runnable {
             PlayerJoinedPacket existingPlayerPacket = new PlayerJoinedPacket(
                     existingPlayer.getId(),
                     existingPlayer.getUsername());
+            WeaponStatePacket weaponStatePacket = WeaponStateSerializer.serializeWeaponState(existingPlayer);
             this.server.sendToTCP(connection.getID(), existingPlayerPacket);
+            this.server.sendToTCP(connection.getID(), weaponStatePacket);
         });
         this.entityManager.addPlayerEntity(player.getId(), player);
         this.worldManager.sendWorldDataToClient(server, connection.getID());

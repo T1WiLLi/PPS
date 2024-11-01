@@ -16,6 +16,7 @@ import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.network.packets.*;
+import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 
 public class ClientHandler extends Handler {
     @Getter
@@ -65,6 +66,8 @@ public class ClientHandler extends Handler {
                 handleBulletCreatePacket((BulletCreatePacket) packet);
             } else if (packet instanceof BulletRemovePacket) {
                 handleBulletRemovePacket((BulletRemovePacket) packet);
+            } else if (packet instanceof WeaponStatePacket) {
+                handleWeaponStatePacket((WeaponStatePacket) packet);
             } else if (packet instanceof PlayerDeathPacket) {
                 handlePlayerDeathPacket((PlayerDeathPacket) packet);
             } else if (packet instanceof BroadcastMessagePacket) {
@@ -124,6 +127,13 @@ public class ClientHandler extends Handler {
 
     private void handleBulletRemovePacket(BulletRemovePacket packet) {
         this.entityManager.removeBulletEntity(packet.getBulletID());
+    }
+
+    private void handleWeaponStatePacket(WeaponStatePacket packet) {
+        Player player = this.entityManager.getPlayerEntity(packet.getOwnerID());
+        if (player != null) {
+            WeaponStateSerializer.deserializeWeaponState(packet, player);
+        }
     }
 
     private void handlePlayerDeathPacket(PlayerDeathPacket packet) {

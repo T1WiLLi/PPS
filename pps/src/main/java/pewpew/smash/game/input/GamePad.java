@@ -1,5 +1,7 @@
 package pewpew.smash.game.input;
 
+import java.awt.event.KeyEvent;
+
 import pewpew.smash.engine.controls.MovementController;
 
 public class GamePad extends MovementController {
@@ -44,5 +46,13 @@ public class GamePad extends MovementController {
 
     public boolean isPauseKeyPressed() {
         return isKeyPressed("pause");
+    }
+
+    public boolean isSwitchWeaponOneKeyPressed() {
+        return isKeyPressed(KeyEvent.VK_1);
+    }
+
+    public boolean isSwitchWeaponTwoKeyPressed() {
+        return isKeyPressed(KeyEvent.VK_2);
     }
 }
