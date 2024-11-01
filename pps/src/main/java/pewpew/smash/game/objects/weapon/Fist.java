@@ -59,12 +59,6 @@ public class Fist extends MeleeWeapon {
     }
 
     @Override
-    public void preview(Canvas canvas) {
-        throw new UnsupportedOperationException("Not supported yet.");
-
-    }
-
-    @Override
     public void attack() {
         attackProgress += (isReturning ? -attackSpeed : attackSpeed);
 

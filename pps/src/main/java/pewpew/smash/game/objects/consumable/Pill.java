@@ -20,9 +20,4 @@ public class Pill extends Consumable {
     public void render(Canvas canvas) {
 
     }
-
-    @Override
-    public void preview(Canvas canvas) {
-
-    }
 }
