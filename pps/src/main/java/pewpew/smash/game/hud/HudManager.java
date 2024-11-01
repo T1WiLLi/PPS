@@ -23,11 +23,11 @@ public class HudManager {
     }
 
     public void update() {
-
+        this.healthBar.setValue(this.local.getHealth());
     }
 
     public void render(Canvas canvas) {
-        this.healthBar.render(canvas, this.local.getHealth());
+        this.healthBar.render(canvas);
     }
 
     private HudManager() {

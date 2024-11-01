@@ -2,21 +2,21 @@ package pewpew.smash.game.hud;
 
 import java.awt.Color;
 
+import lombok.Setter;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.utils.FontFactory;
 
-public class BarDisplayer {
+public class BarDisplayer extends HudElement {
 
-    private int x, y, width, height;
+    @Setter
+    private int value;
 
     public BarDisplayer(int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        super(x, y, width, height);
     }
 
-    public void render(Canvas canvas, int value) {
+    @Override
+    public void render(Canvas canvas) {
         int filled = (int) ((double) value / 100 * width);
 
         canvas.renderRectangle(x, y, width, height, Color.GRAY);

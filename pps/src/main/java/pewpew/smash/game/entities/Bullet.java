@@ -60,7 +60,7 @@ public class Bullet {
         this.damage = owner.getEquippedWeapon().getDamage();
         this.maxRange = owner.getEquippedWeapon().getRange();
 
-        this.x = owner.getX();
+        this.x = owner.getX() + owner.getWidth() / 2;
         this.y = owner.getY();
         this.speed = ((RangedWeapon) owner.getEquippedWeapon()).getBulletSpeed();
 
