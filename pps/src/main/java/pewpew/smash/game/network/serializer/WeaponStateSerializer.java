@@ -1,8 +1,7 @@
 package pewpew.smash.game.network.serializer;
 
-import java.util.Map;
 import java.util.HashMap;
-
+import java.util.Map;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.objects.ItemFactory;
@@ -13,54 +12,33 @@ import pewpew.smash.game.objects.WeaponType;
 
 public class WeaponStateSerializer {
 
-    private static WeaponStateSnapshot lastSentState = null;
-
     public static WeaponStatePacket serializeWeaponState(Player player) {
         Weapon weapon = player.getEquippedWeapon();
         if (weapon == null) {
-            if (lastSentState != null) {
-                lastSentState = null;
-                return new WeaponStatePacket(null, null);
-            }
-            return null;
+            return new WeaponStatePacket(Integer.MIN_VALUE, null, null);
         }
 
         Map<String, Object> stateData = new HashMap<>();
         WeaponType weaponType = getWeaponType(weapon);
 
-        stateData.put("damage", weapon.getDamage());
-        stateData.put("range", weapon.getRange());
-        stateData.put("attackSpeed", weapon.getAttackSpeed());
-
         if (weapon instanceof MeleeWeapon) {
             MeleeWeapon meleeWeapon = (MeleeWeapon) weapon;
-            stateData.put("isAttacking", meleeWeapon.isAttacking());
-            stateData.put("isReturning", meleeWeapon.isReturning());
             stateData.put("attackProgress", meleeWeapon.getAttackProgress());
+            stateData.put("isReturning", meleeWeapon.isReturning());
         } else if (weapon instanceof RangedWeapon) {
             RangedWeapon rangedWeapon = (RangedWeapon) weapon;
-            stateData.put("ammoCapacity", rangedWeapon.getAmmoCapacity());
             stateData.put("currentAmmo", rangedWeapon.getCurrentAmmo());
-            stateData.put("reloadSpeed", rangedWeapon.getReloadSpeed());
-            stateData.put("bulletSpeed", rangedWeapon.getBulletSpeed());
         }
 
-        WeaponStateSnapshot currentState = new WeaponStateSnapshot(weaponType, stateData);
-
-        if (lastSentState == null || !lastSentState.equals(currentState)) {
-            lastSentState = currentState;
-            return new WeaponStatePacket(weaponType, stateData);
-        }
-
-        return null;
+        return new WeaponStatePacket(player.getId(), weaponType, stateData);
     }
 
     public static void deserializeWeaponState(WeaponStatePacket weaponState, Player player) {
-        Weapon weapon = player.getEquippedWeapon();
         WeaponType weaponType = weaponState.getWeaponType();
+        Weapon weapon = player.getEquippedWeapon();
 
         if (weapon == null || getWeaponType(weapon) != weaponType) {
-            weapon = ItemFactory.createItem(weaponState.getWeaponType());
+            weapon = ItemFactory.createItem(weaponType);
             weapon.pickup(player);
             player.setEquippedWeapon(weapon);
         }
@@ -69,39 +47,22 @@ public class WeaponStateSerializer {
 
         if (weapon instanceof MeleeWeapon) {
             MeleeWeapon meleeWeapon = (MeleeWeapon) weapon;
-            meleeWeapon.buildWeapon(
-                    (int) stateData.get("damage"),
-                    ((Number) stateData.get("attackSpeed")).doubleValue(),
-                    (int) stateData.get("range"));
-
-            meleeWeapon.setAttacking((boolean) stateData.get("isAttacking"));
+            meleeWeapon.setAttackProgress((float) stateData.get("attackProgress"));
             meleeWeapon.setReturning((boolean) stateData.get("isReturning"));
-            meleeWeapon.setAttackProgress(((Number) stateData.get("attackProgress")).floatValue());
         } else if (weapon instanceof RangedWeapon) {
             RangedWeapon rangedWeapon = (RangedWeapon) weapon;
-            rangedWeapon.buildWeapon(
-                    (int) stateData.get("damage"),
-                    ((Number) stateData.get("attackSpeed")).doubleValue(),
-                    (int) stateData.get("range"),
-                    ((Number) stateData.get("reloadSpeed")).doubleValue(),
-                    (int) stateData.get("ammoCapacity"),
-                    (int) stateData.get("bulletSpeed"));
             rangedWeapon.setCurrentAmmo((int) stateData.get("currentAmmo"));
         }
     }
 
     private static WeaponType getWeaponType(Weapon weapon) {
-        for (WeaponType weaponType : WeaponType.values()) {
-            if (matchesAttributes(weapon, weaponType)) {
-                return weaponType;
+        for (WeaponType type : WeaponType.values()) {
+            if (type.getDamage() == weapon.getDamage() &&
+                    type.getRange() == weapon.getRange() &&
+                    type.getAttackSpeed() == weapon.getAttackSpeed()) {
+                return type;
             }
         }
         return null;
-    }
-
-    private static boolean matchesAttributes(Weapon weapon, WeaponType weaponType) {
-        return weapon.getDamage() == weaponType.getDamage() &&
-                weapon.getRange() == weaponType.getRange() &&
-                weapon.getAttackSpeed() == weaponType.getAttackSpeed();
     }
 }

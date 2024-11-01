@@ -28,6 +28,7 @@ public class Player extends MovableEntity {
     private Weapon equippedWeapon;
     private Fist fists;
     private MouseInput mouseInput = MouseInput.NONE;
+    private Inventory inventory;
 
     private float rotation;
 
@@ -42,11 +43,13 @@ public class Player extends MovableEntity {
         this.id = id;
         this.health = 100;
 
+        this.inventory = new Inventory();
         this.fists = ItemFactory.createItem(WeaponType.FIST);
-        this.fists.pickup(this);
         AK47 ak47 = ItemFactory.createItem(WeaponType.AK47);
+        this.fists.pickup(this);
         ak47.pickup(this);
         this.equippedWeapon = ak47;
+        inventory.changeWeapon(ak47);
     }
 
     public Player(int id, String username) {
@@ -86,5 +89,10 @@ public class Player extends MovableEntity {
 
     public void applyState(PlayerState newState) {
         this.health = newState.getHealth();
+    }
+
+    public void changeWeapon(RangedWeapon newWeapon) {
+        inventory.changeWeapon(newWeapon);
+        this.equippedWeapon = newWeapon;
     }
 }

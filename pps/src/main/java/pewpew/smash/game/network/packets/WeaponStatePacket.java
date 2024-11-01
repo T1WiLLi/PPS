@@ -13,6 +13,7 @@ import pewpew.smash.game.objects.WeaponType;
 @Getter
 @Setter
 public class WeaponStatePacket extends BasePacket {
+    private int ownerID;
     private WeaponType weaponType;
     private Map<String, Object> weaponStateData;
 }

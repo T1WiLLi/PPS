@@ -4,12 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import lombok.Getter;
 import pewpew.smash.game.objects.ConsumableType;
 import pewpew.smash.game.objects.RangedWeapon;
 import pewpew.smash.game.objects.special.AmmoStack;
 
 public class Inventory {
     private RangedWeapon primaryWeapon;
+    @Getter
     private final Map<ConsumableType, Integer> consumables;
     private AmmoStack ammoStack;
 

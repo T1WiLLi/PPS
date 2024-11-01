@@ -24,6 +24,7 @@ import pewpew.smash.game.network.packets.PlayerStatePacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
 import pewpew.smash.game.network.packets.PositionPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
+import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.packets.WorldDataPacket;
 import pewpew.smash.game.objects.WeaponType;
 
@@ -48,6 +49,7 @@ public class KryoRegister {
         kryo.register(WorldDataPacket.class);
         kryo.register(PlayerStatePacket.class);
         kryo.register(WeaponStatePacket.class);
+        kryo.register(WeaponSwitchRequestPacket.class);
         kryo.register(InventoryPacket.class);
         kryo.register(PlayerDeathPacket.class);
         kryo.register(BulletCreatePacket.class);
