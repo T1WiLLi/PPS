@@ -7,75 +7,147 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import pewpew.smash.engine.Canvas;
-import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.game.objects.RangedWeapon;
 
-public class Bullet extends MovableEntity {
+@ToString
+public class Bullet {
+    private static final Color BULLET_CORE = new Color(255, 200, 0);
+    private static final Color BULLET_OUTER = new Color(255, 140, 0, 180);
+    private static final Color TRAIL_COLOR = new Color(255, 165, 0, 150);
 
-    private static final int TRAIL_LENGTH = 10;
-
     @Getter
-    private int playerOwnerID;
+    @Setter
+    private int id;
     @Getter
-    private int damage;
+    private final int playerOwnerID;
     @Getter
-    private int maxRange;
+    private final int damage;
+    @Getter
+    private final int maxRange;
     @Getter
     private float distanceTraveled = 0;
-    private Queue<int[]> trailPositions = new LinkedList<>();
+
+    private final Queue<TrailPoint> trailPositions = new LinkedList<>();
+
+    @Getter
+    @Setter
+    private float x, y;
+    private float prevX, prevY;
+    private int coreWidth = 4, coreHeight = 4;
+    private int glowWidth = 8, glowHeight = 8;
+    private float speed;
+    private final float velocityX;
+    private final float velocityY;
+    private final float rotation;
+
+    private static class TrailPoint {
+        int x, y;
+        long createTime;
+
+        TrailPoint(int x, int y) {
+            this.x = x;
+            this.y = y;
+            this.createTime = System.currentTimeMillis();
+        }
+    }
 
     public Bullet(Player owner) {
         this.playerOwnerID = owner.getId();
+        this.rotation = owner.getRotation();
         this.damage = owner.getEquippedWeapon().getDamage();
         this.maxRange = owner.getEquippedWeapon().getRange();
-        setDimensions(4, 4);
-        setDirection(owner.getDirection());
-        teleport(owner.getX(), owner.getY());
-        setSpeed(((RangedWeapon) owner.getEquippedWeapon()).getBulletSpeed());
+
+        this.x = owner.getX();
+        this.y = owner.getY();
+        this.speed = ((RangedWeapon) owner.getEquippedWeapon()).getBulletSpeed();
+
+        double angleRad = Math.toRadians(rotation);
+        this.velocityX = (float) (Math.cos(angleRad) * speed);
+        this.velocityY = (float) (Math.sin(angleRad) * speed);
     }
 
-    @Override
+    public void teleport(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public void updateClient() {
-    }
+        prevX = x;
+        prevY = y;
+        x += velocityX;
+        y += velocityY;
 
-    @Override
-    public void updateServer() {
-        move(1);
+        trailPositions.add(new TrailPoint((int) x, (int) y));
 
-        double dx = getX() - getPrevX();
-        double dy = getY() - getPrevY();
-        distanceTraveled += Math.sqrt(dx * dx + dy * dy);
-
-        trailPositions.add(new int[] { getX(), getY() });
-        if (trailPositions.size() > TRAIL_LENGTH) {
+        long currentTime = System.currentTimeMillis();
+        while (!trailPositions.isEmpty() &&
+                currentTime - trailPositions.peek().createTime > 150) {
             trailPositions.poll();
         }
     }
 
-    @Override
+    public void updateServer() {
+        prevX = x;
+        prevY = y;
+        x += velocityX;
+        y += velocityY;
+
+        double dx = x - prevX;
+        double dy = y - prevY;
+        distanceTraveled += Math.sqrt(dx * dx + dy * dy);
+    }
+
     public void render(Canvas canvas) {
         renderTrail(canvas);
 
-        canvas.setColor(new Color(200, 200, 200));
-        canvas.renderCircle(getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth(),
-                new Color(200, 200, 200));
+        canvas.renderCircle(
+                (int) x - glowWidth / 2,
+                (int) y - glowHeight / 2,
+                glowWidth,
+                BULLET_OUTER);
+
+        canvas.renderCircle(
+                (int) x - coreWidth / 2,
+                (int) y - coreHeight / 2,
+                coreWidth,
+                BULLET_CORE);
+    }
+
+    public Shape getHitbox() {
+        return new Ellipse2D.Float(x - coreWidth / 2, y - coreHeight / 2, coreWidth, coreHeight);
     }
 
     private void renderTrail(Canvas canvas) {
-        int alpha = 150;
-        int alphaDecrement = 15;
+        if (trailPositions.isEmpty())
+            return;
 
-        for (int[] position : trailPositions) {
-            canvas.setColor(new Color(200, 200, 200, alpha));
-            canvas.renderCircle(position[0] - getWidth() / 2, position[1] - getHeight() / 2, getWidth(),
-                    new Color(200, 200, 200, alpha));
-            alpha = Math.max(0, alpha - alphaDecrement);
+        long currentTime = System.currentTimeMillis();
+        int index = 0;
+        int totalPoints = trailPositions.size();
+
+        for (TrailPoint point : trailPositions) {
+            float ageRatio = (currentTime - point.createTime) / 150f;
+            float positionRatio = (float) index / totalPoints;
+            int alpha = (int) (150 * (1 - ageRatio) * (1 - positionRatio));
+
+            int size = (int) (coreWidth * (1 + positionRatio * 0.5f));
+
+            Color trailColor = new Color(
+                    TRAIL_COLOR.getRed(),
+                    TRAIL_COLOR.getGreen(),
+                    TRAIL_COLOR.getBlue(),
+                    Math.max(0, Math.min(255, alpha)));
+
+            canvas.renderCircle(
+                    point.x - size / 2,
+                    point.y - size / 2,
+                    size,
+                    trailColor);
+
+            index++;
         }
-    }
-
-    @Override
-    public Shape getHitbox() {
-        return new Ellipse2D.Float(getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth(), getHeight());
     }
 }

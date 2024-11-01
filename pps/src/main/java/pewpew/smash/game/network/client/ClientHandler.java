@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pewpew.smash.game.SpectatorManager;
 import pewpew.smash.game.Alert.AlertManager;
+import pewpew.smash.game.entities.Bullet;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.network.Handler;
@@ -60,6 +61,10 @@ public class ClientHandler extends Handler {
                 handleMouseActionPacket(mouseActionPacket);
             } else if (packet instanceof PlayerStatePacket) {
                 handlePlayerStatePacket((PlayerStatePacket) packet);
+            } else if (packet instanceof BulletCreatePacket) {
+                handleBulletCreatePacket((BulletCreatePacket) packet);
+            } else if (packet instanceof BulletRemovePacket) {
+                handleBulletRemovePacket((BulletRemovePacket) packet);
             } else if (packet instanceof PlayerDeathPacket) {
                 handlePlayerDeathPacket((PlayerDeathPacket) packet);
             } else if (packet instanceof BroadcastMessagePacket) {
@@ -108,6 +113,17 @@ public class ClientHandler extends Handler {
         PlayerState newState = packet.getState();
         Player player = this.entityManager.getPlayerEntity(newState.getId());
         player.applyState(newState);
+    }
+
+    private void handleBulletCreatePacket(BulletCreatePacket packet) {
+        Bullet bullet = new Bullet(entityManager.getPlayerEntity(packet.getOwnerID()));
+        bullet.setId(packet.getBulletID());
+        bullet.teleport(packet.getX(), packet.getY());
+        this.entityManager.addBulletEntity(packet.getBulletID(), bullet);
+    }
+
+    private void handleBulletRemovePacket(BulletRemovePacket packet) {
+        this.entityManager.removeBulletEntity(packet.getBulletID());
     }
 
     private void handlePlayerDeathPacket(PlayerDeathPacket packet) {

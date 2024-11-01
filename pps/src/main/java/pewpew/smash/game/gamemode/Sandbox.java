@@ -5,7 +5,8 @@ import java.awt.event.KeyEvent;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.network.NetworkManager;
 import pewpew.smash.game.network.User;
-import pewpew.smash.game.network.client.EntityRenderer;
+import pewpew.smash.game.network.client.ClientEntityRenderer;
+import pewpew.smash.game.network.client.ClientEntityUpdater;
 import pewpew.smash.game.world.WorldGenerator;
 import pewpew.smash.game.Camera;
 import pewpew.smash.game.SpectatorManager;
@@ -16,7 +17,8 @@ import java.awt.image.BufferedImage;
 
 public class Sandbox implements GameMode {
     private NetworkManager networkManager;
-    private EntityRenderer entityRenderer;
+    private ClientEntityRenderer entityRenderer;
+    private ClientEntityUpdater entityUpdater;
     private BufferedImage worldImage;
     private Camera camera;
 
@@ -38,7 +40,8 @@ public class Sandbox implements GameMode {
             networkManager = new NetworkManager();
             networkManager.initialize(host, port, isHosting);
             SpectatorManager.getInstance().initialize(networkManager.getEntityManager());
-            entityRenderer = new EntityRenderer(networkManager.getEntityManager());
+            entityRenderer = new ClientEntityRenderer(networkManager.getEntityManager());
+            entityUpdater = new ClientEntityUpdater(networkManager.getEntityManager());
             System.out.println("Sandbox initialized");
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,6 +57,7 @@ public class Sandbox implements GameMode {
 
         try {
             networkManager.update();
+            entityUpdater.update();
 
             if (User.getInstance().isDead()) {
                 SpectatorManager.getInstance().update();
@@ -68,7 +72,6 @@ public class Sandbox implements GameMode {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         handleZoomControls();
     }
 

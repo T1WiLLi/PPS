@@ -39,6 +39,7 @@ public class ServerHandler extends Handler implements Runnable {
         this.worldManager = new ServerWorldManager();
         this.worldManager.displayWorld();
         this.gameTime = GameTime.getServerInstance();
+        ServerBulletTracker.getInstance().setServerReference(this.server);
         registersClasses(this.server.getKryo());
     }
 

@@ -16,12 +16,10 @@ import pewpew.smash.game.objects.MeleeWeapon;
 
 public class ServerCombatManager {
     private final EntityManager entityManager;
-    private final ServerBulletTracker bulletTracker;
     private final Map<Player, Boolean> damageDealtMap = new HashMap<>();
 
     public ServerCombatManager(EntityManager entityManager) {
         this.entityManager = entityManager;
-        this.bulletTracker = new ServerBulletTracker();
     }
 
     public void updateCombat(ServerWrapper server) {
@@ -48,15 +46,15 @@ public class ServerCombatManager {
     }
 
     private void checkRangedCombat(ServerWrapper server) {
-        bulletTracker.update();
+        ServerBulletTracker.getInstance().update(server);
 
-        for (Bullet bullet : bulletTracker.getActiveBullet()) {
+        for (Bullet bullet : ServerBulletTracker.getInstance().getBullets()) {
             for (Player targetPlayer : entityManager.getPlayerEntities()) {
                 if (targetPlayer.getId() != bullet.getPlayerOwnerID()
                         && bullet.getHitbox().intersects(targetPlayer.getX(), targetPlayer.getY(),
                                 targetPlayer.getWidth(), targetPlayer.getHeight())) {
                     handleBulletDamage(bullet, targetPlayer, server);
-                    bulletTracker.removeBullet(bullet);
+                    ServerBulletTracker.getInstance().removeBullet(bullet);
                 }
             }
         }

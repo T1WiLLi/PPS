@@ -11,6 +11,8 @@ import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.network.model.SerializedItem;
 import pewpew.smash.game.network.packets.BasePacket;
 import pewpew.smash.game.network.packets.BroadcastMessagePacket;
+import pewpew.smash.game.network.packets.BulletCreatePacket;
+import pewpew.smash.game.network.packets.BulletRemovePacket;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.InventoryPacket;
 import pewpew.smash.game.network.packets.MouseActionPacket;
@@ -48,6 +50,8 @@ public class KryoRegister {
         kryo.register(WeaponStatePacket.class);
         kryo.register(InventoryPacket.class);
         kryo.register(PlayerDeathPacket.class);
+        kryo.register(BulletCreatePacket.class);
+        kryo.register(BulletRemovePacket.class);
     }
 
     private void registerObjects(Kryo kryo) {
