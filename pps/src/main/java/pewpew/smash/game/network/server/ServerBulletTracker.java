@@ -38,7 +38,6 @@ public class ServerBulletTracker {
     }
 
     public void removeBullet(Bullet bullet) {
-        System.out.println("Removing bullet: " + bullet.toString());
         bullets.remove(bullet.getId());
         server.sendToAllTCP(new BulletRemovePacket(bullet.getId()));
     }
