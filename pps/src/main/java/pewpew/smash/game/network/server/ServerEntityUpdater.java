@@ -23,7 +23,7 @@ public class ServerEntityUpdater {
 
     public void update(ServerWrapper server) {
         entityManager.getPlayerEntities().forEach(player -> player.updateServer());
-        combatManager.checkMeleeCombat(server);
+        combatManager.updateCombat(server);
 
         ViewBounds combinedFOV = calculateCombinedPlayerFOV();
 

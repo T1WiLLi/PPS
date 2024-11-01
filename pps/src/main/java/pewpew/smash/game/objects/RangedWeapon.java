@@ -16,6 +16,7 @@ public abstract class RangedWeapon extends Weapon {
     protected double reloadSpeed;
 
     private double reloadTimer;
+    private int bulletSpeed;
 
     public abstract void shoot();
 
@@ -23,11 +24,13 @@ public abstract class RangedWeapon extends Weapon {
         super(name, description, preview);
     }
 
-    public void buildWeapon(int damage, double attackSpeed, int range, double reloadSpeed, int ammoCapacity) {
+    public void buildWeapon(int damage, double attackSpeed, int range, double reloadSpeed, int ammoCapacity,
+            int bulletSpeed) {
         super.buildWeapon(damage, attackSpeed, range);
         this.reloadSpeed = reloadSpeed;
         this.ammoCapacity = ammoCapacity;
         this.currentAmmo = ammoCapacity;
+        this.bulletSpeed = bulletSpeed;
     }
 
     // This function should be called in update()

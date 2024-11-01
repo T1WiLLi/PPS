@@ -42,6 +42,7 @@ public class WeaponStateSerializer {
             stateData.put("ammoCapacity", rangedWeapon.getAmmoCapacity());
             stateData.put("currentAmmo", rangedWeapon.getCurrentAmmo());
             stateData.put("reloadSpeed", rangedWeapon.getReloadSpeed());
+            stateData.put("bulletSpeed", rangedWeapon.getBulletSpeed());
         }
 
         WeaponStateSnapshot currentState = new WeaponStateSnapshot(weaponType, stateData);
@@ -83,7 +84,8 @@ public class WeaponStateSerializer {
                     ((Number) stateData.get("attackSpeed")).doubleValue(),
                     (int) stateData.get("range"),
                     ((Number) stateData.get("reloadSpeed")).doubleValue(),
-                    (int) stateData.get("ammoCapacity"));
+                    (int) stateData.get("ammoCapacity"),
+                    (int) stateData.get("bulletSpeed"));
             rangedWeapon.setCurrentAmmo((int) stateData.get("currentAmmo"));
         }
     }
