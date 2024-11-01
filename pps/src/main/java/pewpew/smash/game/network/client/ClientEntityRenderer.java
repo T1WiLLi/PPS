@@ -6,13 +6,13 @@ import pewpew.smash.game.Camera;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.utils.ScaleUtils;
 
-public class EntityRenderer {
+public class ClientEntityRenderer {
     private final EntityManager entityManager;
     private static final double FOV_BUFFER = 0.05; // 5% buffer for FOV calculations
     private static final int BASE_WIDTH = 800;
     private static final int BASE_HEIGHT = 600;
 
-    public EntityRenderer(EntityManager entityManager) {
+    public ClientEntityRenderer(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
@@ -22,6 +22,8 @@ public class EntityRenderer {
         renderPlayers(canvas, camera, bounds);
         renderMovableEntities(canvas, camera, bounds);
         renderUpdatableEntities(canvas, camera, bounds);
+
+        renderBulletEntities(canvas, camera, bounds);
 
         canvas.resetScale();
     }
@@ -44,6 +46,16 @@ public class EntityRenderer {
         entityManager.getUpdatableEntities().forEach(entity -> {
             if (isInView(entity.getX(), entity.getY(), bounds)) {
                 renderEntity(canvas, camera, entity);
+            }
+        });
+    }
+
+    private void renderBulletEntities(Canvas canvas, Camera camera, ViewBounds bounds) {
+        entityManager.getBulletEntities().forEach(entity -> {
+            if (isInView((int) entity.getX(), (int) entity.getY(), bounds)) {
+                canvas.translate(-camera.getX(), -camera.getY());
+                entity.render(canvas);
+                canvas.translate(camera.getX(), camera.getY());
             }
         });
     }

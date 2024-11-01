@@ -43,6 +43,7 @@ public abstract class RangedWeapon extends Weapon {
     }
 
     protected boolean canShoot() {
-        return currentAmmo > 0;
+        return true;
+        // return currentAmmo > 0;
     }
 }

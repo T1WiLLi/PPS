@@ -13,8 +13,11 @@ import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.objects.ItemFactory;
+import pewpew.smash.game.objects.MeleeWeapon;
+import pewpew.smash.game.objects.RangedWeapon;
 import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.WeaponType;
+import pewpew.smash.game.objects.weapon.AK47;
 import pewpew.smash.game.objects.weapon.Fist;
 
 @ToString(callSuper = true)
@@ -41,7 +44,9 @@ public class Player extends MovableEntity {
 
         this.fists = ItemFactory.createItem(WeaponType.FIST);
         this.fists.pickup(this);
-        this.equippedWeapon = fists;
+        AK47 ak47 = ItemFactory.createItem(WeaponType.AK47);
+        ak47.pickup(this);
+        this.equippedWeapon = ak47;
     }
 
     public Player(int id, String username) {
@@ -51,12 +56,17 @@ public class Player extends MovableEntity {
 
     @Override
     public void updateClient() {
-        this.fists.updateClient();
+        if (equippedWeapon instanceof MeleeWeapon) {
+            this.equippedWeapon.updateClient();
+        }
     }
 
     @Override
     public void updateServer() {
         move(1);
+        if (equippedWeapon instanceof RangedWeapon) {
+            this.equippedWeapon.updateServer();
+        }
     }
 
     @Override
@@ -64,7 +74,7 @@ public class Player extends MovableEntity {
         canvas.renderCircle(x, y, width, new Color(168, 168, 168));
         canvas.renderCircle(x + 2, y + 2, width - 4, new Color(229, 194, 152));
 
-        this.fists.render(canvas);
+        this.equippedWeapon.render(canvas);
 
         canvas.renderString(User.getInstance().getUsername() + "-" + id, x - width / 2, y - height / 2, Color.WHITE);
     }
