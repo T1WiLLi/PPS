@@ -16,9 +16,11 @@ import pewpew.smash.game.network.packets.MouseInputPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
+import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
+import pewpew.smash.game.objects.RangedWeapon;
 
 public class ServerHandler extends Handler implements Runnable {
 
@@ -80,6 +82,13 @@ public class ServerHandler extends Handler implements Runnable {
             Player player = this.entityManager.getPlayerEntity(connection.getID());
             if (player != null) {
                 player.setMouseInput(mouseInputPacket.getInput());
+            }
+        } else if (packet instanceof ReloadWeaponRequestPacket) {
+            Player player = this.entityManager.getPlayerEntity(connection.getID());
+            if (player != null) {
+                ((RangedWeapon) player.getEquippedWeapon()).reload();
+                WeaponStatePacket weaponStatePacket = WeaponStateSerializer.serializeWeaponState(player);
+                this.server.sendToTCP(connection.getID(), weaponStatePacket);
             }
         } else if (packet instanceof WeaponSwitchRequestPacket) {
             WeaponSwitchRequestPacket weaponSwitchRequestPacket = (WeaponSwitchRequestPacket) packet;

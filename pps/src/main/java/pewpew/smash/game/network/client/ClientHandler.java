@@ -17,6 +17,7 @@ import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.network.packets.*;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
+import pewpew.smash.game.objects.RangedWeapon;
 
 public class ClientHandler extends Handler {
     @Getter
@@ -123,6 +124,9 @@ public class ClientHandler extends Handler {
         bullet.setId(packet.getBulletID());
         bullet.teleport(packet.getX(), packet.getY());
         this.entityManager.addBulletEntity(packet.getBulletID(), bullet);
+        Player player = this.entityManager.getPlayerEntity(packet.getOwnerID());
+        ((RangedWeapon) player.getEquippedWeapon())
+                .setCurrentAmmo(((RangedWeapon) player.getEquippedWeapon()).getCurrentAmmo() - 1);
     }
 
     private void handleBulletRemovePacket(BulletRemovePacket packet) {

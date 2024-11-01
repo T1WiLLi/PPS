@@ -9,6 +9,7 @@ import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.MouseInputPacket;
+import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
@@ -25,6 +26,7 @@ public class ClientUpdater {
         if (!User.getInstance().isDead()) {
             sendDirection(client);
             sendWeaponSwitch(client);
+            sendGamePadInput(client);
             sendMouseInput(client);
             sendWeaponState(client);
         }
@@ -47,6 +49,12 @@ public class ClientUpdater {
         } else if (GamePad.getInstance().isSwitchWeaponTwoKeyPressed()) {
             WeaponSwitchRequestPacket packet = new WeaponSwitchRequestPacket(2);
             client.sendToTCP(packet);
+        }
+    }
+
+    private void sendGamePadInput(ClientWrapper client) {
+        if (GamePad.getInstance().isReloadKeyPressed()) {
+            client.sendToTCP(new ReloadWeaponRequestPacket());
         }
     }
 
