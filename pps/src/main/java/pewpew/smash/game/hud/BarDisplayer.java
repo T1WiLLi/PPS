@@ -10,20 +10,25 @@ public class BarDisplayer extends HudElement {
 
     @Setter
     private int value;
+    @Setter
+    private int maxValue;
 
-    public BarDisplayer(int x, int y, int width, int height) {
+    private Color accentColor;
+
+    public BarDisplayer(int x, int y, int width, int height, Color accentColor) {
         super(x, y, width, height);
+        this.accentColor = accentColor;
     }
 
     @Override
     public void render(Canvas canvas) {
-        int filled = (int) ((double) value / 100 * width);
+        int filled = (int) ((double) value / maxValue * width);
 
         canvas.renderRectangle(x, y, width, height, Color.GRAY);
-        canvas.renderRectangle(x, y, filled, height, Color.RED);
+        canvas.renderRectangle(x, y, filled, height, this.accentColor);
 
         FontFactory.IMPACT_SMALL.applyFont(canvas);
-        canvas.renderString(value + "/100", x + 10, y + 20, Color.WHITE);
+        canvas.renderString(value + "/" + maxValue, x + 10, y + 20, Color.WHITE);
         FontFactory.resetFont(canvas);
     }
 }

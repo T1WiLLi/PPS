@@ -35,8 +35,8 @@ public class Playing implements State {
         HudManager.getInstance().render(canvas);
         this.overlayManager.render(canvas);
 
-        canvas.renderString("FPS: " + GameTime.getCurrentFps(), 10, 60, Color.WHITE);
-        canvas.renderString("UPS: " + GameTime.getCurrentUps(), 10, 80, Color.WHITE);
+        canvas.renderString("FPS: " + GameTime.getCurrentFps(), 220, 20, Color.WHITE);
+        canvas.renderString("UPS: " + GameTime.getCurrentUps(), 220, 40, Color.WHITE);
     }
 
     @Override

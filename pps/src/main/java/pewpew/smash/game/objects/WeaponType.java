@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum WeaponType {
 
     FIST(10, 25, 0.020, Optional.empty(), Optional.empty(), Optional.empty()),
-    AK47(35, 2500, 0.1, Optional.of(1), Optional.of(2.5), Optional.of(30)),
+    AK47(35, 2500, 0.1, Optional.of(3), Optional.of(2.5), Optional.of(30)),
     HK416(38, 2700, 0.1, Optional.of(4), Optional.of(2.3), Optional.of(30)),
     M1A1(45, 3200, 0.4, Optional.of(4), Optional.of(3.0), Optional.of(20)),
     MAC10(25, 800, 0.08, Optional.of(2), Optional.of(2.1), Optional.of(32)),
