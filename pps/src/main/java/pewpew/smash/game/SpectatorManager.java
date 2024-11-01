@@ -1,5 +1,6 @@
 package pewpew.smash.game;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.ArrayList;
@@ -80,7 +81,7 @@ public class SpectatorManager {
         FontFactory.IMPACT_X_LARGE.applyFont(canvas);
         String text = "Spectating: " + getSpectatingTarget().getUsername();
         canvas.renderString(text, 800 / 2 - FontFactory.IMPACT_X_LARGE.getFontWidth(text, canvas) / 2,
-                200);
+                200, Color.WHITE);
         FontFactory.resetFont(canvas);
     }
 

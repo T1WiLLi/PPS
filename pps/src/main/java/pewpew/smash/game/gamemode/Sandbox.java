@@ -1,5 +1,6 @@
 package pewpew.smash.game.gamemode;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 
 import pewpew.smash.engine.Canvas;
@@ -97,7 +98,7 @@ public class Sandbox implements GameMode {
             SpectatorManager.getInstance().render(canvas);
         }
 
-        canvas.renderString(networkManager.getBroadcastMessage(), 25, 550);
+        canvas.renderString(networkManager.getBroadcastMessage(), 25, 550, Color.WHITE);
         canvas.resetScale();
     }
 
