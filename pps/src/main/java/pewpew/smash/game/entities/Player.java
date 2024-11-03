@@ -12,13 +12,12 @@ import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.model.PlayerState;
+import pewpew.smash.game.objects.Fist;
 import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.objects.MeleeWeapon;
 import pewpew.smash.game.objects.RangedWeapon;
 import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.WeaponType;
-import pewpew.smash.game.objects.weapon.AK47;
-import pewpew.smash.game.objects.weapon.Fist;
 
 @ToString(callSuper = true)
 @Getter
@@ -45,7 +44,7 @@ public class Player extends MovableEntity {
 
         this.inventory = new Inventory();
         this.fists = ItemFactory.createItem(WeaponType.FIST);
-        AK47 ak47 = ItemFactory.createItem(WeaponType.AK47);
+        RangedWeapon ak47 = ItemFactory.createItem(WeaponType.MAC10);
         this.fists.pickup(this);
         ak47.pickup(this);
         this.equippedWeapon = ak47;

@@ -1,4 +1,4 @@
-package pewpew.smash.game.objects.weapon;
+package pewpew.smash.game.objects;
 
 import java.awt.Shape;
 import java.awt.image.BufferedImage;
@@ -8,7 +8,6 @@ import java.awt.Color;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.MouseInput;
-import pewpew.smash.game.objects.MeleeWeapon;
 
 public class Fist extends MeleeWeapon {
 

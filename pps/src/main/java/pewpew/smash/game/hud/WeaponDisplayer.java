@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import lombok.Setter;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.entities.Player;
-import pewpew.smash.game.objects.weapon.Fist;
+import pewpew.smash.game.objects.Fist;
 
 public class WeaponDisplayer extends HudElement {
 
