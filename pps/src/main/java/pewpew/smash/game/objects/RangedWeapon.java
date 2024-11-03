@@ -8,39 +8,39 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.game.entities.Bullet;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.server.ServerBulletTracker;
 
 @ToString(callSuper = true)
 @Getter
-public abstract class RangedWeapon extends Weapon {
-    protected int ammoCapacity;
+public class RangedWeapon extends Weapon {
+    private RangedWeaponPropreties properties;
+
+    private int ammoCapacity;
     @Setter
-    protected int currentAmmo;
-    protected double reloadSpeed;
+    private int currentAmmo;
+    private double reloadSpeed;
 
     private double reloadTimer;
     @Getter
     private int bulletSpeed;
 
-    // Render gun
     @Getter
-    protected final int weaponLength;
-    protected final int weaponWidth;
-    protected final int handRadius;
-    protected final Color weaponColor;
+    private final int weaponLength;
+    private final int weaponWidth;
+    private final int handRadius;
+    private final Color weaponColor;
     private long lastShotTime = 0;
 
-    public abstract void shoot();
-
-    public RangedWeapon(String name, String description, BufferedImage preview, int weaponLength, int weaponWidth,
-            int handRadius, Color weaponColor) {
+    public RangedWeapon(String name, String description, BufferedImage preview, RangedWeaponPropreties properties) {
         super(name, description, preview);
-        this.weaponLength = weaponLength;
-        this.weaponWidth = weaponWidth;
-        this.handRadius = handRadius;
-        this.weaponColor = weaponColor;
+        this.properties = properties;
+        this.weaponLength = properties.getWeaponLength();
+        this.weaponWidth = properties.getWeaponWidth();
+        this.weaponColor = properties.getWeaponColor();
+        this.handRadius = properties.getHandRadius();
     }
 
     public void buildWeapon(int damage, double attackSpeed, int range, double reloadSpeed, int ammoCapacity,
@@ -56,18 +56,27 @@ public abstract class RangedWeapon extends Weapon {
         currentAmmo = ammoCapacity;
     }
 
-    protected boolean canShoot() {
-        long currentTime = System.currentTimeMillis();
-        return currentAmmo > 0 && (currentTime - lastShotTime >= (getAttackSpeed() * 1000));
+    public void shoot() {
+        if (canShoot()) {
+            if (getOwner() != null) {
+                spawnBullet((Player) getOwner());
+            }
+        }
     }
 
-    protected void spawnBullet(Player owner) {
-        Bullet bullet = new Bullet(owner);
-        ServerBulletTracker.getInstance().addBullet(bullet);
-        lastShotTime = System.currentTimeMillis();
-        currentAmmo--;
+    @Override
+    public void updateClient() {
+
     }
 
+    @Override
+    public void updateServer() {
+        if (getOwner().getMouseInput() == MouseInput.LEFT_CLICK && canShoot()) {
+            shoot();
+        }
+    }
+
+    @Override
     public void render(Canvas canvas) {
         if (getOwner() == null)
             return;
@@ -89,5 +98,30 @@ public abstract class RangedWeapon extends Weapon {
         canvas.getGraphics2D().setTransform(original);
     }
 
-    protected abstract void renderWeapon(Canvas canvas);
+    private void renderWeapon(Canvas canvas) {
+        canvas.renderRectangle(-getWeaponLength() / 4, -getWeaponWidth() / 2, getWeaponLength(), getWeaponWidth(),
+                getWeaponColor());
+        renderHand(canvas, getWeaponLength() / 2 - getHandRadius(), 0);
+        if (properties.isTwoHanded()) {
+            renderHand(canvas, -getWeaponLength() / 4 + getHandRadius() / 2, getWeaponWidth() * 2 - getHandRadius());
+        }
+    }
+
+    private void renderHand(Canvas canvas, int x, int y) {
+        canvas.renderCircle(x - getHandRadius() / 2, y - getHandRadius() / 2, getHandRadius(), Color.BLACK);
+        canvas.renderCircle(x - getHandRadius() / 2 + 1, y - getHandRadius() / 2 + 1, getHandRadius() - 2,
+                new Color(229, 194, 152));
+    }
+
+    protected boolean canShoot() {
+        long currentTime = System.currentTimeMillis();
+        return currentAmmo > 0 && (currentTime - lastShotTime >= (getAttackSpeed() * 1000));
+    }
+
+    protected void spawnBullet(Player owner) {
+        Bullet bullet = new Bullet(owner);
+        ServerBulletTracker.getInstance().addBullet(bullet);
+        lastShotTime = System.currentTimeMillis();
+        currentAmmo--;
+    }
 }

@@ -13,6 +13,7 @@ import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
+import pewpew.smash.game.objects.RangedWeapon;
 
 public class ClientUpdater {
     private final EntityManager entityManager;
@@ -54,7 +55,10 @@ public class ClientUpdater {
 
     private void sendGamePadInput(ClientWrapper client) {
         if (GamePad.getInstance().isReloadKeyPressed()) {
-            client.sendToTCP(new ReloadWeaponRequestPacket());
+            if (this.entityManager.getPlayerEntity(User.getInstance().getLocalID().get())
+                    .getEquippedWeapon() instanceof RangedWeapon) {
+                client.sendToTCP(new ReloadWeaponRequestPacket());
+            }
         }
     }
 

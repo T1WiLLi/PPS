@@ -3,7 +3,7 @@
     "fps" : 120,
     "antiAliasing" : true,
     "textAliasing" : true,
-    "renderQuality" : "fast"
+    "renderQuality" : "quality"
   },
   "key" : {
     "movement" : {
@@ -26,9 +26,9 @@
     }
   },
   "audio" : {
-    "generalVolume" : 0.48124998807907104,
+    "generalVolume" : 0.4921875,
     "sfxVolume" : 1.0,
-    "music" : false,
+    "music" : true,
     "sfx" : true,
     "ui" : true
   }

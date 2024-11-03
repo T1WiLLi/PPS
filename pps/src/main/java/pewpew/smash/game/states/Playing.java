@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.GameTime;
 import pewpew.smash.game.GameManager;
+import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.gamemode.GameModeManager;
 import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.input.GamePad;
@@ -20,6 +21,7 @@ public class Playing implements State {
 
     public Playing() {
         init();
+        AudioPlayer.getInstance().stopAll();
     }
 
     @Override
