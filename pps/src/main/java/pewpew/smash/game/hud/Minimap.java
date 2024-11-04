@@ -6,6 +6,7 @@ public class Minimap extends HudElement {
 
     public Minimap(int x, int y, int width, int height) {
         super(x, y, width, height);
+
     }
 
     @Override
