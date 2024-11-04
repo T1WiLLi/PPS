@@ -12,6 +12,7 @@ import pewpew.smash.game.world.WorldGenerator;
 import pewpew.smash.game.Camera;
 import pewpew.smash.game.SpectatorManager;
 import pewpew.smash.game.entities.Player;
+import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.input.GamePad;
 
 import java.awt.image.BufferedImage;
@@ -54,6 +55,7 @@ public class Sandbox implements GameMode {
     public void update(double deltaTime) {
         if (networkManager.isWorldDataReceived() && this.worldImage == null) {
             this.worldImage = WorldGenerator.getWorldImage(networkManager.getWorldData());
+            HudManager.getInstance().setWorldImage(this.worldImage);
         }
 
         try {
