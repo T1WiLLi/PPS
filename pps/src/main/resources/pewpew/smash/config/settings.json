@@ -28,7 +28,7 @@
   "audio" : {
     "generalVolume" : 0.4921875,
     "sfxVolume" : 1.0,
-    "music" : true,
+    "music" : false,
     "sfx" : true,
     "ui" : true
   }
