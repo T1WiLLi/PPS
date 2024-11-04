@@ -44,7 +44,7 @@ public class Player extends MovableEntity {
 
         this.inventory = new Inventory();
         this.fists = ItemFactory.createItem(WeaponType.FIST);
-        RangedWeapon ak47 = ItemFactory.createItem(WeaponType.MAC10);
+        RangedWeapon ak47 = ItemFactory.createItem(WeaponType.HK416);
         this.fists.pickup(this);
         ak47.pickup(this);
         this.equippedWeapon = ak47;
