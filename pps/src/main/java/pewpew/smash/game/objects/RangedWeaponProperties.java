@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class RangedWeaponPropreties {
+public class RangedWeaponProperties {
     private final int weaponLength;
     private final int weaponWidth;
     private final int handRadius;

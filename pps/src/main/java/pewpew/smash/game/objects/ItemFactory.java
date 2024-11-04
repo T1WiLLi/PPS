@@ -16,7 +16,7 @@ public class ItemFactory {
     private static final Map<ConsumableType, BufferedImage> consumablesPreviews = new EnumMap<>(ConsumableType.class);
     private static final Map<SpecialType, BufferedImage> specialItems = new EnumMap<>(SpecialType.class);
 
-    private static final Map<WeaponType, RangedWeaponPropreties> rangedWeaponPropertiesMap = new EnumMap<>(
+    private static final Map<WeaponType, RangedWeaponProperties> rangedWeaponPropertiesMap = new EnumMap<>(
             WeaponType.class);
 
     public static void preloadItemPreviews() {
@@ -37,19 +37,19 @@ public class ItemFactory {
 
     private static void preloadRangedWeaponPropreties() {
         rangedWeaponPropertiesMap.put(WeaponType.AK47,
-                new RangedWeaponPropreties(60, 8, 14, new Color(139, 69, 19), true));
+                new RangedWeaponProperties(60, 8, 14, new Color(139, 69, 19), true));
         rangedWeaponPropertiesMap.put(WeaponType.HK416,
-                new RangedWeaponPropreties(80, 10, 14, new Color(139, 69, 19), true));
+                new RangedWeaponProperties(80, 10, 14, new Color(139, 69, 19), true));
         rangedWeaponPropertiesMap.put(WeaponType.M1A1,
-                new RangedWeaponPropreties(70, 10, 14, new Color(97, 74, 62), true));
+                new RangedWeaponProperties(70, 10, 14, new Color(97, 74, 62), true));
         rangedWeaponPropertiesMap.put(WeaponType.MAC10,
-                new RangedWeaponPropreties(25, 6, 14, new Color(139, 69, 19), false));
+                new RangedWeaponProperties(25, 6, 14, new Color(139, 69, 19), false));
     }
 
     @SuppressWarnings("unchecked")
     public static <T extends Weapon> T createItem(WeaponType type) {
         BufferedImage preview = weaponsPreviews.get(type);
-        RangedWeaponPropreties properties = rangedWeaponPropertiesMap.get(type);
+        RangedWeaponProperties properties = rangedWeaponPropertiesMap.get(type);
 
         Item weapon = switch (type) {
             case FIST -> createMeleeWeapon(new Fist(type.name(), "Good'ol fist", preview), type);
