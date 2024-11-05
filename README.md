@@ -150,11 +150,11 @@ This project is licensed under a proprietary license. All rights reserved.
 - Commercial use not permitted
 
 ## 🤝 Contributing
-While this is a proprietary project, we welcome bug reports and feature suggestions through the issue tracker.
+While this is a proprietary project, I welcome bug reports and feature suggestions through the issue tracker.
 
 ---
 <div align="center">
-  Made with ❤️ by [Your Name/Team]
+  Made with ❤️ by William Beaudin (T1WiLLi)
   
-  <img src="logo.png" alt="PewPewSmash Logo" style="width:64px; height:64px;">
+  <img src="icon.png" alt="PewPewSmash Logo" style="width:64px; height:64px;">
 </div>
