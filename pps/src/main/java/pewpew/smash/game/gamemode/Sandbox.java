@@ -100,7 +100,7 @@ public class Sandbox implements GameMode {
             SpectatorManager.getInstance().render(canvas);
         }
 
-        canvas.renderString(networkManager.getBroadcastMessage(), 25, 550, Color.WHITE);
+        canvas.renderString(networkManager.getBroadcastMessage(), 140, 580, Color.WHITE);
         canvas.resetScale();
     }
 
