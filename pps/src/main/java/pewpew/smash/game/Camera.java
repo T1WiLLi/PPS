@@ -1,13 +1,14 @@
 package pewpew.smash.game;
 
 import pewpew.smash.engine.entities.StaticEntity;
+import pewpew.smash.game.world.WorldGenerator;
 
 public class Camera {
     private volatile static Camera instance;
 
     private float x, y;
-    private final int MAP_WIDTH = 2000;
-    private final int MAP_HEIGHT = 2000;
+    private final int MAP_WIDTH = WorldGenerator.getWorldWidth();
+    private final int MAP_HEIGHT = WorldGenerator.getWorldHeight();
     private float zoom = 1.0f;
 
     public static Camera getInstance() {

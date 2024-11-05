@@ -12,8 +12,8 @@ import pewpew.smash.game.utils.HelpMethods;
 
 public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
     private static final int tileSize = 5;
-    private int worldWidth = 400;
-    private int worldHeight = 400;
+    private static int worldWidth = 400;
+    private static int worldHeight = 400;
     private byte[][] world;
     private double[][] noiseCache;
 
@@ -22,8 +22,8 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
     private static final byte SAND = 3;
 
     public WorldGenerator() {
-        this.world = new byte[this.worldWidth][this.worldHeight];
-        this.noiseCache = new double[this.worldWidth][this.worldHeight];
+        this.world = new byte[worldWidth][worldHeight];
+        this.noiseCache = new double[worldWidth][worldHeight];
         long startTime = System.currentTimeMillis();
         generateWorld();
         long endTime = System.currentTimeMillis();
@@ -32,6 +32,14 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
 
     public byte[][] getWorldData() {
         return this.world;
+    }
+
+    public static int getWorldWidth() {
+        return worldWidth * tileSize;
+    }
+
+    public static int getWorldHeight() {
+        return worldHeight * tileSize;
     }
 
     private void generateWorld() {

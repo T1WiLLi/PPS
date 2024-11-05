@@ -65,8 +65,8 @@ public class Bullet {
         float weaponCenterX = owner.getX() + owner.getWidth() / 2;
         float weaponCenterY = owner.getY() + owner.getHeight() / 2;
         double angleRad = Math.toRadians(this.rotation);
-        this.x = weaponCenterX + (int) (equippedWeapon.getWeaponLength() / 2 * Math.cos(angleRad));
-        this.y = weaponCenterY + (int) (equippedWeapon.getWeaponLength() / 2 * Math.sin(angleRad));
+        this.x = weaponCenterX + (int) (equippedWeapon.getWeaponLength() * Math.cos(angleRad));
+        this.y = weaponCenterY + (int) (equippedWeapon.getWeaponLength() * Math.sin(angleRad));
 
         this.speed = equippedWeapon.getBulletSpeed();
 
