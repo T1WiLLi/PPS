@@ -23,6 +23,7 @@ public class WeaponStateSerializer {
 
         if (weapon instanceof MeleeWeapon) {
             MeleeWeapon meleeWeapon = (MeleeWeapon) weapon;
+            stateData.put("isAttacking", meleeWeapon.isAttacking());
             stateData.put("attackProgress", meleeWeapon.getAttackProgress());
             stateData.put("isReturning", meleeWeapon.isReturning());
         } else if (weapon instanceof RangedWeapon) {
@@ -47,6 +48,7 @@ public class WeaponStateSerializer {
 
         if (weapon instanceof MeleeWeapon) {
             MeleeWeapon meleeWeapon = (MeleeWeapon) weapon;
+            meleeWeapon.setAttacking((Boolean) stateData.get("isAttacking"));
             meleeWeapon.setAttackProgress((float) stateData.get("attackProgress"));
             meleeWeapon.setReturning((boolean) stateData.get("isReturning"));
         } else if (weapon instanceof RangedWeapon) {

@@ -69,7 +69,7 @@ public class ServerHandler extends Handler implements Runnable {
             PlayerUsernamePacket usernamePacket = (PlayerUsernamePacket) packet;
             this.entityManager.getPlayerEntity(connection.getID()).setUsername(usernamePacket.getUsername());
             PlayerJoinedPacket joinedPacket = new PlayerJoinedPacket(connection.getID(), usernamePacket.getUsername());
-            this.server.sendToAllExceptTCP(connection.getID(), joinedPacket);
+            this.server.sendToAllUDP(joinedPacket);
         } else if (packet instanceof DirectionPacket) {
             DirectionPacket directionPacket = (DirectionPacket) packet;
             Player player = this.entityManager.getPlayerEntity(connection.getID());
@@ -122,6 +122,8 @@ public class ServerHandler extends Handler implements Runnable {
             this.server.sendToTCP(connection.getID(), existingPlayerPacket);
             this.server.sendToTCP(connection.getID(), weaponStatePacket);
         });
+        WeaponStatePacket playerWeaponStatePacket = WeaponStateSerializer.serializeWeaponState(player);
+        this.server.sendToTCP(connection.getID(), playerWeaponStatePacket);
         this.entityManager.addPlayerEntity(player.getId(), player);
         this.worldManager.sendWorldDataToClient(server, connection.getID());
     }
