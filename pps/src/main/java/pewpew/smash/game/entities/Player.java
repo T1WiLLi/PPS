@@ -10,14 +10,17 @@ import lombok.ToString;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.engine.entities.MovableEntity;
+import pewpew.smash.game.Camera;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.objects.Fist;
 import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.objects.MeleeWeapon;
 import pewpew.smash.game.objects.RangedWeapon;
+import pewpew.smash.game.objects.SpecialType;
 import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.WeaponType;
+import pewpew.smash.game.objects.special.Scope;
 
 @ToString(callSuper = true)
 @Getter
@@ -26,6 +29,7 @@ public class Player extends MovableEntity {
 
     private Weapon equippedWeapon;
     private Fist fists;
+    private Scope scope = ItemFactory.createItem(SpecialType.SCOPE_X1);
     private MouseInput mouseInput = MouseInput.NONE;
     private Inventory inventory;
 
@@ -46,9 +50,10 @@ public class Player extends MovableEntity {
         this.fists = ItemFactory.createItem(WeaponType.FIST);
         RangedWeapon ak47 = ItemFactory.createItem(WeaponType.HK416);
         this.fists.pickup(this);
-        ak47.pickup(this);
-        this.equippedWeapon = ak47;
-        inventory.changeWeapon(ak47);
+        this.equippedWeapon = this.fists;
+
+        // Apply player scope to camera
+        Camera.getInstance().setZoom(this.scope.getZoomValue());
     }
 
     public Player(int id, String username) {
@@ -76,7 +81,9 @@ public class Player extends MovableEntity {
         canvas.renderCircle(x, y, width, new Color(168, 168, 168));
         canvas.renderCircle(x + 2, y + 2, width - 4, new Color(229, 194, 152));
 
-        this.equippedWeapon.render(canvas);
+        if (this.equippedWeapon != null) {
+            this.equippedWeapon.render(canvas);
+        }
 
         canvas.renderString(User.getInstance().getUsername() + "-" + id, x - width / 2, y - height / 2, Color.WHITE);
     }
@@ -93,5 +100,10 @@ public class Player extends MovableEntity {
     public void changeWeapon(RangedWeapon newWeapon) {
         inventory.changeWeapon(newWeapon);
         this.equippedWeapon = newWeapon;
+    }
+
+    public void setScope(Scope scope) {
+        this.scope = scope;
+        Camera.getInstance().setZoom(this.scope.getZoomValue());
     }
 }
