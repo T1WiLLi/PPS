@@ -152,6 +152,7 @@ public class ClientHandler extends Handler {
             SpectatorManager.getInstance().startSpectating(killerPlayerId);
         }
         entityManager.removePlayerEntity(deadPlayerId);
+        HudManager.getInstance().setAmountOfPlayerAlive(this.entityManager.getPlayerEntities().size());
     }
 
     private void handleBroadcastMessagePacket(BroadcastMessagePacket packet) {
@@ -164,7 +165,6 @@ public class ClientHandler extends Handler {
             Player player = new Player(playerJoined.getId(), playerJoined.getUsername());
             this.entityManager.addPlayerEntity(player.getId(), player);
             this.currentBroadcastedMessage = player.getUsername() + " has joined the game.";
-
         }
     }
 

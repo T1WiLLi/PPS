@@ -94,9 +94,11 @@ public class ServerHandler extends Handler implements Runnable {
             WeaponSwitchRequestPacket weaponSwitchRequestPacket = (WeaponSwitchRequestPacket) packet;
             Player player = this.entityManager.getPlayerEntity(connection.getID());
 
-            switch (weaponSwitchRequestPacket.getKeyCode()) {
-                case 1 -> player.setEquippedWeapon(player.getFists());
-                case 2 -> player.getInventory().getPrimaryWeapon().ifPresent(player::setEquippedWeapon);
+            if (player.getInventory().getPrimaryWeapon().isPresent()) {
+                switch (weaponSwitchRequestPacket.getKeyCode()) {
+                    case 1 -> player.setEquippedWeapon(player.getFists());
+                    case 2 -> player.getInventory().getPrimaryWeapon().ifPresent(player::setEquippedWeapon);
+                }
             }
 
             WeaponStatePacket newWeaponState = WeaponStateSerializer.serializeWeaponState(player);

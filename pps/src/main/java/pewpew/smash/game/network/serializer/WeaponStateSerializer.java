@@ -38,10 +38,12 @@ public class WeaponStateSerializer {
         WeaponType weaponType = weaponState.getWeaponType();
         Weapon weapon = player.getEquippedWeapon();
 
-        if (weapon == null || getWeaponType(weapon) != weaponType) {
+        if ((weapon == null || getWeaponType(weapon) != weaponType) && weaponType != null) {
             weapon = ItemFactory.createItem(weaponType);
             weapon.pickup(player);
             player.setEquippedWeapon(weapon);
+        } else if (weaponType != null) {
+            return;
         }
 
         Map<String, Object> stateData = weaponState.getWeaponStateData();
