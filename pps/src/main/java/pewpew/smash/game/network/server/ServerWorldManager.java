@@ -2,7 +2,11 @@ package pewpew.smash.game.network.server;
 
 import java.util.Arrays;
 
+import pewpew.smash.game.network.manager.ItemManager;
+import pewpew.smash.game.network.model.SerializedItem;
+import pewpew.smash.game.network.packets.ItemAddPacket;
 import pewpew.smash.game.network.packets.WorldDataPacket;
+import pewpew.smash.game.network.serializer.SerializationUtility;
 import pewpew.smash.game.world.WorldDisplayerHelper;
 import pewpew.smash.game.world.WorldGenerator;
 
@@ -25,6 +29,9 @@ public final class ServerWorldManager {
 
     public void sendWorldDataToClient(ServerWrapper server, int clientID) {
         server.sendToTCP(clientID, new WorldDataPacket(this.worldData));
-
+        ItemManager.getInstance().getItems().forEach(i -> {
+            SerializedItem serializedItem = SerializationUtility.serializeItem(i);
+            server.sendToTCP(clientID, new ItemAddPacket(i.getX(), i.getY(), serializedItem));
+        });
     }
 }

@@ -7,8 +7,8 @@ import pewpew.smash.game.objects.Consumable;
 
 public class Bandage extends Consumable {
 
-    public Bandage(String name, String description, BufferedImage preview) {
-        super(name, description, preview);
+    public Bandage(int id, String name, String description, BufferedImage preview) {
+        super(id, name, description, preview);
     }
 
     @Override

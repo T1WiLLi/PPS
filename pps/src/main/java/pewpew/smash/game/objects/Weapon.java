@@ -17,8 +17,8 @@ public abstract class Weapon extends Item {
 
     public abstract void updateServer();
 
-    public Weapon(String name, String description, BufferedImage preview) {
-        super(name, description, preview);
+    public Weapon(int id, String name, String description, BufferedImage preview) {
+        super(id, name, description, preview);
     }
 
     protected void buildWeapon(int damage, double attackSpeed, int range) {

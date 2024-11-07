@@ -14,8 +14,8 @@ public abstract class Consumable extends Item {
 
     public abstract void consume();
 
-    public Consumable(String name, String description, BufferedImage preview) {
-        super(name, description, preview);
+    public Consumable(int id, String name, String description, BufferedImage preview) {
+        super(id, name, description, preview);
     }
 
     protected void buildConsumable(int healingAmount, double timeToConsume) {

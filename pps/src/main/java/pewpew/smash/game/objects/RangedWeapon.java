@@ -22,6 +22,8 @@ public class RangedWeapon extends Weapon {
     private final int handRadius;
     private final Color weaponColor;
 
+    private WeaponType type;
+
     private int ammoCapacity;
     @Setter
     private int currentAmmo;
@@ -29,22 +31,25 @@ public class RangedWeapon extends Weapon {
     private int bulletSpeed;
     private long lastShotTime = 0;
 
-    public RangedWeapon(String name, String description, BufferedImage preview, RangedWeaponProperties properties) {
-        super(name, description, preview);
+    public RangedWeapon(int id, String name, String description, BufferedImage preview,
+            RangedWeaponProperties properties, WeaponType type) {
+        super(id, name, description, preview);
+        setDimensions(48, 48);
         this.properties = properties;
+        this.type = type;
         this.weaponLength = properties.getWeaponLength();
         this.weaponWidth = properties.getWeaponWidth();
         this.weaponColor = properties.getWeaponColor();
         this.handRadius = properties.getHandRadius();
+        buildWeapon();
     }
 
-    public void buildWeapon(int damage, double attackSpeed, int range, double reloadSpeed, int ammoCapacity,
-            int bulletSpeed) {
-        super.buildWeapon(damage, attackSpeed, range);
-        this.reloadSpeed = reloadSpeed;
-        this.ammoCapacity = ammoCapacity;
-        this.currentAmmo = ammoCapacity;
-        this.bulletSpeed = bulletSpeed;
+    private void buildWeapon() {
+        super.buildWeapon(this.type.getDamage(), this.type.getAttackSpeed(), this.type.getRange());
+        this.reloadSpeed = this.type.getReloadSpeed().get();
+        this.ammoCapacity = this.type.getAmmoCapacity().get();
+        this.currentAmmo = this.ammoCapacity;
+        this.bulletSpeed = this.type.getBulletSpeed().get();
     }
 
     public void reload() {

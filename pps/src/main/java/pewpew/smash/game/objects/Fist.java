@@ -21,8 +21,8 @@ public class Fist extends MeleeWeapon {
     private boolean isLeftFistAttacking = false;
     private boolean isRightFistAttacking = false;
 
-    public Fist(String name, String description, BufferedImage preview) {
-        super(name, description, preview);
+    public Fist(int id, String name, String description, BufferedImage preview) {
+        super(id, name, description, preview);
         setDimensions(6, 6);
         this.damageZone = new Polygon();
     }

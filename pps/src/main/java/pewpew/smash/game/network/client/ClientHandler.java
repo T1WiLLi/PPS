@@ -14,9 +14,13 @@ import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
+import pewpew.smash.game.network.manager.ItemManager;
 import pewpew.smash.game.network.model.PlayerState;
+import pewpew.smash.game.network.model.SerializedItem;
 import pewpew.smash.game.network.packets.*;
+import pewpew.smash.game.network.serializer.SerializationUtility;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
+import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.objects.RangedWeapon;
 
 public class ClientHandler extends Handler {
@@ -69,6 +73,8 @@ public class ClientHandler extends Handler {
                 handleBulletRemovePacket((BulletRemovePacket) packet);
             } else if (packet instanceof WeaponStatePacket) {
                 handleWeaponStatePacket((WeaponStatePacket) packet);
+            } else if (packet instanceof ItemAddPacket) {
+                handleItemAddPacket((ItemAddPacket) packet);
             } else if (packet instanceof PlayerDeathPacket) {
                 handlePlayerDeathPacket((PlayerDeathPacket) packet);
             } else if (packet instanceof BroadcastMessagePacket) {
@@ -138,6 +144,15 @@ public class ClientHandler extends Handler {
         if (player != null) {
             WeaponStateSerializer.deserializeWeaponState(packet, player);
         }
+    }
+
+    private void handleItemAddPacket(ItemAddPacket packet) {
+        SerializedItem serializedItem = packet.getSerializedItem();
+
+        Item item = SerializationUtility.deserializeItem(serializedItem);
+        item.teleport(packet.getX(), packet.getY());
+
+        ItemManager.getInstance().addItem(item);
     }
 
     private void handlePlayerDeathPacket(PlayerDeathPacket packet) {

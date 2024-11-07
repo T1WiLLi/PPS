@@ -34,7 +34,8 @@ public class HudManager {
         this.local = player;
         this.weaponDisplayer.setPlayer(player);
         this.healthBar.setMaxValue(100);
-        if (this.local.getInventory().getPrimaryWeapon().isPresent()) {
+        if (this.local.getInventory().getPrimaryWeapon().isPresent()
+                && this.local.getEquippedWeapon().equals(this.local.getInventory().getPrimaryWeapon().get())) {
             this.ammoBar.setMaxValue(((RangedWeapon) this.local.getEquippedWeapon()).getAmmoCapacity());
         }
         this.minimap.setLocal(player);

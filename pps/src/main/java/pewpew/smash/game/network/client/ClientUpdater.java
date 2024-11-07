@@ -70,7 +70,7 @@ public class ClientUpdater {
     private void sendWeaponState(ClientWrapper client) {
         Player localPlayer = entityManager.getPlayerEntity(User.getInstance().getLocalID().get());
         if (localPlayer != null) {
-            WeaponStatePacket packet = WeaponStateSerializer.serializeWeaponState(localPlayer);
+            WeaponStatePacket packet = WeaponStateSerializer.serializeWeaponState(localPlayer.getEquippedWeapon());
             if (packet != null) {
                 client.sendToUDP(packet);
             }

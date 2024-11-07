@@ -17,9 +17,9 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
     private byte[][] world;
     private double[][] noiseCache;
 
-    private static final byte GRASS = 1;
-    private static final byte WATER = 2;
-    private static final byte SAND = 3;
+    public static final byte GRASS = 1;
+    public static final byte WATER = 2;
+    public static final byte SAND = 3;
 
     public WorldGenerator() {
         this.world = new byte[worldWidth][worldHeight];

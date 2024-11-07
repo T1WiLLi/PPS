@@ -1,8 +1,12 @@
 package pewpew.smash.game.network.model;
 
 import java.util.Map;
+
+import lombok.NoArgsConstructor;
+
 import java.util.HashMap;
 
+@NoArgsConstructor
 public class SerializedItem {
     public enum ItemType {
         CONSUMABLE,
