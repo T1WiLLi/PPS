@@ -29,7 +29,7 @@ public class Player extends MovableEntity {
 
     private Weapon equippedWeapon;
     private Fist fists;
-    private Scope scope = ItemFactory.createItem(SpecialType.SCOPE_X1);
+    private Scope scope = (Scope) ItemFactory.createItem(SpecialType.SCOPE_X1);
     private MouseInput mouseInput = MouseInput.NONE;
     private Inventory inventory;
 
@@ -47,8 +47,7 @@ public class Player extends MovableEntity {
         this.health = 100;
 
         this.inventory = new Inventory();
-        this.fists = ItemFactory.createItem(WeaponType.FIST);
-        RangedWeapon ak47 = ItemFactory.createItem(WeaponType.HK416);
+        this.fists = (Fist) ItemFactory.createItem(WeaponType.FIST);
         this.fists.pickup(this);
         this.equippedWeapon = this.fists;
 

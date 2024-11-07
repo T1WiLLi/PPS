@@ -20,8 +20,8 @@ public abstract class MeleeWeapon extends Weapon {
 
     public abstract Shape getHitbox();
 
-    public MeleeWeapon(String name, String description, BufferedImage preview) {
-        super(name, description, preview);
+    public MeleeWeapon(int id, String name, String description, BufferedImage preview) {
+        super(id, name, description, preview);
     }
 
     public void buildWeapon(int damage, double attackSpeed, int range) {

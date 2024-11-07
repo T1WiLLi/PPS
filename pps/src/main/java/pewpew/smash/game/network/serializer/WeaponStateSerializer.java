@@ -12,8 +12,7 @@ import pewpew.smash.game.objects.WeaponType;
 
 public class WeaponStateSerializer {
 
-    public static WeaponStatePacket serializeWeaponState(Player player) {
-        Weapon weapon = player.getEquippedWeapon();
+    public static WeaponStatePacket serializeWeaponState(Weapon weapon) {
         if (weapon == null) {
             return new WeaponStatePacket(Integer.MIN_VALUE, null, null);
         }
@@ -31,7 +30,8 @@ public class WeaponStateSerializer {
             stateData.put("currentAmmo", rangedWeapon.getCurrentAmmo());
         }
 
-        return new WeaponStatePacket(player.getId(), weaponType, stateData);
+        return new WeaponStatePacket(weapon.getOwner() != null ? weapon.getOwner().getId() : Integer.MIN_VALUE,
+                weaponType, stateData);
     }
 
     public static void deserializeWeaponState(WeaponStatePacket weaponState, Player player) {
@@ -60,13 +60,10 @@ public class WeaponStateSerializer {
     }
 
     private static WeaponType getWeaponType(Weapon weapon) {
-        for (WeaponType type : WeaponType.values()) {
-            if (type.getDamage() == weapon.getDamage() &&
-                    type.getRange() == weapon.getRange() &&
-                    type.getAttackSpeed() == weapon.getAttackSpeed()) {
-                return type;
-            }
+        if (weapon instanceof MeleeWeapon) {
+            return WeaponType.FIST;
+        } else {
+            return ((RangedWeapon) weapon).getType();
         }
-        return null;
     }
 }

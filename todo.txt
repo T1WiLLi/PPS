@@ -1,0 +1,3 @@
+Le nom in-game est pas le bon
+Les fists damage font pas dégats
+l'état de l'arme n'est pas correctement partagé entre les clients

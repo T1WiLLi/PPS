@@ -4,14 +4,19 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Random;
 
 import pewpew.smash.game.objects.consumable.Bandage;
 import pewpew.smash.game.objects.consumable.Medikit;
 import pewpew.smash.game.objects.consumable.Pill;
+import pewpew.smash.game.objects.special.AmmoStack;
 import pewpew.smash.game.objects.special.Scope;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class ItemFactory {
+
+    private static int currentID = 0;
+
     private static final Map<WeaponType, BufferedImage> weaponsPreviews = new EnumMap<>(WeaponType.class);
     private static final Map<ConsumableType, BufferedImage> consumablesPreviews = new EnumMap<>(ConsumableType.class);
     private static final Map<SpecialType, BufferedImage> specialItems = new EnumMap<>(SpecialType.class);
@@ -46,75 +51,56 @@ public class ItemFactory {
                 new RangedWeaponProperties(25, 6, 14, new Color(139, 69, 19), false));
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Weapon> T createItem(WeaponType type) {
+    public static Weapon createItem(WeaponType type) {
         BufferedImage preview = weaponsPreviews.get(type);
         RangedWeaponProperties properties = rangedWeaponPropertiesMap.get(type);
 
-        Item weapon = switch (type) {
-            case FIST -> createMeleeWeapon(new Fist(type.name(), "Good'ol fist", preview), type);
-            case AK47 -> createRangedWeapon(new RangedWeapon(type.name(), "AK-47", preview, properties), type);
-            case HK416 ->
-                createRangedWeapon(new RangedWeapon(type.name(), "For heavy duty combat", preview, properties), type);
-            case M1A1 -> createRangedWeapon(
-                    new RangedWeapon(type.name(), "You won't see it t'ill it's too late", preview, properties), type);
-            case MAC10 -> createRangedWeapon(
-                    new RangedWeapon(type.name(), "Samll-rate firing machine", preview, properties), type);
+        int itemId = currentID++;
+
+        Weapon weapon = switch (type) {
+            case FIST -> createMeleeWeapon(new Fist(itemId, type.name(), "Good'ol fist", preview), type);
+            case AK47, HK416, M1A1, MAC10 ->
+                new RangedWeapon(itemId, type.name(), "Description", preview, properties, type);
             default -> throw new IllegalArgumentException("Unknown weapon type");
         };
 
-        if (weapon instanceof Item) {
-            return (T) weapon;
-        } else {
-            throw new ClassCastException("Failed to create item of type: " + type);
-        }
+        return weapon;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Consumable> T createItem(ConsumableType type) {
+    public static Consumable createItem(ConsumableType type) {
         BufferedImage preview = consumablesPreviews.get(type);
 
-        Item createdItem = switch (type) {
+        Consumable createdItem = switch (type) {
             case MEDIKIT -> createConsumable(type, preview);
             case BANDAGE -> createConsumable(type, preview);
             case PILL -> createConsumable(type, preview);
             default -> throw new IllegalArgumentException("Unknown consumable type");
         };
 
-        if (createdItem instanceof Item) {
-            return (T) createdItem;
-        } else {
-            throw new ClassCastException("Failed to create item of type: " + type);
-        }
+        return createdItem;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Item> T createItem(SpecialType type) {
+    public static Item createItem(SpecialType type) {
         BufferedImage preview = specialItems.get(type);
 
+        int itemId = currentID++;
+
         Item createdItem = switch (type) {
-            case SCOPE_X1 -> new Scope(type.getName(), type.getDescription(), type.getValue(), preview);
-            case SCOPE_X2 -> new Scope(type.getName(), type.getDescription(), type.getValue(), preview);
-            case SCOPE_X3 -> new Scope(type.getName(), type.getDescription(), type.getValue(), preview);
-            case SCOPE_X4 -> new Scope(type.getName(), type.getDescription(), type.getValue(), preview);
+            case SCOPE_X1 -> new Scope(itemId, type.getName(), type.getDescription(), type.getValue(), preview);
+            case SCOPE_X2 -> new Scope(itemId, type.getName(), type.getDescription(), type.getValue(), preview);
+            case SCOPE_X3 -> new Scope(itemId, type.getName(), type.getDescription(), type.getValue(), preview);
+            case SCOPE_X4 -> new Scope(itemId, type.getName(), type.getDescription(), type.getValue(), preview);
         };
 
-        if (createdItem instanceof Item) {
-            return (T) createdItem;
-        } else {
-            throw new ClassCastException("Failed to create item of type: " + type);
-        }
+        return createdItem;
     }
 
-    private static RangedWeapon createRangedWeapon(RangedWeapon weapon, WeaponType type) {
-        weapon.buildWeapon(
-                type.getDamage(),
-                type.getAttackSpeed(),
-                type.getRange(),
-                type.getReloadSpeed().get(),
-                type.getAmmoCapacity().get(),
-                type.getBulletSpeed().get());
-        return weapon;
+    public static AmmoStack createAmmoStack() {
+        int itemId = currentID++;
+        int ammoAmount = 15 + new Random().nextInt(26);
+        AmmoStack ammoStack = new AmmoStack(itemId, "Ammo Stack", "A Stack of ammo");
+        ammoStack.setAmmo(ammoAmount);
+        return ammoStack;
     }
 
     private static MeleeWeapon createMeleeWeapon(MeleeWeapon weapon, WeaponType type) {
@@ -126,10 +112,11 @@ public class ItemFactory {
     }
 
     private static Consumable createConsumable(ConsumableType type, BufferedImage preview) {
+        int itemId = currentID++;
         return switch (type) {
-            case MEDIKIT -> new Medikit(type.name(), "Heals you", preview);
-            case BANDAGE -> new Bandage(type.name(), "Heals you", preview);
-            case PILL -> new Pill(type.name(), "Heals you", preview);
+            case MEDIKIT -> new Medikit(itemId, type.name(), "Heals you", preview);
+            case BANDAGE -> new Bandage(itemId, type.name(), "Heals you", preview);
+            case PILL -> new Pill(itemId, type.name(), "Heals you", preview);
             default -> throw new IllegalArgumentException("Unknown consumable type");
         };
     }

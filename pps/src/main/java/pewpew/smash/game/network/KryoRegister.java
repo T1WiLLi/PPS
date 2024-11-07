@@ -15,6 +15,8 @@ import pewpew.smash.game.network.packets.BulletCreatePacket;
 import pewpew.smash.game.network.packets.BulletRemovePacket;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.InventoryPacket;
+import pewpew.smash.game.network.packets.ItemAddPacket;
+import pewpew.smash.game.network.packets.ItemRemovePacket;
 import pewpew.smash.game.network.packets.MouseActionPacket;
 import pewpew.smash.game.network.packets.MouseInputPacket;
 import pewpew.smash.game.network.packets.PlayerDeathPacket;
@@ -56,6 +58,8 @@ public class KryoRegister {
         kryo.register(BulletCreatePacket.class);
         kryo.register(BulletRemovePacket.class);
         kryo.register(ReloadWeaponRequestPacket.class);
+        kryo.register(ItemAddPacket.class);
+        kryo.register(ItemRemovePacket.class);
     }
 
     private void registerObjects(Kryo kryo) {
@@ -72,7 +76,7 @@ public class KryoRegister {
         kryo.register(byte[][].class);
         kryo.register(int[].class);
         kryo.register(int[][].class);
-        kryo.register(Object.class);
+        kryo.register(String.class);
         kryo.register(Integer.class);
         kryo.register(Map.class);
         kryo.register(HashMap.class);

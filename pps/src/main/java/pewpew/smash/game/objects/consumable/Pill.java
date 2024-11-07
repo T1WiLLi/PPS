@@ -7,8 +7,8 @@ import pewpew.smash.game.objects.Consumable;
 
 public class Pill extends Consumable {
 
-    public Pill(String name, String description, BufferedImage preview) {
-        super(name, description, preview);
+    public Pill(int id, String name, String description, BufferedImage preview) {
+        super(id, name, description, preview);
     }
 
     @Override

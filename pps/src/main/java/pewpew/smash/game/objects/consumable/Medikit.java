@@ -7,8 +7,8 @@ import pewpew.smash.game.objects.Consumable;
 
 public class Medikit extends Consumable {
 
-    public Medikit(String name, String description, BufferedImage preview) {
-        super(name, description, preview);
+    public Medikit(int id, String name, String description, BufferedImage preview) {
+        super(id, name, description, preview);
     }
 
     @Override

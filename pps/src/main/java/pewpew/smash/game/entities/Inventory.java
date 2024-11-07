@@ -17,7 +17,7 @@ public class Inventory {
 
     public Inventory() {
         this.consumables = new HashMap<>();
-        this.ammoStack = new AmmoStack("Ammo", "Stack of ammunition");
+        this.ammoStack = new AmmoStack(0, "Ammo", "Stack of ammunition");
     }
 
     public void changeWeapon(RangedWeapon weapon) {

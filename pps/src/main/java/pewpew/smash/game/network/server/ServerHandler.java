@@ -20,6 +20,7 @@ import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
+import pewpew.smash.game.objects.ItemGenerator;
 import pewpew.smash.game.objects.RangedWeapon;
 
 public class ServerHandler extends Handler implements Runnable {
@@ -55,6 +56,8 @@ public class ServerHandler extends Handler implements Runnable {
 
     @Override
     public void run() {
+        // Run starting-event
+        new ItemGenerator().generateItems(server, this.worldManager.getWorldData(), 3);
         while (!Thread.currentThread().isInterrupted()) {
             if (gameTime.shouldUpdate()) {
                 update(gameTime.getDeltaTime());
@@ -87,7 +90,8 @@ public class ServerHandler extends Handler implements Runnable {
             Player player = this.entityManager.getPlayerEntity(connection.getID());
             if (player != null) {
                 ((RangedWeapon) player.getEquippedWeapon()).reload();
-                WeaponStatePacket weaponStatePacket = WeaponStateSerializer.serializeWeaponState(player);
+                WeaponStatePacket weaponStatePacket = WeaponStateSerializer
+                        .serializeWeaponState(player.getEquippedWeapon());
                 this.server.sendToTCP(connection.getID(), weaponStatePacket);
             }
         } else if (packet instanceof WeaponSwitchRequestPacket) {
@@ -101,7 +105,7 @@ public class ServerHandler extends Handler implements Runnable {
                 }
             }
 
-            WeaponStatePacket newWeaponState = WeaponStateSerializer.serializeWeaponState(player);
+            WeaponStatePacket newWeaponState = WeaponStateSerializer.serializeWeaponState(player.getEquippedWeapon());
             this.server.sendToAllTCP(newWeaponState);
         } else if (packet instanceof WeaponStatePacket) {
             WeaponStatePacket weaponStatePacket = (WeaponStatePacket) packet;
@@ -120,11 +124,14 @@ public class ServerHandler extends Handler implements Runnable {
             PlayerJoinedPacket existingPlayerPacket = new PlayerJoinedPacket(
                     existingPlayer.getId(),
                     existingPlayer.getUsername());
-            WeaponStatePacket weaponStatePacket = WeaponStateSerializer.serializeWeaponState(existingPlayer);
+            WeaponStatePacket weaponStatePacket = WeaponStateSerializer
+                    .serializeWeaponState(existingPlayer.getEquippedWeapon());
             this.server.sendToTCP(connection.getID(), existingPlayerPacket);
             this.server.sendToTCP(connection.getID(), weaponStatePacket);
         });
-        WeaponStatePacket playerWeaponStatePacket = WeaponStateSerializer.serializeWeaponState(player);
+
+        WeaponStatePacket playerWeaponStatePacket = WeaponStateSerializer
+                .serializeWeaponState(player.getEquippedWeapon());
         this.server.sendToTCP(connection.getID(), playerWeaponStatePacket);
         this.entityManager.addPlayerEntity(player.getId(), player);
         this.worldManager.sendWorldDataToClient(server, connection.getID());

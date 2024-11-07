@@ -11,8 +11,8 @@ public class Scope extends Item {
     @Getter
     private float zoomValue;
 
-    public Scope(String name, String description, float zoomValue, BufferedImage preview) {
-        super(name, description, preview);
+    public Scope(int id, String name, String description, float zoomValue, BufferedImage preview) {
+        super(id, name, description, preview);
         this.zoomValue = zoomValue;
     }
 
