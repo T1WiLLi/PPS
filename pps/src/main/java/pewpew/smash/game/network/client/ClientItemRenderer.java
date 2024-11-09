@@ -6,6 +6,7 @@ import pewpew.smash.game.Camera;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.manager.ItemManager;
 import pewpew.smash.game.objects.Item;
+import pewpew.smash.game.objects.special.AmmoStack;
 import pewpew.smash.game.settings.SettingsManager;
 import pewpew.smash.game.utils.FontFactory;
 
@@ -34,16 +35,15 @@ public class ClientItemRenderer {
     }
 
     private void renderPickupPrompt(Canvas canvas, Item item, Camera camera) {
-
         FontFactory.SMALL_FONT.applyFont(canvas);
-        canvas.renderString(item.getName(), item.getX(), item.getY() - 5, Color.WHITE);
+        canvas.renderString(
+                item.getName() + ((item instanceof AmmoStack) ? "(" + ((AmmoStack) item).getAmmo() + ")" : ""),
+                item.getX(), item.getY() - 5, Color.WHITE);
 
         FontFactory.IMPACT_MEDIUM.applyFont(canvas);
         canvas.renderString(SettingsManager.getInstance().getSettings().getKey().getMisc().get("use").toLowerCase(),
                 item.getX(),
                 item.getY() + item.getWidth() + 10, Color.YELLOW);
-
         FontFactory.resetFont(canvas);
     }
-
 }
