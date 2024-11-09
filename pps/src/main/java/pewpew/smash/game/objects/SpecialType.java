@@ -20,4 +20,13 @@ public enum SpecialType {
         this.name = name;
         this.description = description;
     }
+
+    public static SpecialType getScopeFromIdentifier(String identifier) {
+        for (SpecialType type : SpecialType.values()) {
+            if (type.getName().equals(identifier)) {
+                return type;
+            }
+        }
+        return null;
+    }
 }

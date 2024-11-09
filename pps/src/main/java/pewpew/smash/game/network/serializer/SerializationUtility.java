@@ -35,7 +35,13 @@ public class SerializationUtility {
         } else if (item instanceof AmmoStack) {
             type = SerializedItem.ItemType.AMMO_STACK;
             quantity = ((AmmoStack) item).getAmmo();
+        } else if (item instanceof Scope) {
+            type = SerializedItem.ItemType.SCOPE;
+            Scope scope = (Scope) item;
+            itemIdentifier = scope.getName();
+            extraData.put("zoomValue", (int) (scope.getZoomValue() * 100));
         } else {
+            System.err.println("Unknown item type: " + item.getClass().getName());
             throw new IllegalArgumentException("Unknown item type");
         }
 
@@ -60,6 +66,10 @@ public class SerializationUtility {
             case AMMO_STACK:
                 item = ItemFactory.createAmmoStack();
                 ((AmmoStack) item).setAmmo(serializedItem.quantity);
+                break;
+            case SCOPE:
+                SpecialType specialType = SpecialType.getScopeFromIdentifier(serializedItem.itemIdentifier);
+                item = ItemFactory.createItem(specialType);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown SerializedItem type");
