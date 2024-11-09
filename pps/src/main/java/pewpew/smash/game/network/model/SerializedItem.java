@@ -11,7 +11,8 @@ public class SerializedItem {
     public enum ItemType {
         CONSUMABLE,
         WEAPON,
-        AMMO_STACK
+        AMMO_STACK,
+        SCOPE;
     }
 
     public ItemType type;

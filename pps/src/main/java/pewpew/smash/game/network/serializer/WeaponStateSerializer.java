@@ -42,15 +42,13 @@ public class WeaponStateSerializer {
             weapon = ItemFactory.createItem(weaponType);
             weapon.pickup(player);
             player.setEquippedWeapon(weapon);
-        } else if (weaponType != null) {
-            return;
         }
 
         Map<String, Object> stateData = weaponState.getWeaponStateData();
 
         if (weapon instanceof MeleeWeapon) {
             MeleeWeapon meleeWeapon = (MeleeWeapon) weapon;
-            meleeWeapon.setAttacking((Boolean) stateData.get("isAttacking"));
+            meleeWeapon.setAttacking((boolean) stateData.get("isAttacking"));
             meleeWeapon.setAttackProgress((float) stateData.get("attackProgress"));
             meleeWeapon.setReturning((boolean) stateData.get("isReturning"));
         } else if (weapon instanceof RangedWeapon) {
