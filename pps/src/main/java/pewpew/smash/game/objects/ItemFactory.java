@@ -37,10 +37,10 @@ public class ItemFactory {
             specialItems.put(type, loadPreview(ResourcesLoader.HUD_PATH, type));
         }
 
-        preloadRangedWeaponPropreties();
+        preloadRangedWeaponProperties();
     }
 
-    private static void preloadRangedWeaponPropreties() {
+    private static void preloadRangedWeaponProperties() {
         rangedWeaponPropertiesMap.put(WeaponType.AK47,
                 new RangedWeaponProperties(60, 8, 14, new Color(139, 69, 19), true));
         rangedWeaponPropertiesMap.put(WeaponType.HK416,
@@ -49,6 +49,14 @@ public class ItemFactory {
                 new RangedWeaponProperties(70, 10, 14, new Color(97, 74, 62), true));
         rangedWeaponPropertiesMap.put(WeaponType.MAC10,
                 new RangedWeaponProperties(25, 6, 14, new Color(139, 69, 19), false));
+        rangedWeaponPropertiesMap.put(WeaponType.MP5,
+                new RangedWeaponProperties(30, 7, 12, new Color(105, 105, 105), false));
+        rangedWeaponPropertiesMap.put(WeaponType.COLT45,
+                new RangedWeaponProperties(50, 8, 5, new Color(112, 128, 144), false));
+        rangedWeaponPropertiesMap.put(WeaponType.DEAGLE,
+                new RangedWeaponProperties(75, 9, 7, new Color(128, 128, 128), false));
+        rangedWeaponPropertiesMap.put(WeaponType.GLOCK,
+                new RangedWeaponProperties(20, 5, 12, new Color(105, 105, 105), false));
     }
 
     public static Weapon createItem(WeaponType type) {
@@ -59,7 +67,7 @@ public class ItemFactory {
 
         Weapon weapon = switch (type) {
             case FIST -> createMeleeWeapon(new Fist(itemId, type.name(), "Good'ol fist", preview), type);
-            case AK47, HK416, M1A1, MAC10 ->
+            case AK47, HK416, M1A1, MAC10, MP5, COLT45, DEAGLE, GLOCK ->
                 new RangedWeapon(itemId, type.name(), "Description", preview, properties, type);
             default -> throw new IllegalArgumentException("Unknown weapon type");
         };

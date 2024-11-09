@@ -11,7 +11,6 @@ import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.game.Camera;
-import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.objects.Fist;
 import pewpew.smash.game.objects.ItemFactory;
@@ -84,7 +83,8 @@ public class Player extends MovableEntity {
             this.equippedWeapon.render(canvas);
         }
 
-        canvas.renderString(User.getInstance().getUsername() + "-" + id, x - width / 2, y - height / 2, Color.WHITE);
+        String displayUsername = this.username.equals("Guest") ? this.username + "-" + id : this.username;
+        canvas.renderString(displayUsername, x - width / 2, y - height / 2, Color.WHITE);
     }
 
     @Override
