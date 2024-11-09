@@ -83,8 +83,9 @@ public class NetworkManager {
             if (server != null) {
                 server.stop();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } finally {
+            server = null;
+            client = null;
         }
     }
 

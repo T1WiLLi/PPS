@@ -1,7 +1,7 @@
 {
   "video" : {
     "fps" : 120,
-    "antiAliasing" : true,
+    "antiAliasing" : false,
     "textAliasing" : true,
     "renderQuality" : "quality"
   },
@@ -17,7 +17,7 @@
       "reload" : "R",
       "map" : "M",
       "inventory" : "I",
-      "pause" : "Escape"
+      "pause" : "P"
     }
   },
   "mouse" : {

@@ -25,6 +25,7 @@ public class OverlayFactory {
             case CONNECTION -> new ConnectionOverlay(x, y, width, height);
             case ACCOUNT -> new AccountOverlay(x, y, width, height);
             case PLAY -> new PlayOverlay(x, y, width, height);
+            case PAUSE -> new PauseOverlay(x + 250, y + 100, 300, 400);
             case JOIN -> new JoinOverlay(x, y, width, height);
             case HOST -> new HostOverlay(x, y, width, height);
             default -> throw new IllegalArgumentException("Unknown overlay type: " + type);
