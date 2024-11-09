@@ -20,6 +20,7 @@ import pewpew.smash.game.objects.SpecialType;
 import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.WeaponType;
 import pewpew.smash.game.objects.special.Scope;
+import pewpew.smash.game.utils.FontFactory;
 
 @ToString(callSuper = true)
 @Getter
@@ -83,8 +84,10 @@ public class Player extends MovableEntity {
             this.equippedWeapon.render(canvas);
         }
 
+        FontFactory.DEFAULT_FONT.applyFont(canvas);
         String displayUsername = this.username.equals("Guest") ? this.username + "-" + id : this.username;
         canvas.renderString(displayUsername, x - width / 2, y - height / 2, Color.WHITE);
+        FontFactory.resetFont(canvas);
     }
 
     @Override

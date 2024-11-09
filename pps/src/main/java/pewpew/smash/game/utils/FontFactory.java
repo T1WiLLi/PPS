@@ -26,6 +26,7 @@ public enum FontFactory {
     }
 
     public static void resetFont(Canvas canvas) {
+        canvas.resetFont();
         canvas.setFont(DEFAULT_FONT.getFont());
     }
 

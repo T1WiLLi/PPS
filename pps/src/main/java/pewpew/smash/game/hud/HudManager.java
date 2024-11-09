@@ -18,6 +18,7 @@ public class HudManager {
     private WeaponDisplayer weaponDisplayer;
     private AlivePlayerDisplayer alivePlayerDisplayer;
     private ScopeElementDisplayer scopeElementDisplayer;
+    private ConsumableDisplayer consumableDisplayer;
     private Minimap minimap;
 
     @Setter
@@ -33,6 +34,7 @@ public class HudManager {
     public void setPlayer(Player player) {
         this.local = player;
         this.weaponDisplayer.setPlayer(player);
+        this.consumableDisplayer.setInventory(player.getInventory());
         this.healthBar.setMaxValue(100);
         if (this.local.getInventory().getPrimaryWeapon().isPresent()
                 && this.local.getEquippedWeapon().equals(this.local.getInventory().getPrimaryWeapon().get())) {
@@ -60,15 +62,17 @@ public class HudManager {
         this.weaponDisplayer.render(canvas);
         this.alivePlayerDisplayer.render(canvas);
         this.scopeElementDisplayer.render(canvas);
+        this.consumableDisplayer.render(canvas);
         this.minimap.render(canvas);
     }
 
     private HudManager() {
         this.healthBar = new BarDisplayer(10, 10, 200, 25, Color.RED);
         this.ammoBar = new BarDisplayer(10, 40, 100, 25, Color.ORANGE);
-        this.weaponDisplayer = new WeaponDisplayer(800 - 120 - 10, 600 - 100 - 10, 120, 100);
+        this.weaponDisplayer = new WeaponDisplayer(800 - 105 - 10, 600 - 100 - 10, 120, 100);
         this.alivePlayerDisplayer = new AlivePlayerDisplayer(690, 10, 100, 100);
         this.scopeElementDisplayer = new ScopeElementDisplayer(375, 25, 50, 50);
+        this.consumableDisplayer = new ConsumableDisplayer(800 - 120 - 10, 225, 120, 150);
         this.minimap = new Minimap(20, 580, 100, 100);
     }
 }

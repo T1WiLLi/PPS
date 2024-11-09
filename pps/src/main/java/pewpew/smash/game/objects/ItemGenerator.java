@@ -61,19 +61,18 @@ public class ItemGenerator {
             return ItemFactory.createAmmoStack();
 
         } else if (itemType < 85) {
-            WeaponType weapon = switch (random.nextInt(7)) {
-                case 0 -> WeaponType.AK47;
-                case 1 -> WeaponType.HK416;
-                case 2 -> WeaponType.M1A1;
-                case 3 -> WeaponType.MAC10;
-                case 4 -> WeaponType.MP5;
-                case 5 -> WeaponType.COLT45;
-                case 6 -> WeaponType.DEAGLE;
-                case 7 -> WeaponType.GLOCK;
+            WeaponType weapon = switch (random.nextInt(16)) {
+                case 0, 1 -> WeaponType.AK47;
+                case 2, 3 -> WeaponType.HK416;
+                case 4, 5 -> WeaponType.M1A1;
+                case 6 -> WeaponType.MAC10;
+                case 7, 8 -> WeaponType.MP5;
+                case 9, 10 -> WeaponType.COLT45;
+                case 11 -> WeaponType.DEAGLE;
+                case 12, 13, 14, 15 -> WeaponType.GLOCK;
                 default -> throw new IllegalStateException("Unexpected weapon type");
             };
             return ItemFactory.createItem(weapon);
-
         } else {
             int scopeRarity = random.nextInt(100);
             SpecialType scope = switch (scopeRarity) {
