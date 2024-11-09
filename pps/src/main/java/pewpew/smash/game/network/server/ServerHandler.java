@@ -144,23 +144,31 @@ public class ServerHandler extends Handler implements Runnable {
     }
 
     @Override
-    public void stop() {
+    public synchronized void stop() {
         try {
-            this.server.stop();
-            this.executor.shutdown();
+            if (server != null) {
+                server.stop();
+            }
 
-            if (!this.executor.awaitTermination(30, TimeUnit.SECONDS)) {
-                this.executor.shutdownNow();
-                if (!this.executor.awaitTermination(30, TimeUnit.SECONDS)) {
-                    System.err.println("Thread did not terminate");
+            if (executor != null) {
+                executor.shutdown();
+
+                if (!executor.awaitTermination(30, TimeUnit.MILLISECONDS)) {
+                    executor.shutdownNow();
+                    if (!executor.awaitTermination(30, TimeUnit.MILLISECONDS)) {
+                        System.err.println("Executor did not terminate");
+                    }
                 }
             }
-        } catch (InterruptedException e) {
-            this.executor.shutdownNow();
-            Thread.currentThread().interrupt();
-            e.printStackTrace();
         } catch (IOException e) {
+            System.err.println("Error during server shutdown: " + e.getMessage());
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("Shutdown was interrupted: " + e.getMessage());
+        } finally {
+            server = null;
+            executor = null;
         }
     }
 

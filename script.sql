@@ -100,6 +100,7 @@ VALUES
 ('T1WiLLi', 't1willi@gmail.com', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8'), -- passowrd
 ('xXProGamerXx', 'proGamer@gmail.com', '07ed400759a0f606a8b5bfa84712aabe7d1b1c45cb6536c8a5727446b6647b84'), -- pro
 ('l', 'l@gmail.com', 'acac86c0e609ca906f632b0e2dacccb2b77d22b0621f20ebece1a4835b93f6f0'); -- l
+('xX_dark_gamer_tv_Xx63', 'dark@gmail.com', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225') -- 123456789
 
 INSERT INTO game_modes (name, description, image_url)
 VALUES

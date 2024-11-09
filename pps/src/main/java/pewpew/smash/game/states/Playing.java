@@ -10,7 +10,9 @@ import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.gamemode.GameModeManager;
 import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.input.GamePad;
+import pewpew.smash.game.overlay.OverlayFactory;
 import pewpew.smash.game.overlay.OverlayManager;
+import pewpew.smash.game.overlay.OverlayType;
 
 public class Playing implements State {
 
@@ -29,6 +31,9 @@ public class Playing implements State {
         this.gameModeManager.update(deltaTime);
         HudManager.getInstance().update();
         this.overlayManager.update();
+        if (this.gamePad.isPauseKeyPressed()) {
+            this.overlayManager.push(OverlayFactory.getOverlay(OverlayType.PAUSE));
+        }
     }
 
     @Override

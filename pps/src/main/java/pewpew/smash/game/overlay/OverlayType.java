@@ -6,6 +6,7 @@ public enum OverlayType {
     CONNECTION,
     ACCOUNT,
     PLAY,
+    PAUSE,
     HOST,
     JOIN;
 }

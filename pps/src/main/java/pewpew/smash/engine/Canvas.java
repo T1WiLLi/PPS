@@ -1,5 +1,6 @@
 package pewpew.smash.engine;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Polygon;
@@ -61,6 +62,15 @@ public class Canvas {
         graphics2D.setClip(circle);
         graphics2D.drawImage(image, x, y, diameter, diameter, null);
         resetClipAndRenderBorder(circle);
+    }
+
+    public void setTransparency(float alpha) {
+        AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+        graphics2D.setComposite(composite);
+    }
+
+    public void resetTransparency() {
+        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
     }
 
     // Shape Rendering Methods

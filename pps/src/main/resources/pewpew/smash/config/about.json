@@ -178,7 +178,9 @@
               "license": "Attribution 4.0 International",
               "assets": [
                 "Wallpaper/survivio_wallpaper_02.png (Overlay)",
-                "Wallpaper/survivo_wallpaper_04.png (Loading)"
+                "Wallpaper/survivo_wallpaper_04.png (Loading)",
+                "All 'Preview' images",
+                "All 'Scope' preview images"
                 ]
             },
             {
@@ -188,6 +190,7 @@
               "assets": [
                 "connection-wallpaper",
                 "login-wallpaper",
+                "pause",
                 "bronze_badge",
                 "silver_badge",
                 "gold_badge",
