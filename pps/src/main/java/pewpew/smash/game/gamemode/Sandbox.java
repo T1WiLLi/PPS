@@ -103,7 +103,8 @@ public class Sandbox implements GameMode {
     public void render(Canvas canvas) {
         canvas.scale(Camera.getZoom(), Camera.getZoom());
         canvas.renderImage(this.worldImage, (int) -this.camera.getX(), (int) -this.camera.getY());
-        itemRenderer.render(canvas, camera);
+        itemRenderer.render(canvas, camera, networkManager.getEntityManager()
+                .getPlayerEntity(User.getInstance().getLocalID().get()));
         entityRenderer.render(canvas, camera);
 
         if (User.getInstance().isDead()) {

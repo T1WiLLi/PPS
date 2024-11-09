@@ -203,9 +203,8 @@ public class ClientHandler extends Handler {
     protected synchronized void onConnect(Connection connection) {
         System.out.println("Connecting to the server ... ");
         User.getInstance().setID(connection.getID());
-        String username = User.getInstance().getUsername().equals("Guest")
-                ? User.getInstance().getUsername() + "-" + connection.getID()
-                : User.getInstance().getUsername();
+
+        String username = User.getInstance().getUsername();
 
         Player player = new Player(connection.getID(), username);
         this.entityManager.addPlayerEntity(player.getId(), player);

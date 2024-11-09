@@ -57,7 +57,7 @@ public class ServerHandler extends Handler implements Runnable {
     @Override
     public void run() {
         // Run starting-event
-        new ItemGenerator().generateItems(server, this.worldManager.getWorldData(), 3);
+        new ItemGenerator().generateItems(server, this.worldManager.getWorldData(), 15);
         while (!Thread.currentThread().isInterrupted()) {
             if (gameTime.shouldUpdate()) {
                 update(gameTime.getDeltaTime());
