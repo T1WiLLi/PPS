@@ -9,6 +9,7 @@ import lombok.Setter;
 import pewpew.smash.game.SpectatorManager;
 import pewpew.smash.game.Alert.AlertManager;
 import pewpew.smash.game.entities.Bullet;
+import pewpew.smash.game.entities.Inventory;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.network.Handler;
@@ -18,6 +19,7 @@ import pewpew.smash.game.network.manager.ItemManager;
 import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.network.model.SerializedItem;
 import pewpew.smash.game.network.packets.*;
+import pewpew.smash.game.network.serializer.InventorySerializer;
 import pewpew.smash.game.network.serializer.SerializationUtility;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 import pewpew.smash.game.objects.Item;
@@ -75,6 +77,10 @@ public class ClientHandler extends Handler {
                 handleWeaponStatePacket((WeaponStatePacket) packet);
             } else if (packet instanceof ItemAddPacket) {
                 handleItemAddPacket((ItemAddPacket) packet);
+            } else if (packet instanceof ItemRemovePacket) {
+                handleItemRemovePacket((ItemRemovePacket) packet);
+            } else if (packet instanceof InventoryPacket) {
+                handleInventoryPacket((InventoryPacket) packet);
             } else if (packet instanceof PlayerDeathPacket) {
                 handlePlayerDeathPacket((PlayerDeathPacket) packet);
             } else if (packet instanceof BroadcastMessagePacket) {
@@ -153,6 +159,18 @@ public class ClientHandler extends Handler {
         item.teleport(packet.getX(), packet.getY());
 
         ItemManager.getInstance().addItem(item);
+    }
+
+    private void handleItemRemovePacket(ItemRemovePacket packet) {
+        ItemManager.getInstance().removeItemByID(packet.getId());
+    }
+
+    private void handleInventoryPacket(InventoryPacket packet) {
+        Player player = this.entityManager.getPlayerEntity(packet.getPlayerID());
+        if (player != null) {
+            Inventory inventory = player.getInventory();
+            InventorySerializer.deserializeInventory(packet.getItems(), inventory);
+        }
     }
 
     private void handlePlayerDeathPacket(PlayerDeathPacket packet) {

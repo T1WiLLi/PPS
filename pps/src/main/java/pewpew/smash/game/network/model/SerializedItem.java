@@ -2,11 +2,14 @@ package pewpew.smash.game.network.model;
 
 import java.util.Map;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashMap;
 
 @NoArgsConstructor
+@Getter
 public class SerializedItem {
     public enum ItemType {
         CONSUMABLE,
@@ -15,10 +18,11 @@ public class SerializedItem {
         SCOPE;
     }
 
-    public ItemType type;
-    public String itemIdentifier;
-    public int quantity;
-    public Map<String, Integer> extraData;
+    private ItemType type;
+    private String itemIdentifier;
+    @Setter
+    private int quantity;
+    private Map<String, Integer> extraData;
 
     public SerializedItem(ItemType type, String itemIdentifier, int quantity) {
         this.type = type;

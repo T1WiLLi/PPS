@@ -12,12 +12,10 @@ import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.game.Camera;
 import pewpew.smash.game.network.model.PlayerState;
-import pewpew.smash.game.objects.ConsumableType;
 import pewpew.smash.game.objects.Fist;
 import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.objects.MeleeWeapon;
 import pewpew.smash.game.objects.RangedWeapon;
-import pewpew.smash.game.objects.SpecialType;
 import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.WeaponType;
 import pewpew.smash.game.objects.special.Scope;
@@ -30,7 +28,6 @@ public class Player extends MovableEntity {
 
     private Weapon equippedWeapon;
     private Fist fists;
-    private Scope scope = (Scope) ItemFactory.createItem(SpecialType.SCOPE_X1);
     private MouseInput mouseInput = MouseInput.NONE;
     private Inventory inventory;
 
@@ -53,8 +50,7 @@ public class Player extends MovableEntity {
         this.equippedWeapon = this.fists;
 
         // Apply player scope to camera
-        Camera.getInstance().setZoom(this.scope.getZoomValue());
-        inventory.addConsumable(ConsumableType.MEDIKIT);
+        Camera.getInstance().setZoom(this.inventory.getScope().getZoomValue());
     }
 
     public Player(int id, String username) {
@@ -107,7 +103,11 @@ public class Player extends MovableEntity {
     }
 
     public void setScope(Scope scope) {
-        this.scope = scope;
-        Camera.getInstance().setZoom(this.scope.getZoomValue());
+        this.inventory.setScope(scope);
+        Camera.getInstance().setZoom(scope.getZoomValue());
+    }
+
+    public Scope getScope() {
+        return this.inventory.getScope();
     }
 }

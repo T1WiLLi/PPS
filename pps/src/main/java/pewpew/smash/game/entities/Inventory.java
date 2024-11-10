@@ -5,19 +5,30 @@ import java.util.Map;
 import java.util.Optional;
 
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import pewpew.smash.game.objects.ConsumableType;
+import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.objects.RangedWeapon;
+import pewpew.smash.game.objects.SpecialType;
 import pewpew.smash.game.objects.special.AmmoStack;
+import pewpew.smash.game.objects.special.Scope;
 
+@ToString
 public class Inventory {
     private RangedWeapon primaryWeapon;
     @Getter
     private final Map<ConsumableType, Integer> consumables;
+    @Getter
     private AmmoStack ammoStack;
+    @Getter
+    @Setter
+    private Scope scope;
 
     public Inventory() {
         this.consumables = new HashMap<>();
         this.ammoStack = new AmmoStack(0, "Ammo", "Stack of ammunition");
+        this.scope = (Scope) ItemFactory.createItem(SpecialType.SCOPE_X1);
     }
 
     public void changeWeapon(RangedWeapon weapon) {
