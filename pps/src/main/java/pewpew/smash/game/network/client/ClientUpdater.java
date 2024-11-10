@@ -9,6 +9,7 @@ import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.MouseInputPacket;
+import pewpew.smash.game.network.packets.PickupItemRequestPacket;
 import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
@@ -59,6 +60,8 @@ public class ClientUpdater {
                     .getEquippedWeapon() instanceof RangedWeapon) {
                 client.sendToTCP(new ReloadWeaponRequestPacket());
             }
+        } else if (GamePad.getInstance().isUseKeyPressed()) {
+            client.sendToTCP(new PickupItemRequestPacket());
         }
     }
 

@@ -5,11 +5,14 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import pewpew.smash.game.network.model.SerializedItem;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@ToString
 public class InventoryPacket extends BasePacket {
-    private Map<Integer, SerializedItem> items;
+    private int playerID;
+    private Map<String, SerializedItem> items;
 }

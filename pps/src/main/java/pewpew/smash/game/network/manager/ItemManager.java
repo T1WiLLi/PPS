@@ -27,8 +27,12 @@ public class ItemManager {
         this.items.add(item);
     }
 
-    public synchronized void removeItem(Item item) {
-        this.items.remove(item);
+    public synchronized boolean removeItem(Item item) {
+        return this.items.remove(item);
+    }
+
+    public synchronized void removeItemByID(int id) {
+        this.items.removeIf(i -> i.getId() == id);
     }
 
     public synchronized Item getItem(int id) {

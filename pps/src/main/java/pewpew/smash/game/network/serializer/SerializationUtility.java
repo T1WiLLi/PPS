@@ -18,6 +18,7 @@ public class SerializationUtility {
         if (item instanceof Consumable) {
             type = SerializedItem.ItemType.CONSUMABLE;
             quantity = 1;
+            itemIdentifier = ((Consumable) item).getType().name().toUpperCase();
         } else if (item instanceof RangedWeapon || item instanceof MeleeWeapon) {
             type = SerializedItem.ItemType.WEAPON;
             Weapon weapon = (Weapon) item;
@@ -46,29 +47,29 @@ public class SerializationUtility {
         }
 
         SerializedItem serializedItem = new SerializedItem(type, itemIdentifier, quantity);
-        serializedItem.extraData.putAll(extraData);
+        serializedItem.getExtraData().putAll(extraData);
         return serializedItem;
     }
 
     public static Item deserializeItem(SerializedItem serializedItem) {
         Item item;
-        switch (serializedItem.type) {
+        switch (serializedItem.getType()) {
             case CONSUMABLE:
-                item = ItemFactory.createItem(ConsumableType.valueOf(serializedItem.itemIdentifier.toUpperCase()));
+                item = ItemFactory.createItem(ConsumableType.valueOf(serializedItem.getItemIdentifier().toUpperCase()));
                 break;
             case WEAPON:
-                WeaponType weaponType = WeaponType.valueOf(serializedItem.itemIdentifier.toUpperCase());
+                WeaponType weaponType = WeaponType.valueOf(serializedItem.getItemIdentifier().toUpperCase());
                 item = ItemFactory.createItem(weaponType);
                 if (item instanceof RangedWeapon rangedWeapon) {
-                    rangedWeapon.setCurrentAmmo(serializedItem.extraData.getOrDefault("currentAmmo", 0));
+                    rangedWeapon.setCurrentAmmo(serializedItem.getExtraData().getOrDefault("currentAmmo", 0));
                 }
                 break;
             case AMMO_STACK:
                 item = ItemFactory.createAmmoStack();
-                ((AmmoStack) item).setAmmo(serializedItem.quantity);
+                ((AmmoStack) item).setAmmo(serializedItem.getQuantity());
                 break;
             case SCOPE:
-                SpecialType specialType = SpecialType.getScopeFromIdentifier(serializedItem.itemIdentifier);
+                SpecialType specialType = SpecialType.getScopeFromIdentifier(serializedItem.getItemIdentifier());
                 item = ItemFactory.createItem(specialType);
                 break;
             default:

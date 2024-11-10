@@ -13,6 +13,7 @@ import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.MouseInputPacket;
+import pewpew.smash.game.network.packets.PickupItemRequestPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
@@ -107,6 +108,12 @@ public class ServerHandler extends Handler implements Runnable {
 
             WeaponStatePacket newWeaponState = WeaponStateSerializer.serializeWeaponState(player.getEquippedWeapon());
             this.server.sendToAllTCP(newWeaponState);
+        } else if (packet instanceof PickupItemRequestPacket) {
+            Player player = this.entityManager.getPlayerEntity(connection.getID());
+            if (player != null) {
+                ServerItemUpdater updater = new ServerItemUpdater();
+                updater.tryPickupItem(player, server);
+            }
         } else if (packet instanceof WeaponStatePacket) {
             WeaponStatePacket weaponStatePacket = (WeaponStatePacket) packet;
             Player player = this.entityManager.getPlayerEntity(connection.getID());

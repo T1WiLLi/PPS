@@ -3,6 +3,7 @@ package pewpew.smash.game.objects;
 import java.awt.image.BufferedImage;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @ToString(callSuper = true)
@@ -11,6 +12,9 @@ public abstract class Consumable extends Item {
 
     protected int healingAmount;
     protected double timeToConsume;
+
+    @Setter
+    private ConsumableType type;
 
     public abstract void consume();
 

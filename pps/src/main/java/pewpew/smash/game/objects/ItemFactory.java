@@ -121,12 +121,14 @@ public class ItemFactory {
 
     private static Consumable createConsumable(ConsumableType type, BufferedImage preview) {
         int itemId = currentID++;
-        return switch (type) {
+        Consumable consumable = switch (type) {
             case MEDIKIT -> new Medikit(itemId, type.name(), "Heals you", preview);
             case BANDAGE -> new Bandage(itemId, type.name(), "Heals you", preview);
             case PILL -> new Pill(itemId, type.name(), "Heals you", preview);
             default -> throw new IllegalArgumentException("Unknown consumable type");
         };
+        consumable.setType(type);
+        return consumable;
     }
 
     private static BufferedImage loadPreview(String path, Enum<?> type) {
