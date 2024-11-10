@@ -12,6 +12,7 @@ import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.game.Camera;
 import pewpew.smash.game.network.model.PlayerState;
+import pewpew.smash.game.objects.ConsumableType;
 import pewpew.smash.game.objects.Fist;
 import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.objects.MeleeWeapon;
@@ -53,6 +54,7 @@ public class Player extends MovableEntity {
 
         // Apply player scope to camera
         Camera.getInstance().setZoom(this.scope.getZoomValue());
+        inventory.addConsumable(ConsumableType.MEDIKIT);
     }
 
     public Player(int id, String username) {

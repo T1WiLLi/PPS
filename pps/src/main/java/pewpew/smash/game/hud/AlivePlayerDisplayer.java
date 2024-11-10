@@ -25,6 +25,6 @@ public class AlivePlayerDisplayer extends HudElement {
         int titleWidth = FontFactory.IMPACT_LARGE.getFontWidth(title, canvas);
         int amountWidth = FontFactory.IMPACT_LARGE.getFontWidth(amount, canvas);
         canvas.renderString(title, x + width / 2 - titleWidth / 2, y + 40, Color.WHITE);
-        canvas.renderString(amount, x + width / 2 - amountWidth / 2, y + 90, Color.WHITE);
+        canvas.renderString(amount, x + width / 2 - amountWidth / 2, y + 90, new Color(255, 0, 0, 125));
     }
 }

@@ -38,7 +38,6 @@ public class ConsumableDisplayer extends HudElement {
         int quantity = inventory.getConsumableQuantity(type).orElse(0);
 
         canvas.renderRectangle(x, y + offsetY, width, 45, new Color(34, 85, 24, 200));
-        canvas.renderRectangleBorder(x, y + offsetY, width, 45, 2, quantity > 0 ? Color.GREEN : Color.GRAY);
 
         if (image != null) {
             canvas.renderImage(image, x + 5, y + offsetY + 5, 35, 35);
