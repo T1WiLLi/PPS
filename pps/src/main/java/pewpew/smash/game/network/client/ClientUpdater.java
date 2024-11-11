@@ -7,6 +7,7 @@ import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.input.MouseHandler;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
+import pewpew.smash.game.network.manager.ItemManager;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.MouseInputPacket;
 import pewpew.smash.game.network.packets.PickupItemRequestPacket;
@@ -15,6 +16,7 @@ import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 import pewpew.smash.game.objects.RangedWeapon;
+import pewpew.smash.game.utils.HelpMethods;
 
 public class ClientUpdater {
     private final EntityManager entityManager;
@@ -62,6 +64,7 @@ public class ClientUpdater {
             }
         } else if (GamePad.getInstance().isUseKeyPressed()) {
             client.sendToTCP(new PickupItemRequestPacket());
+            HelpMethods.getIDOfItem(ItemManager.getInstance(false).getItems(), "Client");
         }
     }
 

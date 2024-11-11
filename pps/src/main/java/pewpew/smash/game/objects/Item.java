@@ -3,6 +3,7 @@ package pewpew.smash.game.objects;
 import java.awt.image.BufferedImage;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.entities.Player;
@@ -12,6 +13,7 @@ import pewpew.smash.game.network.manager.ItemManager;
 @Getter
 public abstract class Item {
 
+    @Setter
     private int id;
 
     private BufferedImage preview;

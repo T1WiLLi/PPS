@@ -46,13 +46,15 @@ public class SerializationUtility {
             throw new IllegalArgumentException("Unknown item type");
         }
 
-        SerializedItem serializedItem = new SerializedItem(type, itemIdentifier, quantity);
+        SerializedItem serializedItem = new SerializedItem(item.getId(), type, itemIdentifier, quantity);
         serializedItem.getExtraData().putAll(extraData);
         return serializedItem;
     }
 
     public static Item deserializeItem(SerializedItem serializedItem) {
         Item item;
+        int providedID = serializedItem.getId();
+
         switch (serializedItem.getType()) {
             case CONSUMABLE:
                 item = ItemFactory.createItem(ConsumableType.valueOf(serializedItem.getItemIdentifier().toUpperCase()));
@@ -75,6 +77,9 @@ public class SerializationUtility {
             default:
                 throw new IllegalArgumentException("Unknown SerializedItem type");
         }
+
+        item.setId(providedID);
+
         return item;
     }
 }
