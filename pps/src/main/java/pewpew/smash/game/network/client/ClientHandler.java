@@ -158,11 +158,11 @@ public class ClientHandler extends Handler {
         Item item = SerializationUtility.deserializeItem(serializedItem);
         item.teleport(packet.getX(), packet.getY());
 
-        ItemManager.getInstance().addItem(item);
+        ItemManager.getInstance(false).addItem(item);
     }
 
     private void handleItemRemovePacket(ItemRemovePacket packet) {
-        ItemManager.getInstance().removeItemByID(packet.getId());
+        ItemManager.getInstance(false).removeItemByID(packet.getId());
     }
 
     private void handleInventoryPacket(InventoryPacket packet) {

@@ -37,7 +37,7 @@ public class ItemGenerator {
 
             existingsBounds.add(new Rectangle(x, y, ITEM_SIZE, ITEM_SIZE));
 
-            ItemManager.getInstance().addItem(item);
+            ItemManager.getInstance(true).addItem(item);
 
             SerializedItem serializedItem = SerializationUtility.serializeItem(item);
             ItemAddPacket packet = new ItemAddPacket(x, y, serializedItem);
@@ -48,7 +48,7 @@ public class ItemGenerator {
     private Item generateRandomItem() {
         int itemType = random.nextInt(100);
 
-        if (itemType < 20) {
+        if (itemType < 100) {
             ConsumableType consumable = switch (random.nextInt(3)) {
                 case 0 -> ConsumableType.MEDIKIT;
                 case 1 -> ConsumableType.BANDAGE;

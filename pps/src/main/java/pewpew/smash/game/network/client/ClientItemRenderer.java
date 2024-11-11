@@ -15,7 +15,7 @@ public class ClientItemRenderer {
     private static final int PICKUP_RADIUS = 100; // Radius within which the player can pick up items
 
     public void render(Canvas canvas, Camera camera, Player localPlayer) {
-        ItemManager.getInstance().getItems().forEach(item -> {
+        ItemManager.getInstance(false).getItems().forEach(item -> {
             canvas.translate(-camera.getX(), -camera.getY());
             item.preview(canvas);
             if (isPlayerNearItem(localPlayer, item)) {
