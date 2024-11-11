@@ -30,6 +30,7 @@ public class ServerHandler extends Handler implements Runnable {
     private ServerWrapper server;
     private EntityManager entityManager;
     private ServerEntityUpdater entityUpdater;
+    private ServerItemUpdater updater;
     private ServerWorldManager worldManager;
     private ServerCollisionManager collisionManager;
 
@@ -40,6 +41,7 @@ public class ServerHandler extends Handler implements Runnable {
         this.executor = Executors.newSingleThreadExecutor();
         this.entityManager = new EntityManager();
         this.entityUpdater = new ServerEntityUpdater(entityManager);
+        this.updater = new ServerItemUpdater();
         this.collisionManager = new ServerCollisionManager(entityManager);
         this.worldManager = new ServerWorldManager();
         this.worldManager.displayWorld();
@@ -111,7 +113,6 @@ public class ServerHandler extends Handler implements Runnable {
         } else if (packet instanceof PickupItemRequestPacket) {
             Player player = this.entityManager.getPlayerEntity(connection.getID());
             if (player != null) {
-                ServerItemUpdater updater = new ServerItemUpdater();
                 updater.tryPickupItem(player, server);
             }
         } else if (packet instanceof WeaponStatePacket) {

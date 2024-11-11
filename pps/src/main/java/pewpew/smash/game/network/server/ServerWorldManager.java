@@ -29,7 +29,7 @@ public final class ServerWorldManager {
 
     public void sendWorldDataToClient(ServerWrapper server, int clientID) {
         server.sendToTCP(clientID, new WorldDataPacket(this.worldData));
-        ItemManager.getInstance().getItems().forEach(i -> {
+        ItemManager.getInstance(true).getItems().forEach(i -> {
             SerializedItem serializedItem = SerializationUtility.serializeItem(i);
             server.sendToTCP(clientID, new ItemAddPacket(i.getX(), i.getY(), serializedItem));
         });

@@ -56,7 +56,7 @@ public abstract class Item {
     // We would probably want to override this function in the actual class (while
     // still calling the super)
     public Item pickup(Player newOwner) {
-        ItemManager.getInstance().removeItem(this);
+        ItemManager.getInstance(true).removeItem(this);
         this.owner = newOwner;
         isOnScreen = false;
         return this;
@@ -65,7 +65,7 @@ public abstract class Item {
     // We would probably want to override this function in the actual class (while
     // still calling the super)
     public void drop(int newX, int newY) {
-        ItemManager.getInstance().addItem(this);
+        ItemManager.getInstance(true).addItem(this);
         this.owner = null;
         this.x = newX;
         this.y = newY;

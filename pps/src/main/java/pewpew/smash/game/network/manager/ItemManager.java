@@ -3,24 +3,39 @@ package pewpew.smash.game.network.manager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import pewpew.smash.game.objects.Item;
 
 public class ItemManager {
 
-    private static ItemManager instance;
+    private static ItemManager serverManager;
+    private static ItemManager clientManager;
 
     private final List<Item> items;
 
-    public synchronized static ItemManager getInstance() {
-        if (instance == null) {
-            synchronized (ItemManager.class) {
-                if (instance == null) {
-                    instance = new ItemManager();
+    private ItemManager() {
+        this.items = Collections.synchronizedList(new ArrayList<Item>());
+    }
+
+    public synchronized static ItemManager getInstance(boolean isServer) {
+        if (isServer) {
+            if (serverManager == null) {
+                synchronized (ItemManager.class) {
+                    if (serverManager == null) {
+                        serverManager = new ItemManager();
+                    }
                 }
             }
+            return serverManager;
+        } else {
+            if (clientManager == null) {
+                synchronized (ItemManager.class) {
+                    if (clientManager == null) {
+                        clientManager = new ItemManager();
+                    }
+                }
+            }
+            return clientManager;
         }
-        return instance;
     }
 
     public synchronized void addItem(Item item) {
@@ -32,7 +47,7 @@ public class ItemManager {
     }
 
     public synchronized void removeItemByID(int id) {
-        this.items.removeIf(i -> i.getId() == id);
+        items.removeIf(item -> item.getId() == id);
     }
 
     public synchronized Item getItem(int id) {
@@ -45,9 +60,5 @@ public class ItemManager {
 
     public synchronized int size() {
         return this.items.size();
-    }
-
-    private ItemManager() {
-        this.items = Collections.synchronizedList(new ArrayList<Item>());
     }
 }
