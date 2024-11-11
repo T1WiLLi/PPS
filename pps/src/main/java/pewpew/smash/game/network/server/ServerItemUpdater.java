@@ -14,7 +14,6 @@ import pewpew.smash.game.objects.Consumable;
 import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.objects.RangedWeapon;
 import pewpew.smash.game.objects.special.AmmoStack;
-import pewpew.smash.game.utils.HelpMethods;
 
 public class ServerItemUpdater {
     private static final int PICKUP_RADIUS = 100;
@@ -24,8 +23,6 @@ public class ServerItemUpdater {
         if (pickupInProgress.getOrDefault(player.getId(), false)) {
             return;
         }
-
-        HelpMethods.getIDOfItem(ItemManager.getInstance(true).getItems(), "Server");
 
         ItemManager.getInstance(true).getItems().stream()
                 .filter(item -> isPlayerNearItem(player, item))

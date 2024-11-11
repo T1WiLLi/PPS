@@ -100,6 +100,7 @@ public class Player extends MovableEntity {
     public void changeWeapon(RangedWeapon newWeapon) {
         inventory.changeWeapon(newWeapon);
         this.equippedWeapon = newWeapon;
+        newWeapon.pickup(this);
     }
 
     public void setScope(Scope scope) {
