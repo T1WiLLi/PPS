@@ -18,6 +18,7 @@ public class ClientItemRenderer {
         ItemManager.getInstance(false).getItems().forEach(item -> {
             canvas.translate(-camera.getX(), -camera.getY());
             item.preview(canvas);
+            canvas.renderString("ITEM ID: " + item.getId(), item.getX() - 10, item.getY() - 10);
             if (isPlayerNearItem(localPlayer, item)) {
                 renderPickupPrompt(canvas, item, camera);
             }

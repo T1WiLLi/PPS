@@ -18,13 +18,15 @@ public class SerializedItem {
         SCOPE;
     }
 
+    private int id;
     private ItemType type;
     private String itemIdentifier;
     @Setter
     private int quantity;
     private Map<String, Integer> extraData;
 
-    public SerializedItem(ItemType type, String itemIdentifier, int quantity) {
+    public SerializedItem(int id, ItemType type, String itemIdentifier, int quantity) {
+        this.id = id;
         this.type = type;
         this.itemIdentifier = itemIdentifier;
         this.quantity = quantity;
