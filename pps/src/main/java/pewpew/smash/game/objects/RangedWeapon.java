@@ -114,10 +114,9 @@ public class RangedWeapon extends Weapon {
     }
 
     private void spawnBullet(Player owner) {
-        Bullet bullet = new Bullet(owner);
-        ServerBulletTracker.getInstance().addBullet(bullet);
         lastShotTime = System.currentTimeMillis();
         currentAmmo--;
-        System.out.println("ID: " + getId() + " Current Ammo: " + currentAmmo);
+        Bullet bullet = new Bullet(owner);
+        ServerBulletTracker.getInstance().addBullet(bullet, this);
     }
 }
