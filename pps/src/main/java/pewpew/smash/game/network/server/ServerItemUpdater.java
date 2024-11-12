@@ -19,10 +19,14 @@ import pewpew.smash.game.objects.special.AmmoStack;
 
 public class ServerItemUpdater {
     private static final int PICKUP_RADIUS = 100;
+    private static final long PICKUP_COOLDOWN = 500; // ms
+
     private final Map<Integer, Boolean> pickupInProgress = new HashMap<>();
+    private final Map<Integer, Long> lastPickupTime = new HashMap<>();
 
     public void tryPickupItem(Player player, ServerWrapper server) {
-        if (pickupInProgress.getOrDefault(player.getId(), false)) {
+        int playerID = player.getId();
+        if (pickupInProgress.getOrDefault(playerID, false) || isOnCooldown(playerID)) {
             return;
         }
 
@@ -33,6 +37,7 @@ public class ServerItemUpdater {
                     pickupInProgress.put(player.getId(), true);
                     handleItemPickup(player, item, server);
                     pickupInProgress.put(player.getId(), false);
+                    lastPickupTime.put(playerID, System.currentTimeMillis());
                 });
     }
 
@@ -60,12 +65,13 @@ public class ServerItemUpdater {
             player.getInventory().addConsumable(consumable.getType());
         } else if (item instanceof RangedWeapon) {
             player.getInventory().getPrimaryWeapon().ifPresent(currentWeapon -> {
+                System.out.println("The weapon added has ammo: " + currentWeapon.getCurrentAmmo());
                 currentWeapon.drop(player.getX(), player.getY());
                 ItemManager.getInstance(true).addItem(currentWeapon);
                 server.sendToAllTCP(new ItemAddPacket(player.getX(), player.getY(),
                         SerializationUtility.serializeItem(currentWeapon)));
             });
-
+            System.out.println("ID of pickup item: " + item.getId());
             player.changeWeapon((RangedWeapon) item);
             server.sendToAllTCP(WeaponStateSerializer.serializeWeaponState((Weapon) item));
         }
@@ -73,6 +79,10 @@ public class ServerItemUpdater {
         InventoryPacket inventoryPacket = new InventoryPacket(player.getId(),
                 InventorySerializer.serializeInventory(player.getInventory()));
         server.sendToTCP(player.getId(), inventoryPacket);
+    }
 
+    private boolean isOnCooldown(int playerID) {
+        long currentTime = System.currentTimeMillis();
+        return lastPickupTime.containsKey(playerID) && (currentTime - lastPickupTime.get(playerID)) < PICKUP_COOLDOWN;
     }
 }
