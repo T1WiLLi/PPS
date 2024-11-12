@@ -77,7 +77,6 @@ public class SerializationUtility {
             default:
                 throw new IllegalArgumentException("Unknown SerializedItem type");
         }
-
         item.setId(providedID);
 
         return item;

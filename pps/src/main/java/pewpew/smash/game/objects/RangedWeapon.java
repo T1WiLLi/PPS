@@ -118,5 +118,6 @@ public class RangedWeapon extends Weapon {
         ServerBulletTracker.getInstance().addBullet(bullet);
         lastShotTime = System.currentTimeMillis();
         currentAmmo--;
+        System.out.println("ID: " + getId() + " Current Ammo: " + currentAmmo);
     }
 }

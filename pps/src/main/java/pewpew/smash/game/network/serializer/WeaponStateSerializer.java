@@ -14,7 +14,7 @@ public class WeaponStateSerializer {
 
     public static WeaponStatePacket serializeWeaponState(Weapon weapon) {
         if (weapon == null) {
-            return new WeaponStatePacket(Integer.MIN_VALUE, null, null);
+            return new WeaponStatePacket(Integer.MIN_VALUE, Integer.MIN_VALUE, null, null);
         }
 
         Map<String, Object> stateData = new HashMap<>();
@@ -30,16 +30,20 @@ public class WeaponStateSerializer {
             stateData.put("currentAmmo", rangedWeapon.getCurrentAmmo());
         }
 
-        return new WeaponStatePacket(weapon.getOwner() != null ? weapon.getOwner().getId() : Integer.MIN_VALUE,
-                weaponType, stateData);
+        return new WeaponStatePacket(
+                weapon.getOwner() != null ? weapon.getOwner().getId() : Integer.MIN_VALUE,
+                weapon.getId(),
+                weaponType,
+                stateData);
     }
 
     public static void deserializeWeaponState(WeaponStatePacket weaponState, Player player) {
         WeaponType weaponType = weaponState.getWeaponType();
         Weapon weapon = player.getEquippedWeapon();
 
-        if ((weapon == null || getWeaponType(weapon) != weaponType) && weaponType != null) {
+        if ((weapon == null || weapon.getId() != weaponState.getItemID()) && weaponType != null) {
             weapon = ItemFactory.createItem(weaponType);
+            weapon.setId(weaponState.getItemID());
             weapon.pickup(player);
             player.setEquippedWeapon(weapon);
         }
