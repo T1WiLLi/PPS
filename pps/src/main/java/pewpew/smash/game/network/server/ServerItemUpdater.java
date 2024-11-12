@@ -10,9 +10,11 @@ import pewpew.smash.game.network.packets.ItemAddPacket;
 import pewpew.smash.game.network.packets.ItemRemovePacket;
 import pewpew.smash.game.network.serializer.InventorySerializer;
 import pewpew.smash.game.network.serializer.SerializationUtility;
+import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 import pewpew.smash.game.objects.Consumable;
 import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.objects.RangedWeapon;
+import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.special.AmmoStack;
 
 public class ServerItemUpdater {
@@ -65,6 +67,7 @@ public class ServerItemUpdater {
             });
 
             player.changeWeapon((RangedWeapon) item);
+            server.sendToAllTCP(WeaponStateSerializer.serializeWeaponState((Weapon) item));
         }
 
         InventoryPacket inventoryPacket = new InventoryPacket(player.getId(),
