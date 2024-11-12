@@ -36,10 +36,6 @@ public class HudManager {
         this.weaponDisplayer.setPlayer(player);
         this.consumableDisplayer.setInventory(player.getInventory());
         this.healthBar.setMaxValue(100);
-        if (this.local.getInventory().getPrimaryWeapon().isPresent()
-                && this.local.getEquippedWeapon().equals(this.local.getInventory().getPrimaryWeapon().get())) {
-            this.ammoBar.setMaxValue(((RangedWeapon) this.local.getEquippedWeapon()).getAmmoCapacity());
-        }
         this.minimap.setLocal(player);
     }
 
@@ -52,6 +48,7 @@ public class HudManager {
         this.alivePlayerDisplayer.setAmountOfPlayerAlive(this.amountOfPlayerAlive);
         this.scopeElementDisplayer.setScope(local.getScope().getPreview());
         if (this.local.getEquippedWeapon() instanceof RangedWeapon) {
+            this.ammoBar.setMaxValue(((RangedWeapon) this.local.getEquippedWeapon()).getAmmoCapacity());
             this.ammoBar.setValue(((RangedWeapon) this.local.getEquippedWeapon()).getCurrentAmmo());
         }
     }
