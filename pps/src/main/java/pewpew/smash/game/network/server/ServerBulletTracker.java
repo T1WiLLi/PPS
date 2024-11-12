@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import pewpew.smash.game.entities.Bullet;
 import pewpew.smash.game.network.packets.BulletCreatePacket;
 import pewpew.smash.game.network.packets.BulletRemovePacket;
+import pewpew.smash.game.network.serializer.WeaponStateSerializer;
+import pewpew.smash.game.objects.RangedWeapon;
 
 public class ServerBulletTracker {
 
@@ -25,7 +27,7 @@ public class ServerBulletTracker {
         this.server = server;
     }
 
-    public void addBullet(Bullet bullet) {
+    public void addBullet(Bullet bullet, RangedWeapon weaponFrom) {
         int bulletId = nextBulletId++;
         bullet.setId(bulletId);
         bullets.put(bulletId, bullet);
@@ -35,6 +37,7 @@ public class ServerBulletTracker {
                 bullet.getY(),
                 bullet.getPlayerOwnerID());
         server.sendToAllTCP(packet);
+        server.sendToAllTCP(WeaponStateSerializer.serializeWeaponState(weaponFrom));
     }
 
     public void removeBullet(Bullet bullet) {
