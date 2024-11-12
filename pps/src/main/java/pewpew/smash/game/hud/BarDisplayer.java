@@ -2,11 +2,15 @@ package pewpew.smash.game.hud;
 
 import java.awt.Color;
 
+import lombok.Getter;
 import lombok.Setter;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.utils.FontFactory;
 
 public class BarDisplayer extends HudElement {
+
+    @Getter
+    private boolean isSet;
 
     @Setter
     private int value;
@@ -22,6 +26,10 @@ public class BarDisplayer extends HudElement {
 
     @Override
     public void render(Canvas canvas) {
+        if (value != 0 && maxValue != 0) {
+            isSet = true;
+        }
+
         int filled = (int) ((double) value / maxValue * width);
 
         canvas.renderRectangle(x, y, width, height, Color.GRAY);
