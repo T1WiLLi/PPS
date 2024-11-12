@@ -48,7 +48,7 @@ public class ItemGenerator {
     private Item generateRandomItem() {
         int itemType = random.nextInt(100);
 
-        if (itemType < 30) {
+        if (itemType < 0) {
             ConsumableType consumable = switch (random.nextInt(3)) {
                 case 0 -> ConsumableType.MEDIKIT;
                 case 1 -> ConsumableType.BANDAGE;
@@ -57,10 +57,10 @@ public class ItemGenerator {
             };
             return ItemFactory.createItem(consumable);
 
-        } else if (itemType < 50) {
+        } else if (itemType < 0) {
             return ItemFactory.createAmmoStack();
 
-        } else if (itemType < 70) {
+        } else if (itemType < 100) {
             WeaponType weapon = switch (random.nextInt(16)) {
                 case 0, 1 -> WeaponType.AK47;
                 case 2, 3 -> WeaponType.HK416;
