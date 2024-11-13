@@ -1,17 +1,9 @@
 package pewpew.smash.engine;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
-
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.VolatileImage;
 import javax.swing.JPanel;
 
 import lombok.Getter;
@@ -20,9 +12,12 @@ public class RenderingEngine {
 
     private static RenderingEngine instance;
     @Getter
-    private Screen screen;
+    private DisplayManager displayManager;
     private JPanel panel;
-    private BufferedImage buffer;
+    private VolatileImage buffer;
+    private Graphics2D bufferGraphics;
+
+    private final AffineTransform defaultTransform = new AffineTransform();
 
     @Getter
     private final double[] scale = new double[2];
@@ -43,28 +38,42 @@ public class RenderingEngine {
     }
 
     public Canvas getCanvas() {
-        Graphics2D graphics = this.buffer.createGraphics();
-        graphics.setRenderingHints(getHints());
-        return new Canvas(graphics);
+        defaultTransform.setToIdentity();
+        bufferGraphics.setTransform(defaultTransform);
+        bufferGraphics.setRenderingHints(getHints());
+        bufferGraphics.scale(scale[0], scale[1]);
+
+        return new Canvas(bufferGraphics);
     }
 
     public void renderCanvasOnScreen() {
-        Graphics2D graphics = null;
-        while (graphics == null) {
-            graphics = (Graphics2D) this.panel.getGraphics();
-        }
-        graphics.scale(scale[0], scale[1]);
-        graphics.drawImage(this.buffer, 0, 0, null);
-        Toolkit.getDefaultToolkit().sync();
-        graphics.dispose();
+        do {
+            int returnCode = buffer.validate(panel.getGraphicsConfiguration());
+            if (returnCode == VolatileImage.IMAGE_INCOMPATIBLE) {
+                updateBuffer();
+            }
+            Graphics panelGraphics = panel.getGraphics();
+            if (panelGraphics != null) {
+                try {
+                    int panelWidth = panel.getWidth();
+                    int panelHeight = panel.getHeight();
+                    panelGraphics.drawImage(buffer, 0, 0, panelWidth, panelHeight, null);
+                    Toolkit.getDefaultToolkit().sync();
+                } finally {
+                    panelGraphics.dispose();
+                }
+            }
+        } while (buffer.contentsLost());
     }
 
     public void start() {
-        screen.start();
+        displayManager.showWindow();
+        panel.requestFocusInWindow();
+        initBuffer();
     }
 
     public void stop() {
-        screen.end();
+        displayManager.hideWindow();
     }
 
     public void addKeyListener(KeyListener listener) {
@@ -76,50 +85,77 @@ public class RenderingEngine {
         panel.addMouseMotionListener((MouseMotionListener) listener);
     }
 
+    public void requestFocusOnPanel() {
+        panel.requestFocusInWindow();
+    }
+
     private RenderingEngine() {
-        initScreen();
+        initDisplayManager();
         initPanel();
     }
 
-    private void initScreen() {
-        screen = new Screen();
-        screen.setTitle("PewPewSmash");
-        screen.setSize(800, 600);
-        buffer = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
+    private void initDisplayManager() {
+        displayManager = new DisplayManager("PewPewSmash", 800, 600);
+        panel = new JPanel(); // Use standard JPanel
+        displayManager.getFrame().getContentPane().add(panel);
     }
 
     private void initPanel() {
-        panel = new JPanel();
         panel.setBackground(Color.BLUE);
         panel.setFocusable(true);
         panel.setDoubleBuffered(true);
+        panel.requestFocusInWindow();
         panel.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent evt) {
                 updateScale();
+                updateBuffer();
             }
         });
-
-        screen.setPanel(panel);
         updateScale();
     }
 
-    private void updateScale() {
-        scale[0] = (double) panel.getWidth() / 800;
-        scale[1] = (double) panel.getHeight() / 600;
+    private void initBuffer() {
+        createVolatileImage();
+    }
+
+    private void createVolatileImage() {
+        GraphicsConfiguration gc = panel.getGraphicsConfiguration();
+        int width = panel.getWidth();
+        int height = panel.getHeight();
+        if (width <= 0 || height <= 0) {
+            width = 800;
+            height = 600;
+        }
+        buffer = gc.createCompatibleVolatileImage(width, height);
+        bufferGraphics = buffer.createGraphics();
+    }
+
+    void updateScale() {
+        int width = panel.getWidth();
+        int height = panel.getHeight();
+        if (width == 0 || height == 0) {
+            width = 800;
+            height = 600;
+        }
+        scale[0] = (double) width / 800;
+        scale[1] = (double) height / 600;
+    }
+
+    void updateBuffer() {
+        createVolatileImage();
     }
 
     private RenderingHints getHints() {
         RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, antiAliasingHint);
         hints.put(RenderingHints.KEY_RENDERING, renderingQualityHint);
         hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, textAliasingHint);
-        hints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-        hints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-        hints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-        hints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        hints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        hints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+        hints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
+        hints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
         return hints;
     }
 
-    // Methods to dynamically change rendering settings
     public void setAntiAliasing(boolean enabled) {
         this.antiAliasingHint = enabled ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF;
     }

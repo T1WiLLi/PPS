@@ -56,7 +56,6 @@ public class Bullet {
 
     public Bullet(Player owner) {
         this.playerOwnerID = owner.getId();
-
         RangedWeapon equippedWeapon = (RangedWeapon) owner.getEquippedWeapon();
         this.rotation = owner.getRotation();
         this.damage = equippedWeapon.getDamage();

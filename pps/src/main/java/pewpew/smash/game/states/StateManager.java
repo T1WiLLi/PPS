@@ -45,7 +45,8 @@ public class StateManager {
 
     public void handleKeyPress(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_0) {
-            RenderingEngine.getInstance().getScreen().toggleFullscreen();
+            RenderingEngine.getInstance().getDisplayManager()
+                    .setFullscreen(!RenderingEngine.getInstance().getDisplayManager().isFullscreen());
             return;
         }
         if (currentState != null) {
