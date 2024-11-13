@@ -77,6 +77,7 @@ public class DisplayManager {
             this.isFullscreen = false;
         }
 
+        setIcon();
         this.frame.setVisible(true);
         RenderingEngine.getInstance().requestFocusOnPanel();
     }
