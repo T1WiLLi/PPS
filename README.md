@@ -1,4 +1,9 @@
 
+## Disclaimer ⚠️ 
+
+If you want to use your own database the script.sql is provided and you will need to create DatabaseConfig.json in the config folder. You do not need to use a database if you don't want to be able to connect.
+
+
 # PewPewSmash
 <div align="center">
   <img src="banner.jpg" alt="PewPewSmash Banner" style="width:100%; max-width:800px; border-radius:10px;">
