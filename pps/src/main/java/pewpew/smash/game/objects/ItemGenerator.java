@@ -46,38 +46,36 @@ public class ItemGenerator {
     }
 
     private Item generateRandomItem() {
-        int itemType = random.nextInt(100);
+        int itemType = random.nextInt(1000);
 
-        if (itemType < 0) {
-            ConsumableType consumable = switch (random.nextInt(3)) {
-                case 0 -> ConsumableType.MEDIKIT;
-                case 1 -> ConsumableType.BANDAGE;
-                case 2 -> ConsumableType.PILL;
-                default -> throw new IllegalStateException("Unexpected consumable type");
+        if (itemType < 300) {
+            return ItemFactory.createAmmoStack();
+
+        } else if (itemType < 700) {
+            WeaponType weapon = switch (random.nextInt(60)) {
+                case 0, 1, 2, 3, 4 -> WeaponType.HK416;
+                case 5, 6, 7, 8, 9, 10, 11, 12, 13 -> WeaponType.M1A1;
+                case 14, 15, 16, 17 -> WeaponType.DEAGLE;
+                case 18, 19, 20, 21, 22, 23, 24 -> WeaponType.AK47;
+                case 25, 26, 27, 28, 29 -> WeaponType.MAC10;
+                case 30, 31, 32, 33, 34, 35, 36 -> WeaponType.MP5;
+                case 37, 38, 39, 40, 41 -> WeaponType.COLT45;
+                default -> WeaponType.GLOCK;
+            };
+            return ItemFactory.createItem(weapon);
+
+        } else if (itemType < 950) { // 25% chance for a consumable
+            ConsumableType consumable = switch (random.nextInt(35)) {
+                case 0, 1, 2, 3, 4 -> ConsumableType.MEDIKIT;
+                case 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 -> ConsumableType.PILL;
+                default -> ConsumableType.BANDAGE;
             };
             return ItemFactory.createItem(consumable);
 
-        } else if (itemType < 100) {
-            return ItemFactory.createAmmoStack();
-
-        } else if (itemType < 100) {
-            WeaponType weapon = switch (random.nextInt(16)) {
-                case 0, 1 -> WeaponType.AK47;
-                case 2, 3 -> WeaponType.HK416;
-                case 4, 5 -> WeaponType.M1A1;
-                case 6 -> WeaponType.MAC10;
-                case 7, 8 -> WeaponType.MP5;
-                case 9, 10 -> WeaponType.COLT45;
-                case 11 -> WeaponType.DEAGLE;
-                case 12, 13, 14, 15 -> WeaponType.GLOCK;
-                default -> throw new IllegalStateException("Unexpected weapon type");
-            };
-            return ItemFactory.createItem(weapon);
-        } else {
-            int scopeRarity = random.nextInt(100);
-            SpecialType scope = switch (scopeRarity) {
-                case 0 -> SpecialType.SCOPE_X4;
-                case 1, 2, 3, 4 -> SpecialType.SCOPE_X3;
+        } else { // 5% chance for a scope
+            SpecialType scope = switch (random.nextInt(60)) {
+                case 0, 1, 2, 3, 4 -> SpecialType.SCOPE_X4;
+                case 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 -> SpecialType.SCOPE_X3;
                 default -> SpecialType.SCOPE_X2;
             };
             return ItemFactory.createItem(scope);

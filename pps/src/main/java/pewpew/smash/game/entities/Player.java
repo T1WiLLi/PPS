@@ -63,6 +63,10 @@ public class Player extends MovableEntity {
         if (equippedWeapon instanceof MeleeWeapon) {
             this.equippedWeapon.updateClient();
         }
+
+        if (Camera.getZoom() != this.inventory.getScope().getZoomValue()) {
+            Camera.getInstance().setZoom(this.inventory.getScope().getZoomValue());
+        }
     }
 
     @Override

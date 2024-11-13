@@ -3,9 +3,11 @@ package pewpew.smash.game.objects.special;
 import java.awt.image.BufferedImage;
 
 import lombok.Getter;
+import lombok.ToString;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.objects.Item;
 
+@ToString(callSuper = true)
 public class Scope extends Item {
 
     @Getter
