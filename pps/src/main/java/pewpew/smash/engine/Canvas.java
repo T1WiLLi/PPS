@@ -61,7 +61,7 @@ public class Canvas {
         Shape circle = new Ellipse2D.Float(x, y, diameter, diameter);
         graphics2D.setClip(circle);
         graphics2D.drawImage(image, x, y, diameter, diameter, null);
-        resetClipAndRenderBorder(circle);
+        graphics2D.setClip(originalClip);
     }
 
     public void setTransparency(float alpha) {
@@ -146,12 +146,6 @@ public class Canvas {
     private void setGraphicsProperties(Color color, int strokeWidth) {
         graphics2D.setColor(color);
         graphics2D.setStroke(new BasicStroke(strokeWidth));
-    }
-
-    private void resetClipAndRenderBorder(Shape shape) {
-        graphics2D.setClip(originalClip);
-        graphics2D.setColor(Color.WHITE);
-        graphics2D.draw(shape);
     }
 
     // GameFont Enum

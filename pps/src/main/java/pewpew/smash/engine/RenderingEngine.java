@@ -85,7 +85,7 @@ public class RenderingEngine {
         screen = new Screen();
         screen.setTitle("PewPewSmash");
         screen.setSize(800, 600);
-        buffer = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
+        buffer = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
     }
 
     private void initPanel() {

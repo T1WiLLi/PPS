@@ -92,9 +92,9 @@ public class ServerHandler extends Handler implements Runnable {
         } else if (packet instanceof ReloadWeaponRequestPacket) {
             Player player = this.entityManager.getPlayerEntity(connection.getID());
             if (player != null) {
-                ((RangedWeapon) player.getEquippedWeapon()).reload();
+                ((RangedWeapon) player.getInventory().getPrimaryWeapon().get()).reload();
                 WeaponStatePacket weaponStatePacket = WeaponStateSerializer
-                        .serializeWeaponState(player.getEquippedWeapon());
+                        .serializeWeaponState(player.getInventory().getPrimaryWeapon().get());
                 this.server.sendToTCP(connection.getID(), weaponStatePacket);
             }
         } else if (packet instanceof WeaponSwitchRequestPacket) {
