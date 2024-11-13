@@ -16,6 +16,7 @@ import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.objects.RangedWeapon;
 import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.special.AmmoStack;
+import pewpew.smash.game.objects.special.Scope;
 
 public class ServerItemUpdater {
     private static final int PICKUP_RADIUS = 100;
@@ -60,6 +61,8 @@ public class ServerItemUpdater {
         if (item instanceof AmmoStack) {
             AmmoStack ammoStack = (AmmoStack) item;
             player.getInventory().addAmmo(ammoStack.getAmmo());
+        } else if (item instanceof Scope) {
+            player.getInventory().setScope((Scope) item);
         } else if (item instanceof Consumable) {
             Consumable consumable = (Consumable) item;
             player.getInventory().addConsumable(consumable.getType());

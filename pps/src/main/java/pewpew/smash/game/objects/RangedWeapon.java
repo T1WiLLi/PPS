@@ -68,8 +68,10 @@ public class RangedWeapon extends Weapon {
 
     @Override
     public void updateServer() {
-        if (getOwner().getMouseInput() == MouseInput.LEFT_CLICK && canShoot()) {
-            shoot();
+        if (getOwner() != null) {
+            if (getOwner().getMouseInput() == MouseInput.LEFT_CLICK && canShoot()) {
+                shoot();
+            }
         }
     }
 

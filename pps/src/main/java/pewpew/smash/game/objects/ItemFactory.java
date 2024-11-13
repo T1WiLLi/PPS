@@ -42,21 +42,21 @@ public class ItemFactory {
 
     private static void preloadRangedWeaponProperties() {
         rangedWeaponPropertiesMap.put(WeaponType.AK47,
-                new RangedWeaponProperties(60, 8, 14, new Color(139, 69, 19), true));
+                new RangedWeaponProperties(60, 8, 16, new Color(160, 82, 45), true));
         rangedWeaponPropertiesMap.put(WeaponType.HK416,
-                new RangedWeaponProperties(80, 10, 14, new Color(139, 69, 19), true));
+                new RangedWeaponProperties(80, 10, 16, new Color(105, 105, 105), true));
         rangedWeaponPropertiesMap.put(WeaponType.M1A1,
-                new RangedWeaponProperties(70, 10, 14, new Color(97, 74, 62), true));
+                new RangedWeaponProperties(70, 9, 15, new Color(128, 0, 0), true));
         rangedWeaponPropertiesMap.put(WeaponType.MAC10,
-                new RangedWeaponProperties(25, 6, 14, new Color(139, 69, 19), false));
+                new RangedWeaponProperties(25, 6, 10, new Color(169, 169, 169), false));
         rangedWeaponPropertiesMap.put(WeaponType.MP5,
-                new RangedWeaponProperties(30, 7, 12, new Color(105, 105, 105), false));
+                new RangedWeaponProperties(30, 7, 13, new Color(47, 79, 79), true));
         rangedWeaponPropertiesMap.put(WeaponType.COLT45,
-                new RangedWeaponProperties(50, 8, 5, new Color(112, 128, 144), false));
+                new RangedWeaponProperties(25, 8, 7, new Color(70, 130, 180), false));
         rangedWeaponPropertiesMap.put(WeaponType.DEAGLE,
-                new RangedWeaponProperties(75, 9, 7, new Color(128, 128, 128), false));
+                new RangedWeaponProperties(30, 9, 8, new Color(192, 192, 192), false));
         rangedWeaponPropertiesMap.put(WeaponType.GLOCK,
-                new RangedWeaponProperties(20, 5, 12, new Color(105, 105, 105), false));
+                new RangedWeaponProperties(20, 5, 10, new Color(119, 136, 153), false));
     }
 
     public static Weapon createItem(WeaponType type) {
