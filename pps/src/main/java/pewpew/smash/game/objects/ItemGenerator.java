@@ -57,7 +57,7 @@ public class ItemGenerator {
             };
             return ItemFactory.createItem(consumable);
 
-        } else if (itemType < 0) {
+        } else if (itemType < 100) {
             return ItemFactory.createAmmoStack();
 
         } else if (itemType < 100) {
