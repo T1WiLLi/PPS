@@ -19,6 +19,7 @@ public class HudManager {
     private AlivePlayerDisplayer alivePlayerDisplayer;
     private ScopeElementDisplayer scopeElementDisplayer;
     private ConsumableDisplayer consumableDisplayer;
+    private AmmoDisplayer ammoDisplayer;
     private Minimap minimap;
 
     @Setter
@@ -45,6 +46,7 @@ public class HudManager {
 
     public void update() {
         this.healthBar.setValue(this.local.getHealth());
+        this.ammoDisplayer.setAmmo(this.local.getInventory().getAmmoCount());
         this.alivePlayerDisplayer.setAmountOfPlayerAlive(this.amountOfPlayerAlive);
         this.scopeElementDisplayer.setScope(local.getScope().getPreview());
         if (this.local.getEquippedWeapon() instanceof RangedWeapon) {
@@ -60,6 +62,7 @@ public class HudManager {
         this.alivePlayerDisplayer.render(canvas);
         this.scopeElementDisplayer.render(canvas);
         this.consumableDisplayer.render(canvas);
+        this.ammoDisplayer.render(canvas);
         this.minimap.render(canvas);
     }
 
@@ -70,6 +73,7 @@ public class HudManager {
         this.alivePlayerDisplayer = new AlivePlayerDisplayer(690, 10, 100, 100);
         this.scopeElementDisplayer = new ScopeElementDisplayer(375, 25, 50, 50);
         this.consumableDisplayer = new ConsumableDisplayer(800 - 120 - 10, 225, 120, 150);
+        this.ammoDisplayer = new AmmoDisplayer(550, 545, 110, 50);
         this.minimap = new Minimap(20, 580, 100, 100);
     }
 }
