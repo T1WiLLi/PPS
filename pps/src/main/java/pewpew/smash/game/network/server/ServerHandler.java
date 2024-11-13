@@ -12,6 +12,7 @@ import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.DirectionPacket;
+import pewpew.smash.game.network.packets.InventoryPacket;
 import pewpew.smash.game.network.packets.MouseInputPacket;
 import pewpew.smash.game.network.packets.PickupItemRequestPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
@@ -20,6 +21,7 @@ import pewpew.smash.game.network.packets.PlayerUsernamePacket;
 import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
+import pewpew.smash.game.network.serializer.InventorySerializer;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 import pewpew.smash.game.objects.ItemGenerator;
 import pewpew.smash.game.objects.RangedWeapon;
@@ -95,6 +97,10 @@ public class ServerHandler extends Handler implements Runnable {
                 ((RangedWeapon) player.getInventory().getPrimaryWeapon().get()).reload();
                 WeaponStatePacket weaponStatePacket = WeaponStateSerializer
                         .serializeWeaponState(player.getInventory().getPrimaryWeapon().get());
+                InventoryPacket inventoryPacket = new InventoryPacket(player.getId(),
+                        InventorySerializer.serializeInventory(player.getInventory()));
+                InventorySerializer.serializeInventory(player.getInventory());
+                this.server.sendToTCP(connection.getID(), inventoryPacket);
                 this.server.sendToTCP(connection.getID(), weaponStatePacket);
             }
         } else if (packet instanceof WeaponSwitchRequestPacket) {

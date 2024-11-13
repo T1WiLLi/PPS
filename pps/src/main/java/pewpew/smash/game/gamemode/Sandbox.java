@@ -119,6 +119,7 @@ public class Sandbox implements GameMode {
     public void reset() {
         if (networkManager != null) {
             networkManager.stop();
+            HudManager.getInstance().reset();
         }
     }
 }

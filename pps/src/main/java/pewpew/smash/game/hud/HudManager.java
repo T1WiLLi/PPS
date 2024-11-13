@@ -66,6 +66,10 @@ public class HudManager {
         this.minimap.render(canvas);
     }
 
+    public void reset() {
+        instance = new HudManager();
+    }
+
     private HudManager() {
         this.healthBar = new BarDisplayer(10, 10, 200, 25, Color.RED);
         this.ammoBar = new BarDisplayer(10, 40, 100, 25, Color.ORANGE);

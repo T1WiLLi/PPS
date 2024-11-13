@@ -53,7 +53,9 @@ public class RangedWeapon extends Weapon {
     }
 
     public void reload() {
-        currentAmmo = ammoCapacity;
+        int neededAmmo = this.ammoCapacity - this.currentAmmo;
+        int ammotAvailable = getOwner().getInventory().useAmmo(neededAmmo);
+        currentAmmo += ammotAvailable;
     }
 
     public void shoot() {
