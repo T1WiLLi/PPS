@@ -60,3 +60,5 @@ Thumbs.db
 *.tmp
 *.bak
 *.old
+
+DatabaseConfig.json
