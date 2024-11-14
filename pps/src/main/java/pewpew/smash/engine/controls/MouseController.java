@@ -4,6 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import lombok.Getter;
+import pewpew.smash.engine.RenderingEngine;
 
 public abstract class MouseController extends MouseAdapter {
     @Getter
@@ -56,7 +57,8 @@ public abstract class MouseController extends MouseAdapter {
     }
 
     private void updateMousePosition(MouseEvent e) {
-        mouseX = e.getX();
-        mouseY = e.getY();
+        double systemScaleFactor = RenderingEngine.getInstance().getSystemScaleFactor();
+        mouseX = (int) (e.getX() * systemScaleFactor);
+        mouseY = (int) (e.getY() * systemScaleFactor);
     }
 }

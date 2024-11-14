@@ -21,6 +21,8 @@ public class RenderingEngine {
 
     @Getter
     private final double[] scale = new double[2];
+    @Getter
+    private double systemScaleFactor;
 
     private Object antiAliasingHint = RenderingHints.VALUE_ANTIALIAS_ON;
     private Object textAliasingHint = RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
@@ -137,8 +139,11 @@ public class RenderingEngine {
             width = 800;
             height = 600;
         }
-        scale[0] = (double) width / 800;
-        scale[1] = (double) height / 600;
+
+        systemScaleFactor = displayManager.getSystemScalingFactor();
+
+        scale[0] = (double) width / 800 * systemScaleFactor;
+        scale[1] = (double) height / 600 * systemScaleFactor;
     }
 
     void updateBuffer() {

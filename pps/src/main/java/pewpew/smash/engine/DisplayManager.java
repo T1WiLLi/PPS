@@ -1,9 +1,11 @@
 package pewpew.smash.engine;
 
 import java.awt.Color;
+import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Taskbar;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
@@ -30,6 +32,13 @@ public class DisplayManager {
         initPanel();
         initFrame(title, width, height);
         initGraphicsDevice();
+    }
+
+    public double getSystemScalingFactor() {
+        GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        GraphicsConfiguration config = device.getDefaultConfiguration();
+        AffineTransform transform = config.getDefaultTransform();
+        return transform.getScaleX();
     }
 
     private void initPanel() {
