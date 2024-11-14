@@ -9,20 +9,21 @@ import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.objects.special.AmmoStack;
 import pewpew.smash.game.settings.SettingsManager;
 import pewpew.smash.game.utils.FontFactory;
+import pewpew.smash.game.utils.ViewUtils;
 
 public class ClientItemRenderer {
-
-    private static final int PICKUP_RADIUS = 100; // Radius within which the player can pick up items
+    private static final int PICKUP_RADIUS = 100;
 
     public void render(Canvas canvas, Camera camera, Player localPlayer) {
         ItemManager.getInstance(false).getItems().forEach(item -> {
-            canvas.translate(-camera.getX(), -camera.getY());
-            item.preview(canvas);
-            canvas.renderString("ITEM ID: " + item.getId(), item.getX() - 10, item.getY() - 10);
-            if (isPlayerNearItem(localPlayer, item)) {
-                renderPickupPrompt(canvas, item, camera);
+            if (ViewUtils.isInView(item.getX(), item.getY())) {
+                canvas.translate(-camera.getX(), -camera.getY());
+                item.preview(canvas);
+                if (isPlayerNearItem(localPlayer, item)) {
+                    renderPickupPrompt(canvas, item, camera);
+                }
+                canvas.translate(camera.getX(), camera.getY());
             }
-            canvas.translate(camera.getX(), camera.getY());
         });
     }
 
@@ -42,9 +43,9 @@ public class ClientItemRenderer {
                 item.getX(), item.getY() - 5, Color.WHITE);
 
         FontFactory.IMPACT_MEDIUM.applyFont(canvas);
-        canvas.renderString(SettingsManager.getInstance().getSettings().getKey().getMisc().get("use").toLowerCase(),
-                item.getX(),
-                item.getY() + item.getWidth() + 10, Color.YELLOW);
+        canvas.renderString(
+                SettingsManager.getInstance().getSettings().getKey().getMisc().get("use").toLowerCase(),
+                item.getX(), item.getY() + item.getWidth() + 10, Color.YELLOW);
         FontFactory.resetFont(canvas);
     }
 }
