@@ -1,6 +1,8 @@
 package pewpew.smash.game.network.server;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -12,7 +14,6 @@ import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.DirectionPacket;
-import pewpew.smash.game.network.packets.InventoryPacket;
 import pewpew.smash.game.network.packets.MouseInputPacket;
 import pewpew.smash.game.network.packets.PickupItemRequestPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
@@ -21,10 +22,16 @@ import pewpew.smash.game.network.packets.PlayerUsernamePacket;
 import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
-import pewpew.smash.game.network.serializer.InventorySerializer;
+import pewpew.smash.game.network.processor.PacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.DirectionPacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.MouseInputPacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.PickupItemRequestPacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.ReloadWeaponRequestPacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.UsernamePacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.WeaponStatePacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.WeaponSwitchRequestPacketProcessor;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 import pewpew.smash.game.objects.ItemGenerator;
-import pewpew.smash.game.objects.RangedWeapon;
 
 public class ServerHandler extends Handler implements Runnable {
 
@@ -32,23 +39,27 @@ public class ServerHandler extends Handler implements Runnable {
     private ServerWrapper server;
     private EntityManager entityManager;
     private ServerEntityUpdater entityUpdater;
-    private ServerItemUpdater updater;
+    private ServerItemUpdater itemUpdater;
     private ServerWorldManager worldManager;
     private ServerCollisionManager collisionManager;
-
     private GameTime gameTime;
+
+    private final Map<Class<?>, PacketProcessor> packetProcessors = new HashMap<>();
 
     public ServerHandler(int port) {
         this.server = new ServerWrapper(port, port);
         this.executor = Executors.newSingleThreadExecutor();
         this.entityManager = new EntityManager();
         this.entityUpdater = new ServerEntityUpdater(entityManager);
-        this.updater = new ServerItemUpdater();
+        this.itemUpdater = new ServerItemUpdater();
         this.collisionManager = new ServerCollisionManager(entityManager);
         this.worldManager = new ServerWorldManager();
-        this.worldManager.displayWorld();
         this.gameTime = GameTime.getServerInstance();
+
+        this.worldManager.displayWorld();
         ServerBulletTracker.getInstance().setServerReference(this.server);
+
+        initPacketProcessors();
         registersClasses(this.server.getKryo());
     }
 
@@ -61,7 +72,6 @@ public class ServerHandler extends Handler implements Runnable {
 
     @Override
     public void run() {
-        // Run starting-event
         new ItemGenerator().generateItems(server, this.worldManager.getWorldData(), 15);
         while (!Thread.currentThread().isInterrupted()) {
             if (gameTime.shouldUpdate()) {
@@ -73,57 +83,11 @@ public class ServerHandler extends Handler implements Runnable {
 
     @Override
     protected void handlePacket(Connection connection, Object packet) {
-        if (packet instanceof PlayerUsernamePacket) {
-            PlayerUsernamePacket usernamePacket = (PlayerUsernamePacket) packet;
-            this.entityManager.getPlayerEntity(connection.getID()).setUsername(usernamePacket.getUsername());
-            PlayerJoinedPacket joinedPacket = new PlayerJoinedPacket(connection.getID(), usernamePacket.getUsername());
-            this.server.sendToAllUDP(joinedPacket);
-        } else if (packet instanceof DirectionPacket) {
-            DirectionPacket directionPacket = (DirectionPacket) packet;
-            Player player = this.entityManager.getPlayerEntity(connection.getID());
-            if (player != null) {
-                player.setDirection(directionPacket.getDirection());
-                player.setRotation(directionPacket.getRotation());
-            }
-        } else if (packet instanceof MouseInputPacket) {
-            MouseInputPacket mouseInputPacket = (MouseInputPacket) packet;
-            Player player = this.entityManager.getPlayerEntity(connection.getID());
-            if (player != null) {
-                player.setMouseInput(mouseInputPacket.getInput());
-            }
-        } else if (packet instanceof ReloadWeaponRequestPacket) {
-            Player player = this.entityManager.getPlayerEntity(connection.getID());
-            if (player != null) {
-                ((RangedWeapon) player.getInventory().getPrimaryWeapon().get()).reload();
-                WeaponStatePacket weaponStatePacket = WeaponStateSerializer
-                        .serializeWeaponState(player.getInventory().getPrimaryWeapon().get());
-                InventoryPacket inventoryPacket = new InventoryPacket(player.getId(),
-                        InventorySerializer.serializeInventory(player.getInventory()));
-                InventorySerializer.serializeInventory(player.getInventory());
-                this.server.sendToTCP(connection.getID(), inventoryPacket);
-                this.server.sendToTCP(connection.getID(), weaponStatePacket);
-            }
-        } else if (packet instanceof WeaponSwitchRequestPacket) {
-            WeaponSwitchRequestPacket weaponSwitchRequestPacket = (WeaponSwitchRequestPacket) packet;
-            Player player = this.entityManager.getPlayerEntity(connection.getID());
-            if (player.getInventory().getPrimaryWeapon().isPresent()) {
-                switch (weaponSwitchRequestPacket.getKeyCode()) {
-                    case 1 -> player.setEquippedWeapon(player.getFists());
-                    case 2 -> player.getInventory().getPrimaryWeapon().ifPresent(player::setEquippedWeapon);
-                }
-            }
-
-            WeaponStatePacket newWeaponState = WeaponStateSerializer.serializeWeaponState(player.getEquippedWeapon());
-            this.server.sendToAllTCP(newWeaponState);
-        } else if (packet instanceof PickupItemRequestPacket) {
-            Player player = this.entityManager.getPlayerEntity(connection.getID());
-            if (player != null) {
-                updater.tryPickupItem(player, server);
-            }
-        } else if (packet instanceof WeaponStatePacket) {
-            WeaponStatePacket weaponStatePacket = (WeaponStatePacket) packet;
-            Player player = this.entityManager.getPlayerEntity(connection.getID());
-            WeaponStateSerializer.deserializeWeaponState(weaponStatePacket, player);
+        PacketProcessor processor = packetProcessors.get(packet.getClass());
+        if (processor != null) {
+            processor.process(connection, packet);
+        } else {
+            System.out.println("Unknown packet type: " + packet.getClass().getName());
         }
     }
 
@@ -202,5 +166,18 @@ public class ServerHandler extends Handler implements Runnable {
 
     private void sendPlayerMouseInput() {
         this.entityUpdater.sendPlayerMouseInput(this.server);
+    }
+
+    private void initPacketProcessors() {
+        packetProcessors.put(PlayerUsernamePacket.class, new UsernamePacketProcessor(entityManager, server));
+        packetProcessors.put(DirectionPacket.class, new DirectionPacketProcessor(entityManager, server));
+        packetProcessors.put(MouseInputPacket.class, new MouseInputPacketProcessor(entityManager, server));
+        packetProcessors.put(ReloadWeaponRequestPacket.class,
+                new ReloadWeaponRequestPacketProcessor(entityManager, server));
+        packetProcessors.put(WeaponSwitchRequestPacket.class,
+                new WeaponSwitchRequestPacketProcessor(entityManager, server));
+        packetProcessors.put(PickupItemRequestPacket.class,
+                new PickupItemRequestPacketProcessor(entityManager, server, itemUpdater));
+        packetProcessors.put(WeaponStatePacket.class, new WeaponStatePacketProcessor(entityManager, server));
     }
 }

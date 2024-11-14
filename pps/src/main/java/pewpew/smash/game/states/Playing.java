@@ -13,6 +13,7 @@ import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.overlay.OverlayFactory;
 import pewpew.smash.game.overlay.OverlayManager;
 import pewpew.smash.game.overlay.OverlayType;
+import pewpew.smash.game.utils.FontFactory;
 
 public class Playing implements State {
 
@@ -42,8 +43,10 @@ public class Playing implements State {
         HudManager.getInstance().render(canvas);
         this.overlayManager.render(canvas);
 
+        FontFactory.IMPACT_SMALL.applyFont(canvas);
         canvas.renderString("FPS: " + GameTime.getCurrentFps(), 220, 20, Color.WHITE);
         canvas.renderString("UPS: " + GameTime.getCurrentUps(), 220, 40, Color.WHITE);
+        FontFactory.resetFont(canvas);
     }
 
     @Override
