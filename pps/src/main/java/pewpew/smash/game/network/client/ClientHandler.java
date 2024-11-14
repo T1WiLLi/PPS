@@ -1,56 +1,85 @@
 package pewpew.smash.game.network.client;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.esotericsoftware.kryonet.Connection;
 import lombok.Getter;
 import lombok.Setter;
-import pewpew.smash.game.SpectatorManager;
 import pewpew.smash.game.Alert.AlertManager;
-import pewpew.smash.game.entities.Bullet;
-import pewpew.smash.game.entities.Inventory;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
-import pewpew.smash.game.network.manager.ItemManager;
-import pewpew.smash.game.network.model.PlayerState;
-import pewpew.smash.game.network.model.SerializedItem;
 import pewpew.smash.game.network.packets.*;
-import pewpew.smash.game.network.serializer.InventorySerializer;
-import pewpew.smash.game.network.serializer.SerializationUtility;
-import pewpew.smash.game.network.serializer.WeaponStateSerializer;
-import pewpew.smash.game.objects.Item;
+import pewpew.smash.game.network.processor.PacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.BroadcastMessagePacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.BulletCreatePacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.BulletRemovePacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.InventoryPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ItemAddPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ItemRemovePacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.MouseActionPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.PlayerDeathPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.PlayerJoinedPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.PlayerLeftPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.PlayerStatePacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.PositionPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.WeaponStatePacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.WorldDataPacketProcessor;
 
 public class ClientHandler extends Handler {
+
     @Getter
     private final EntityManager entityManager;
     private final ClientUpdater clientUpdater;
     private final ClientWrapper client;
-    private final ConcurrentHashMap<Integer, String> pendingPlayers;
+    private final Map<Integer, List<PositionPacket>> positionPacketQueue; // Queue for PositionPackets only
+    private final Map<Class<?>, PacketProcessor> packetProcessors = new ConcurrentHashMap<>();
 
     @Getter
+    @Setter
     private byte[][] worldData;
     @Getter
+    @Setter
     private boolean isWorldDataReceived;
 
     @Setter
     @Getter
     private boolean isIntentionalDisconnect;
 
+    @Setter
     private String currentBroadcastedMessage = "";
-
-    @Getter
-    private int spectatingPlayerId = Integer.MIN_VALUE;
 
     public ClientHandler(String host, int port) {
         this.client = new ClientWrapper(host, port, port);
         this.entityManager = new EntityManager();
         this.clientUpdater = new ClientUpdater(this.entityManager);
-        this.pendingPlayers = new ConcurrentHashMap<>();
+        this.positionPacketQueue = new ConcurrentHashMap<>();
         registersClasses(this.client.getKryo());
+        initPacketProcessors();
+    }
+
+    private void initPacketProcessors() {
+        packetProcessors.put(PositionPacket.class, new PositionPacketProcessor(entityManager, client, this));
+        packetProcessors.put(MouseActionPacket.class, new MouseActionPacketProcessor(entityManager, client));
+        packetProcessors.put(PlayerStatePacket.class, new PlayerStatePacketProcessor(entityManager, client));
+        packetProcessors.put(BulletCreatePacket.class, new BulletCreatePacketProcessor(entityManager, client));
+        packetProcessors.put(BulletRemovePacket.class, new BulletRemovePacketProcessor(entityManager, client));
+        packetProcessors.put(WeaponStatePacket.class, new WeaponStatePacketProcessor(entityManager, client));
+        packetProcessors.put(ItemAddPacket.class, new ItemAddPacketProcessor(entityManager, client));
+        packetProcessors.put(ItemRemovePacket.class, new ItemRemovePacketProcessor(entityManager, client));
+        packetProcessors.put(InventoryPacket.class, new InventoryPacketProcessor(entityManager, client));
+        packetProcessors.put(PlayerDeathPacket.class, new PlayerDeathPacketProcessor(entityManager, client));
+        packetProcessors.put(BroadcastMessagePacket.class,
+                new BroadcastMessagePacketProcessor(entityManager, client, this));
+        packetProcessors.put(PlayerJoinedPacket.class, new PlayerJoinedPacketProcessor(entityManager, client, this));
+        packetProcessors.put(PlayerLeftPacket.class, new PlayerLeftPacketProcessor(entityManager, client, this));
+        packetProcessors.put(WorldDataPacket.class, new WorldDataPacketProcessor(entityManager, client, this));
     }
 
     @Override
@@ -61,156 +90,25 @@ public class ClientHandler extends Handler {
 
     @Override
     protected synchronized void handlePacket(Connection connection, Object packet) {
-        try {
-            if (packet instanceof PositionPacket position) {
-                handlePositionPacket(position);
-            } else if (packet instanceof MouseActionPacket mouseActionPacket) {
-                handleMouseActionPacket(mouseActionPacket);
-            } else if (packet instanceof PlayerStatePacket) {
-                handlePlayerStatePacket((PlayerStatePacket) packet);
-            } else if (packet instanceof BulletCreatePacket) {
-                handleBulletCreatePacket((BulletCreatePacket) packet);
-            } else if (packet instanceof BulletRemovePacket) {
-                handleBulletRemovePacket((BulletRemovePacket) packet);
-            } else if (packet instanceof WeaponStatePacket) {
-                handleWeaponStatePacket((WeaponStatePacket) packet);
-            } else if (packet instanceof ItemAddPacket) {
-                handleItemAddPacket((ItemAddPacket) packet);
-            } else if (packet instanceof ItemRemovePacket) {
-                handleItemRemovePacket((ItemRemovePacket) packet);
-            } else if (packet instanceof InventoryPacket) {
-                handleInventoryPacket((InventoryPacket) packet);
-            } else if (packet instanceof PlayerDeathPacket) {
-                handlePlayerDeathPacket((PlayerDeathPacket) packet);
-            } else if (packet instanceof BroadcastMessagePacket) {
-                handleBroadcastMessagePacket((BroadcastMessagePacket) packet);
-            } else if (packet instanceof PlayerJoinedPacket playerJoined) {
-                handlePlayerJoinedPacket(playerJoined);
-            } else if (packet instanceof PlayerLeftPacket playerLeft) {
-                handlePlayerLeftPacket(playerLeft);
-            } else if (packet instanceof WorldDataPacket worldDataPacket) {
-                handleWorldDataPacket(worldDataPacket);
-            }
-        } catch (Exception e) {
-            System.err.println("Error handling packet: " + e.getMessage());
-            e.printStackTrace();
+        PacketProcessor processor = packetProcessors.get(packet.getClass());
+        if (processor != null) {
+            processor.process(connection, packet);
+        } else {
+            System.err.println("No processor found for packet type: " + packet.getClass().getSimpleName());
         }
     }
 
-    private void handlePositionPacket(PositionPacket position) {
-        Player player = this.entityManager.getPlayerEntity(position.getId());
-        if (player != null) {
-            player.teleport(position.getX(), position.getY());
-            player.setRotation(position.getR());
-        } else {
-            System.out.println("Queuing position update for player: " + position.getId());
-            String username = pendingPlayers.get(position.getId());
-            if (username != null) {
-                Player newPlayer = new Player(position.getId(), username);
-                newPlayer.teleport(position.getX(), position.getY());
-                newPlayer.setRotation(position.getR());
-                this.entityManager.addPlayerEntity(newPlayer.getId(), newPlayer);
+    public void queuePositionPacket(int playerId, PositionPacket packet) {
+        positionPacketQueue.computeIfAbsent(playerId, k -> new ArrayList<>()).add(packet);
+    }
+
+    public void processQueuedPositionPackets(int playerId) {
+        List<PositionPacket> queuedPackets = positionPacketQueue.remove(playerId);
+        if (queuedPackets != null) {
+            for (PositionPacket packet : queuedPackets) {
+                handlePacket(null, packet);
             }
         }
-    }
-
-    private void handleMouseActionPacket(MouseActionPacket mouseActionPacket) {
-        Player player = this.entityManager.getPlayerEntity(mouseActionPacket.getPlayerID());
-        if (player != null) {
-            player.setMouseInput(mouseActionPacket.getMouseInput());
-        } else {
-            System.out
-                    .println("Cannot process mouse action for non-existent player: " + mouseActionPacket.getPlayerID());
-        }
-    }
-
-    private void handlePlayerStatePacket(PlayerStatePacket packet) {
-        PlayerState newState = packet.getState();
-        Player player = this.entityManager.getPlayerEntity(newState.getId());
-        player.applyState(newState);
-    }
-
-    private void handleBulletCreatePacket(BulletCreatePacket packet) {
-        Bullet bullet = new Bullet(entityManager.getPlayerEntity(packet.getOwnerID()));
-        bullet.setId(packet.getBulletID());
-        bullet.teleport(packet.getX(), packet.getY());
-        this.entityManager.addBulletEntity(packet.getBulletID(), bullet);
-    }
-
-    private void handleBulletRemovePacket(BulletRemovePacket packet) {
-        this.entityManager.removeBulletEntity(packet.getBulletID());
-    }
-
-    private void handleWeaponStatePacket(WeaponStatePacket packet) {
-        Player player = this.entityManager.getPlayerEntity(packet.getOwnerID());
-        if (player != null) {
-            WeaponStateSerializer.deserializeWeaponState(packet, player);
-        }
-    }
-
-    private void handleItemAddPacket(ItemAddPacket packet) {
-        SerializedItem serializedItem = packet.getSerializedItem();
-
-        Item item = SerializationUtility.deserializeItem(serializedItem);
-        item.teleport(packet.getX(), packet.getY());
-
-        ItemManager.getInstance(false).addItem(item);
-    }
-
-    private void handleItemRemovePacket(ItemRemovePacket packet) {
-        ItemManager.getInstance(false).removeItemByID(packet.getId());
-    }
-
-    private void handleInventoryPacket(InventoryPacket packet) {
-        Player player = this.entityManager.getPlayerEntity(packet.getPlayerID());
-        if (player != null) {
-            Inventory inventory = player.getInventory();
-            InventorySerializer.deserializeInventory(packet.getItems(), inventory);
-        }
-    }
-
-    private void handlePlayerDeathPacket(PlayerDeathPacket packet) {
-        int deadPlayerId = packet.getDeadPlayerID();
-        int killerPlayerId = packet.getKillerPlayerID();
-
-        if (deadPlayerId == User.getInstance().getLocalID().get()) {
-            User.getInstance().setDead(true);
-            SpectatorManager.getInstance().startSpectating(killerPlayerId);
-        } else if (SpectatorManager.getInstance().isSpectating() &&
-                deadPlayerId == SpectatorManager.getInstance().getSpectatingPlayerId()) {
-            SpectatorManager.getInstance().startSpectating(killerPlayerId);
-        }
-        entityManager.removePlayerEntity(deadPlayerId);
-        HudManager.getInstance().setAmountOfPlayerAlive(this.entityManager.getPlayerEntities().size());
-    }
-
-    private void handleBroadcastMessagePacket(BroadcastMessagePacket packet) {
-        this.currentBroadcastedMessage = packet.getMessage();
-    }
-
-    private void handlePlayerJoinedPacket(PlayerJoinedPacket playerJoined) {
-        if (this.entityManager.getPlayerEntity(playerJoined.getId()) == null) {
-            pendingPlayers.put(playerJoined.getId(), playerJoined.getUsername());
-            Player player = new Player(playerJoined.getId(), playerJoined.getUsername());
-            this.entityManager.addPlayerEntity(player.getId(), player);
-            this.currentBroadcastedMessage = player.getUsername() + " has joined the game.";
-        }
-    }
-
-    private void handlePlayerLeftPacket(PlayerLeftPacket packet) {
-        Player player = entityManager.getPlayerEntity(packet.getId());
-        if (player != null) {
-            currentBroadcastedMessage = player.getUsername() + " has left the game.";
-            entityManager.removePlayerEntity(packet.getId());
-        } else {
-            System.err.println("Warning: Attempted to process a player left event for a non-existent player with ID "
-                    + packet.getId());
-        }
-    }
-
-    private void handleWorldDataPacket(WorldDataPacket worldDataPacket) {
-        this.worldData = worldDataPacket.getWorldData();
-        this.isWorldDataReceived = true;
     }
 
     @Override
@@ -219,16 +117,17 @@ public class ClientHandler extends Handler {
         User.getInstance().setID(connection.getID());
 
         String username = User.getInstance().getUsername();
-
         Player player = new Player(connection.getID(), username);
         this.entityManager.addPlayerEntity(player.getId(), player);
         this.client.sendToTCP(new PlayerUsernamePacket(username));
         HudManager.getInstance().setPlayer(player);
+
+        processQueuedPositionPackets(player.getId());
     }
 
     @Override
     protected void onDisconnect(Connection connection) {
-        pendingPlayers.clear();
+        positionPacketQueue.clear();
         entityManager.clearAllEntities();
         System.out.println("DISCONNECTED");
         if (!isIntentionalDisconnect) {
@@ -252,12 +151,5 @@ public class ClientHandler extends Handler {
 
     public synchronized String getCurrentBroadcastedMessage() {
         return this.currentBroadcastedMessage;
-    }
-
-    public Player getSpectatingTarget() {
-        if (entityManager.containsPlayerEntity(spectatingPlayerId)) {
-            return entityManager.getPlayerEntity(spectatingPlayerId);
-        }
-        return null;
     }
 }
