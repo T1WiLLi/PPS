@@ -55,6 +55,7 @@ public class PauseOverlay extends Overlay {
                     GameModeManager.getInstance().getCurrentGameMode().reset();
                     StateManager.getInstance().setState(GameStateType.MENU);
                     OverlayManager.getInstance().pop();
+                    System.out.println("Overlay logic is over!");
                 });
     }
 

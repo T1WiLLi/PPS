@@ -42,7 +42,7 @@ public class ClientItemRenderer {
                 item.getName() + ((item instanceof AmmoStack) ? "(" + ((AmmoStack) item).getAmmo() + ")" : ""),
                 item.getX(), item.getY() - 5, Color.WHITE);
 
-        FontFactory.IMPACT_MEDIUM.applyFont(canvas);
+        FontFactory.MEDIUM_FONT.applyFont(canvas);
         canvas.renderString(
                 SettingsManager.getInstance().getSettings().getKey().getMisc().get("use").toLowerCase(),
                 item.getX(), item.getY() + item.getWidth() + 10, Color.YELLOW);

@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 public enum FontFactory {
     DEFAULT_FONT(new Font("Segoe UI", Font.BOLD, 14)),
     SMALL_FONT(new Font("Verdana", Font.PLAIN, 12)),
+    MEDIUM_FONT(new Font("Arial", Font.BOLD, 18)),
     LARGE_FONT(new Font("Georgia", Font.BOLD, 24)),
     IMPACT_SMALL(new Font("Impact", Font.PLAIN, 18)),
     IMPACT_MEDIUM(new Font("Impact", Font.BOLD, 24)),

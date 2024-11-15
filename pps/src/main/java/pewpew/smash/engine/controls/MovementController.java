@@ -14,7 +14,6 @@ public class MovementController extends KeyController {
     }
 
     public void updateBindings(Map<String, String> movement, Map<String, String> misc) {
-        clearKeys();
         if (movement != null && !movement.isEmpty()) {
             movementKeyMap.clear();
             bindKeysFromMap(movement);
@@ -22,9 +21,6 @@ public class MovementController extends KeyController {
         if (misc != null && !misc.isEmpty()) {
             bindKeysFromMap(misc);
         }
-        bindKeys(new int[] { KeyEvent.VK_F1, KeyEvent.VK_F2, KeyEvent.VK_F3, KeyEvent.VK_F4, KeyEvent.VK_RIGHT,
-                KeyEvent.VK_LEFT });
-        bindKeys(new int[] { KeyEvent.VK_1, KeyEvent.VK_2 });
     }
 
     public boolean isKeyPressed(String action) {

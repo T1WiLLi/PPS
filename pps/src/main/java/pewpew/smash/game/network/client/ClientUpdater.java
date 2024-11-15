@@ -11,6 +11,7 @@ import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.MouseInputPacket;
 import pewpew.smash.game.network.packets.PickupItemRequestPacket;
 import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
+import pewpew.smash.game.network.packets.UseConsumableRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
@@ -62,6 +63,14 @@ public class ClientUpdater {
             }
         } else if (GamePad.getInstance().isUseKeyPressed()) {
             client.sendToTCP(new PickupItemRequestPacket());
+        } else {
+            Object[] consumableKeyResult = GamePad.getInstance().isConsumableKeysPressed();
+            boolean isConsumableKeyPressed = (boolean) consumableKeyResult[0];
+
+            if (isConsumableKeyPressed) {
+                int keyCode = (int) consumableKeyResult[1];
+                client.sendToTCP(new UseConsumableRequestPacket(keyCode));
+            }
         }
     }
 

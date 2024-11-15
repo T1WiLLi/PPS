@@ -5,7 +5,6 @@ import com.esotericsoftware.kryonet.Connection;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.InventoryPacket;
-import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.processor.PacketProcessor;
 import pewpew.smash.game.network.processor.ServerProcessor;
@@ -22,19 +21,17 @@ public class ReloadWeaponRequestPacketProcessor extends ServerProcessor implemen
 
     @Override
     public void handle(Connection connection, Object packet) {
-        if (packet instanceof ReloadWeaponRequestPacket) {
-            Player player = getPlayer(connection);
-            if (player != null && player.getInventory().getPrimaryWeapon().isPresent()) {
-                RangedWeapon weapon = (RangedWeapon) player.getInventory().getPrimaryWeapon().get();
-                weapon.reload();
+        Player player = getPlayer(connection);
+        if (player != null && player.getInventory().getPrimaryWeapon().isPresent()) {
+            RangedWeapon weapon = (RangedWeapon) player.getInventory().getPrimaryWeapon().get();
+            weapon.reload();
 
-                WeaponStatePacket weaponStatePacket = WeaponStateSerializer.serializeWeaponState(weapon);
-                InventoryPacket inventoryPacket = new InventoryPacket(player.getId(),
-                        InventorySerializer.serializeInventory(player.getInventory()));
+            WeaponStatePacket weaponStatePacket = WeaponStateSerializer.serializeWeaponState(weapon);
+            InventoryPacket inventoryPacket = new InventoryPacket(player.getId(),
+                    InventorySerializer.serializeInventory(player.getInventory()));
 
-                sendToTCP(connection.getID(), inventoryPacket);
-                sendToTCP(connection.getID(), weaponStatePacket);
-            }
+            sendToTCP(connection.getID(), inventoryPacket);
+            sendToTCP(connection.getID(), weaponStatePacket);
         }
     }
 }

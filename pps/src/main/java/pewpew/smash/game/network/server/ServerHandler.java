@@ -20,6 +20,7 @@ import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
 import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
+import pewpew.smash.game.network.packets.UseConsumableRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.processor.PacketProcessor;
@@ -27,6 +28,7 @@ import pewpew.smash.game.network.processor.serverProcessor.DirectionPacketProces
 import pewpew.smash.game.network.processor.serverProcessor.MouseInputPacketProcessor;
 import pewpew.smash.game.network.processor.serverProcessor.PickupItemRequestPacketProcessor;
 import pewpew.smash.game.network.processor.serverProcessor.ReloadWeaponRequestPacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.UseConsumableRequestPacketProcessor;
 import pewpew.smash.game.network.processor.serverProcessor.UsernamePacketProcessor;
 import pewpew.smash.game.network.processor.serverProcessor.WeaponStatePacketProcessor;
 import pewpew.smash.game.network.processor.serverProcessor.WeaponSwitchRequestPacketProcessor;
@@ -56,7 +58,7 @@ public class ServerHandler extends Handler implements Runnable {
         this.worldManager = new ServerWorldManager();
         this.gameTime = GameTime.getServerInstance();
 
-        this.worldManager.displayWorld();
+        // this.worldManager.displayWorld();
         ServerBulletTracker.getInstance().setServerReference(this.server);
 
         initPacketProcessors();
@@ -179,5 +181,7 @@ public class ServerHandler extends Handler implements Runnable {
         packetProcessors.put(PickupItemRequestPacket.class,
                 new PickupItemRequestPacketProcessor(entityManager, server, itemUpdater));
         packetProcessors.put(WeaponStatePacket.class, new WeaponStatePacketProcessor(entityManager, server));
+        packetProcessors.put(UseConsumableRequestPacket.class,
+                new UseConsumableRequestPacketProcessor(entityManager, server));
     }
 }
