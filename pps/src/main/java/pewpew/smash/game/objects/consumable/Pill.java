@@ -13,7 +13,9 @@ public class Pill extends Consumable {
 
     @Override
     public void consume() {
-
+        if (getOwner() != null) {
+            getOwner().setHealth(Math.clamp(getOwner().getHealth() + healingAmount, 0, 100));
+        }
     }
 
     @Override

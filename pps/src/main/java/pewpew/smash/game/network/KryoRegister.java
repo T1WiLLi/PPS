@@ -26,6 +26,7 @@ import pewpew.smash.game.network.packets.PlayerLeftPacket;
 import pewpew.smash.game.network.packets.PlayerStatePacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
 import pewpew.smash.game.network.packets.PositionPacket;
+import pewpew.smash.game.network.packets.PreventActionForPlayerPacket;
 import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
 import pewpew.smash.game.network.packets.UseConsumableRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
@@ -64,6 +65,7 @@ public class KryoRegister {
         kryo.register(ItemRemovePacket.class);
         kryo.register(PickupItemRequestPacket.class);
         kryo.register(UseConsumableRequestPacket.class);
+        kryo.register(PreventActionForPlayerPacket.class);
     }
 
     private void registerObjects(Kryo kryo) {

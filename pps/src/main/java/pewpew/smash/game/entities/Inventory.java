@@ -70,6 +70,10 @@ public class Inventory {
         return Optional.empty();
     }
 
+    public boolean hasConsumable(ConsumableType consumableType) {
+        return consumables.containsKey(consumableType);
+    }
+
     public void addAmmo(int amount) {
         ammoStack.setAmmo(ammoStack.getAmmo() + amount);
     }
@@ -83,6 +87,10 @@ public class Inventory {
 
     public int getAmmoCount() {
         return ammoStack.getAmmo();
+    }
+
+    public boolean isAmmoEmpty() {
+        return ammoStack.getAmmo() == 0;
     }
 
     public void clearInventory() {

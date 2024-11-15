@@ -15,7 +15,7 @@ public abstract class MovableEntity extends UpdatableEntity {
 
     @Setter
     private Direction direction = Direction.UP;
-    private int speed;
+    private float speed;
 
     @Getter
     private int prevX, prevY;
@@ -27,7 +27,7 @@ public abstract class MovableEntity extends UpdatableEntity {
         y += direction.getVelocityY((int) (speed));
     }
 
-    public void setSpeed(int speed) {
+    public void setSpeed(float speed) {
         if (speed < 0) {
             throw new IllegalArgumentException("Speed can't be negative");
         }

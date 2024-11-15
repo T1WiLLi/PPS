@@ -3,7 +3,8 @@ package pewpew.smash.game.hud;
 import pewpew.smash.engine.Canvas;
 
 public abstract class HudElement {
-    protected final int x, y;
+    protected int x;
+    protected int y;
     protected final int width, height;
 
     protected abstract void render(Canvas canvas);

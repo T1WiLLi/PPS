@@ -19,6 +19,7 @@ public class AmmoStack extends Item {
     public AmmoStack(int id, String name, String description) {
         super(id, name, description, preview);
         setDimensions(24, 24);
+        this.ammo = 0;
     }
 
     @Override
