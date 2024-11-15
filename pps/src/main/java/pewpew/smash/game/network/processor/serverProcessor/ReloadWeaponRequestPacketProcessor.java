@@ -30,6 +30,7 @@ public class ReloadWeaponRequestPacketProcessor extends ServerProcessor implemen
             InventoryPacket inventoryPacket = new InventoryPacket(player.getId(),
                     InventorySerializer.serializeInventory(player.getInventory()));
 
+            player.allowAction();
             sendToTCP(connection.getID(), inventoryPacket);
             sendToTCP(connection.getID(), weaponStatePacket);
         }

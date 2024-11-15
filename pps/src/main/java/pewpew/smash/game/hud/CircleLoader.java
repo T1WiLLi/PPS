@@ -19,8 +19,13 @@ public class CircleLoader extends HudElement {
         this.currentValue = 0;
     }
 
+    public void teleport(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
     @Override
-    protected void render(Canvas canvas) {
+    public void render(Canvas canvas) {
         int thickness = 2;
         int diameter = Math.min(width, height) - thickness;
         int centerX = x + thickness / 2;

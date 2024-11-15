@@ -22,6 +22,8 @@ public class HudManager {
     private AmmoDisplayer ammoDisplayer;
     private Minimap minimap;
 
+    private CircleLoaderManager circleLoaderManager;
+
     @Setter
     private int amountOfPlayerAlive;
 
@@ -49,7 +51,8 @@ public class HudManager {
             this.healthBar.setValue(this.local.getHealth());
             this.ammoDisplayer.setAmmo(this.local.getInventory().getAmmoCount());
             this.alivePlayerDisplayer.setAmountOfPlayerAlive(this.amountOfPlayerAlive);
-            this.scopeElementDisplayer.setScope(local.getScope().getPreview());
+            this.scopeElementDisplayer.setScope(this.local.getScope().getPreview());
+            this.circleLoaderManager.update(this.local);
             if (this.local.getEquippedWeapon() instanceof RangedWeapon) {
                 this.ammoBar.setMaxValue(((RangedWeapon) this.local.getEquippedWeapon()).getAmmoCapacity());
                 this.ammoBar.setValue(((RangedWeapon) this.local.getEquippedWeapon()).getCurrentAmmo());
@@ -66,6 +69,7 @@ public class HudManager {
         this.consumableDisplayer.render(canvas);
         this.ammoDisplayer.render(canvas);
         this.minimap.render(canvas);
+        this.circleLoaderManager.render(canvas);
     }
 
     public void reset() {
@@ -81,5 +85,11 @@ public class HudManager {
         this.consumableDisplayer = new ConsumableDisplayer(800 - 120 - 10, 225, 120, 150);
         this.ammoDisplayer = new AmmoDisplayer(550, 545, 110, 50);
         this.minimap = new Minimap(20, 580, 100, 100);
+
+        this.circleLoaderManager = new CircleLoaderManager();
+    }
+
+    public void startLoader(long secondDelay, Runnable action, Player player) {
+        this.circleLoaderManager.startLoader(secondDelay, action, player);
     }
 }

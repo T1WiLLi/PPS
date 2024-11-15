@@ -19,6 +19,7 @@ import pewpew.smash.game.network.packets.PickupItemRequestPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
+import pewpew.smash.game.network.packets.PreventActionForPlayerPacket;
 import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
 import pewpew.smash.game.network.packets.UseConsumableRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
@@ -27,6 +28,7 @@ import pewpew.smash.game.network.processor.PacketProcessor;
 import pewpew.smash.game.network.processor.serverProcessor.DirectionPacketProcessor;
 import pewpew.smash.game.network.processor.serverProcessor.MouseInputPacketProcessor;
 import pewpew.smash.game.network.processor.serverProcessor.PickupItemRequestPacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.PreventActionForPlayerPacketProcessor;
 import pewpew.smash.game.network.processor.serverProcessor.ReloadWeaponRequestPacketProcessor;
 import pewpew.smash.game.network.processor.serverProcessor.UseConsumableRequestPacketProcessor;
 import pewpew.smash.game.network.processor.serverProcessor.UsernamePacketProcessor;
@@ -183,5 +185,7 @@ public class ServerHandler extends Handler implements Runnable {
         packetProcessors.put(WeaponStatePacket.class, new WeaponStatePacketProcessor(entityManager, server));
         packetProcessors.put(UseConsumableRequestPacket.class,
                 new UseConsumableRequestPacketProcessor(entityManager, server));
+        packetProcessors.put(PreventActionForPlayerPacket.class,
+                new PreventActionForPlayerPacketProcessor(entityManager, server));
     }
 }

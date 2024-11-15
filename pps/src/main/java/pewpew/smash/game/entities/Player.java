@@ -36,10 +36,12 @@ public class Player extends MovableEntity {
     private String username;
     private int health;
 
+    private boolean canDoAction = true;
+
     public Player(int id) {
         setDimensions(40, 40);
         teleport(100, 100);
-        setSpeed(2);
+        setSpeed(2f);
         this.rotation = 0f;
         this.id = id;
         this.health = 100;
@@ -72,7 +74,7 @@ public class Player extends MovableEntity {
     @Override
     public void updateServer() {
         move(1);
-        if (this.inventory.hasPrimaryWeapon() && equippedWeapon instanceof RangedWeapon) {
+        if (this.inventory.hasPrimaryWeapon() && equippedWeapon instanceof RangedWeapon && canDoAction) {
             this.inventory.getPrimaryWeapon().get().updateServer();
         }
     }
@@ -107,6 +109,10 @@ public class Player extends MovableEntity {
         newWeapon.pickup(this);
     }
 
+    public boolean hasAmmo() {
+        return inventory.isAmmoEmpty();
+    }
+
     public void setScope(Scope scope) {
         this.inventory.setScope(scope);
         Camera.getInstance().setZoom(scope.getZoomValue());
@@ -114,5 +120,15 @@ public class Player extends MovableEntity {
 
     public Scope getScope() {
         return this.inventory.getScope();
+    }
+
+    public void preventAction() {
+        this.canDoAction = false;
+        setSpeed(1.25f);
+    }
+
+    public void allowAction() {
+        this.canDoAction = true;
+        setSpeed(2f);
     }
 }
