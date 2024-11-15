@@ -14,6 +14,7 @@ import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 import pewpew.smash.game.objects.Consumable;
 import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.objects.RangedWeapon;
+import pewpew.smash.game.objects.SpecialType;
 import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.special.AmmoStack;
 import pewpew.smash.game.objects.special.Scope;
@@ -62,6 +63,14 @@ public class ServerItemUpdater {
             AmmoStack ammoStack = (AmmoStack) item;
             player.getInventory().addAmmo(ammoStack.getAmmo());
         } else if (item instanceof Scope) {
+            Scope currentscope = player.getScope();
+            if (currentscope.getZoomValue() != SpecialType.SCOPE_X1.getValue()) {
+                currentscope.drop();
+                ItemManager.getInstance(true).addItem(currentscope);
+                server.sendToAllTCP(
+                        new ItemAddPacket(player.getX(), player.getY(),
+                                SerializationUtility.serializeItem(currentscope)));
+            }
             player.getInventory().setScope((Scope) item);
         } else if (item instanceof Consumable) {
             Consumable consumable = (Consumable) item;
@@ -69,7 +78,7 @@ public class ServerItemUpdater {
         } else if (item instanceof RangedWeapon) {
             player.getInventory().getPrimaryWeapon().ifPresent(currentWeapon -> {
                 System.out.println("The weapon added has ammo: " + currentWeapon.getCurrentAmmo());
-                currentWeapon.drop(player.getX(), player.getY());
+                currentWeapon.drop();
                 ItemManager.getInstance(true).addItem(currentWeapon);
                 server.sendToAllTCP(new ItemAddPacket(player.getX(), player.getY(),
                         SerializationUtility.serializeItem(currentWeapon)));

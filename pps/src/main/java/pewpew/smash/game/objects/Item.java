@@ -66,11 +66,11 @@ public abstract class Item {
 
     // We would probably want to override this function in the actual class (while
     // still calling the super)
-    public void drop(int newX, int newY) {
+    public void drop() {
         ItemManager.getInstance(true).addItem(this);
+        this.x = owner.getX();
+        this.y = owner.getY();
         this.owner = null;
-        this.x = newX;
-        this.y = newY;
         isOnScreen = true;
     }
 }

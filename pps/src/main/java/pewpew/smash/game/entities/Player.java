@@ -98,7 +98,7 @@ public class Player extends MovableEntity {
     }
 
     public void applyState(PlayerState newState) {
-        this.health = newState.getHealth();
+        this.health = Math.clamp(newState.getHealth(), 0, 100);
     }
 
     public void changeWeapon(RangedWeapon newWeapon) {

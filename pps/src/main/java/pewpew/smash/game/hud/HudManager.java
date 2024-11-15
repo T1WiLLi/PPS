@@ -45,13 +45,15 @@ public class HudManager {
     }
 
     public void update() {
-        this.healthBar.setValue(this.local.getHealth());
-        this.ammoDisplayer.setAmmo(this.local.getInventory().getAmmoCount());
-        this.alivePlayerDisplayer.setAmountOfPlayerAlive(this.amountOfPlayerAlive);
-        this.scopeElementDisplayer.setScope(local.getScope().getPreview());
-        if (this.local.getEquippedWeapon() instanceof RangedWeapon) {
-            this.ammoBar.setMaxValue(((RangedWeapon) this.local.getEquippedWeapon()).getAmmoCapacity());
-            this.ammoBar.setValue(((RangedWeapon) this.local.getEquippedWeapon()).getCurrentAmmo());
+        if (this.local != null) {
+            this.healthBar.setValue(this.local.getHealth());
+            this.ammoDisplayer.setAmmo(this.local.getInventory().getAmmoCount());
+            this.alivePlayerDisplayer.setAmountOfPlayerAlive(this.amountOfPlayerAlive);
+            this.scopeElementDisplayer.setScope(local.getScope().getPreview());
+            if (this.local.getEquippedWeapon() instanceof RangedWeapon) {
+                this.ammoBar.setMaxValue(((RangedWeapon) this.local.getEquippedWeapon()).getAmmoCapacity());
+                this.ammoBar.setValue(((RangedWeapon) this.local.getEquippedWeapon()).getCurrentAmmo());
+            }
         }
     }
 
@@ -67,7 +69,7 @@ public class HudManager {
     }
 
     public void reset() {
-        instance = new HudManager();
+        instance = null;
     }
 
     private HudManager() {
