@@ -5,13 +5,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.engine.entities.StaticEntity;
-import pewpew.smash.engine.entities.UpdatableEntity;
 import pewpew.smash.game.entities.Bullet;
 import pewpew.smash.game.entities.Player;
 
 public class EntityManager {
-    private final Map<Integer, UpdatableEntity> updatableEntitiesMap;
     private final Map<Integer, MovableEntity> movableEntitiesMap;
+    private final Map<Integer, StaticEntity> staticEntitiesMap;
     private final Map<Integer, Player> playerEntitiesMap;
     private final Map<Integer, Bullet> bulletEntitiesMap;
 
@@ -22,19 +21,19 @@ public class EntityManager {
     private final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
 
     public EntityManager() {
-        this.updatableEntitiesMap = new ConcurrentHashMap<>();
         this.movableEntitiesMap = new ConcurrentHashMap<>();
+        this.staticEntitiesMap = new ConcurrentHashMap<>();
         this.playerEntitiesMap = new ConcurrentHashMap<>();
         this.bulletEntitiesMap = new ConcurrentHashMap<>();
         this.deadPlayersMap = new ConcurrentHashMap<>();
     }
 
-    public synchronized void addUpdatableEntity(int id, UpdatableEntity entity) {
-        updatableEntitiesMap.put(id, entity);
-    }
-
     public synchronized void addMovableEntity(int id, MovableEntity entity) {
         movableEntitiesMap.put(id, entity);
+    }
+
+    public synchronized void addStaticEntity(int id, StaticEntity entity) {
+        staticEntitiesMap.put(id, entity);
     }
 
     public synchronized void addPlayerEntity(int id, Player entity) {
@@ -45,12 +44,12 @@ public class EntityManager {
         bulletEntitiesMap.put(id, bullet);
     }
 
-    public synchronized UpdatableEntity removeUpdatableEntity(int id) {
-        return updatableEntitiesMap.remove(id);
-    }
-
     public synchronized MovableEntity removeMovableEntity(int id) {
         return movableEntitiesMap.remove(id);
+    }
+
+    public synchronized StaticEntity removeStaticEntity(int id) {
+        return staticEntitiesMap.remove(id);
     }
 
     public synchronized Player removePlayerEntity(int id) {
@@ -65,12 +64,12 @@ public class EntityManager {
         return bulletEntitiesMap.remove(id);
     }
 
-    public synchronized UpdatableEntity getUpdatableEntity(int id) {
-        return updatableEntitiesMap.get(id);
-    }
-
     public synchronized MovableEntity getMovableEntity(int id) {
         return movableEntitiesMap.get(id);
+    }
+
+    public synchronized StaticEntity getStaticEntity(int id) {
+        return staticEntitiesMap.get(id);
     }
 
     public synchronized Player getPlayerEntity(int id) {
@@ -85,12 +84,12 @@ public class EntityManager {
         return bulletEntitiesMap.get(id);
     }
 
-    public boolean containsUpdatableEntity(int id) {
-        return updatableEntitiesMap.containsKey(id);
-    }
-
     public boolean containsMovableEntity(int id) {
         return movableEntitiesMap.containsKey(id);
+    }
+
+    public boolean containsStaticEntity(int id) {
+        return staticEntitiesMap.containsKey(id);
     }
 
     public boolean containsPlayerEntity(int id) {
@@ -105,7 +104,7 @@ public class EntityManager {
         readLock.lock();
         try {
             List<StaticEntity> allEntities = new ArrayList<>();
-            allEntities.addAll(updatableEntitiesMap.values());
+            allEntities.addAll(staticEntitiesMap.values());
             allEntities.addAll(movableEntitiesMap.values());
             allEntities.addAll(playerEntitiesMap.values());
             return allEntities;
@@ -117,7 +116,7 @@ public class EntityManager {
     public void clearAllEntities() {
         writeLock.lock();
         try {
-            updatableEntitiesMap.clear();
+            staticEntitiesMap.clear();
             movableEntitiesMap.clear();
             playerEntitiesMap.clear();
             deadPlayersMap.clear();
@@ -126,19 +125,19 @@ public class EntityManager {
         }
     }
 
-    public List<UpdatableEntity> getUpdatableEntities() {
+    public List<MovableEntity> getMovableEntities() {
         readLock.lock();
         try {
-            return new ArrayList<>(updatableEntitiesMap.values());
+            return new ArrayList<>(movableEntitiesMap.values());
         } finally {
             readLock.unlock();
         }
     }
 
-    public List<MovableEntity> getMovableEntities() {
+    public List<StaticEntity> getStaticEntities() {
         readLock.lock();
         try {
-            return new ArrayList<>(movableEntitiesMap.values());
+            return new ArrayList<>(staticEntitiesMap.values());
         } finally {
             readLock.unlock();
         }
@@ -173,8 +172,8 @@ public class EntityManager {
         }
     }
 
-    public String size() {
+    public String sizeToString() {
         return "Player[" + playerEntitiesMap.size() + "] & MovableEntity[" + movableEntitiesMap.size()
-                + "] & UpdatableEntity[" + updatableEntitiesMap.size() + "] & Bullet[" + bulletEntitiesMap.size() + "]";
+                + "] & StaticEntity[" + staticEntitiesMap.size() + "] & Bullet[" + bulletEntitiesMap.size() + "]";
     }
 }

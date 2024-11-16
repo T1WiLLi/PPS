@@ -32,12 +32,6 @@ public class ServerEntityUpdater {
                 entity.updateServer();
             }
         });
-
-        entityManager.getUpdatableEntities().forEach(entity -> {
-            if (isInView(entity, combinedFOV)) {
-                entity.updateServer();
-            }
-        });
     }
 
     public void sendPlayerPositions(ServerWrapper server) {

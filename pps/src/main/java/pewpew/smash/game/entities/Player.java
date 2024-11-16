@@ -96,7 +96,7 @@ public class Player extends MovableEntity {
 
     @Override
     public Shape getHitbox() {
-        return new Ellipse2D.Float(getX(), getY(), width, width);
+        return new Ellipse2D.Float(getX(), getY(), getWidth(), getHeight());
     }
 
     public void applyState(PlayerState newState) {

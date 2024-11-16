@@ -61,4 +61,4 @@ Thumbs.db
 *.bak
 *.old
 
-src/main/resources/pewpew/smash/config/DatabaseConfig.json
+DatabaseConfig.json

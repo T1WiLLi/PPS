@@ -15,8 +15,8 @@ public class ClientEntityRenderer {
 
     public void render(Canvas canvas, Camera camera) {
         renderPlayers(canvas, camera);
+        renderStaticEntities(canvas, camera);
         renderMovableEntities(canvas, camera);
-        renderUpdatableEntities(canvas, camera);
         renderBulletEntities(canvas, camera);
 
         canvas.resetScale();
@@ -30,16 +30,16 @@ public class ClientEntityRenderer {
         });
     }
 
-    private void renderMovableEntities(Canvas canvas, Camera camera) {
-        entityManager.getMovableEntities().forEach(entity -> {
+    private void renderStaticEntities(Canvas canvas, Camera camera) {
+        entityManager.getStaticEntities().forEach(entity -> {
             if (ViewUtils.isInView(entity.getX(), entity.getY())) {
                 renderEntity(canvas, camera, entity);
             }
         });
     }
 
-    private void renderUpdatableEntities(Canvas canvas, Camera camera) {
-        entityManager.getUpdatableEntities().forEach(entity -> {
+    private void renderMovableEntities(Canvas canvas, Camera camera) {
+        entityManager.getMovableEntities().forEach(entity -> {
             if (ViewUtils.isInView(entity.getX(), entity.getY())) {
                 renderEntity(canvas, camera, entity);
             }
