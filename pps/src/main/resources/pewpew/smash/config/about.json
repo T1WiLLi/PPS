@@ -154,6 +154,15 @@
                 "host",
                 "join"
               ]
+            },
+            {
+              "author": "Surviv.io",
+              "website": "https://survivio.fandom.com/wiki/Creator_Kit",
+              "license": "N/A",
+              "assets": [
+                "obstacle-stone-01",
+                "obstacle-tree-03sv"
+              ]
             }
           ]
         },
@@ -170,7 +179,7 @@
                 "menu background",
                 "login-panel",
                 "account background"
-                ]
+              ]
             },
             {
               "author": "Surviv.io",
@@ -181,7 +190,7 @@
                 "Wallpaper/survivo_wallpaper_04.png (Loading)",
                 "All 'Preview' images",
                 "All 'Scope' preview images"
-                ]
+              ]
             },
             {
               "author": "ChatGPT Dall-E 3",
@@ -196,7 +205,7 @@
                 "gold_badge",
                 "platinum_badge",
                 "diamond_badge"
-                ]
+              ]
             }
           ]
         }

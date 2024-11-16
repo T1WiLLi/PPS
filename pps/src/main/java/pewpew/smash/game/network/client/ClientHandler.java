@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.Setter;
 import pewpew.smash.game.Alert.AlertManager;
 import pewpew.smash.game.entities.Player;
+import pewpew.smash.game.entities.Stone;
+import pewpew.smash.game.entities.Tree;
 import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.User;
@@ -62,6 +64,14 @@ public class ClientHandler extends Handler {
         this.positionPacketQueue = new ConcurrentHashMap<>();
         registersClasses(this.client.getKryo());
         initPacketProcessors();
+
+        Stone stone = new Stone();
+        stone.teleport(1200, 1200);
+        entityManager.addStaticEntity(1, stone);
+
+        Tree tree = new Tree();
+        tree.teleport(1000, 1000);
+        entityManager.addStaticEntity(2, tree);
     }
 
     private void initPacketProcessors() {

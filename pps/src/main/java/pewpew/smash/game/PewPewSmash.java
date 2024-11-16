@@ -42,7 +42,7 @@ public class PewPewSmash extends Game {
     @Override
     public void conclude() {
         AudioPlayer.getInstance().shutdown();
-        // Database.getInstance().dispose();
+        Database.getInstance().dispose();
         System.exit(0);
     }
 }
