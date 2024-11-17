@@ -1,6 +1,7 @@
 package pewpew.smash.game.network.processor.clientProcessor;
 
 import com.esotericsoftware.kryonet.Connection;
+
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.client.ClientHandler;
 import pewpew.smash.game.network.client.ClientWrapper;

@@ -26,7 +26,7 @@ public class CircleLoader extends HudElement {
 
     @Override
     public void render(Canvas canvas) {
-        int thickness = 2;
+        int thickness = 4;
         int diameter = Math.min(width, height) - thickness;
         int centerX = x + thickness / 2;
         int centerY = y + thickness / 2;

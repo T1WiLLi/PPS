@@ -3,7 +3,7 @@ package pewpew.smash.game.utils;
 import pewpew.smash.game.Camera;
 
 public class ViewUtils {
-    private static final double FOV_BUFFER = 0.05;
+    private static final double FOV_BUFFER = 0.1;
     private static final int SCREEN_DEFAULT_WIDTH = 800;
     private static final int SCREEN_DEFAULT_HEIGHT = 600;
 
