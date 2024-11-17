@@ -2,6 +2,7 @@ package pewpew.smash.game.network.serializer;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.objects.ItemFactory;

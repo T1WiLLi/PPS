@@ -5,6 +5,8 @@ import javax.sound.sampled.FloatControl;
 
 public class AudioTrack {
 
+    private static final int FADE_OUT_DURATION = 3000;
+
     private int id;
     private Clip clip;
     private boolean isLooping;
@@ -45,8 +47,41 @@ public class AudioTrack {
 
     public void stop() {
         if (this.clip != null) {
-            this.clip.stop();
+            if (soundType == AudioPlayer.SoundType.MUSIC) {
+                fadeOut();
+            } else {
+                clip.stop();
+            }
         }
+    }
+
+    private void fadeOut() {
+        new Thread(() -> {
+            try {
+                FloatControl volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                float minVolume = volumeControl.getMinimum();
+                float currentVolume = (float) Math.pow(10.0, volumeControl.getValue() / 20.0);
+
+                int steps = FADE_OUT_DURATION / 150;
+                float stepDecrease = currentVolume / steps;
+
+                for (int i = 0; i < steps; i++) {
+                    currentVolume -= stepDecrease;
+                    if (currentVolume <= 0) {
+                        currentVolume = 0;
+                        break;
+                    }
+                    float dB = (float) (20.0 * Math.log10(currentVolume));
+                    volumeControl.setValue(Math.max(dB, minVolume));
+                    Thread.sleep(400);
+                }
+
+                volumeControl.setValue(minVolume);
+                clip.stop();
+            } catch (Exception e) {
+                System.err.println("Error during fade-out: " + e.getMessage());
+            }
+        }).start();
     }
 
     public void setVolume(float volume) {

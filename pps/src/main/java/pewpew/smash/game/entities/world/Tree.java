@@ -1,4 +1,4 @@
-package pewpew.smash.game.entities;
+package pewpew.smash.game.entities.world;
 
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
@@ -8,12 +8,12 @@ import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.entities.StaticEntity;
 import pewpew.smash.game.utils.ResourcesLoader;
 
-public class Stone extends StaticEntity {
+public class Tree extends StaticEntity {
 
     private BufferedImage sprite;
 
-    public Stone() {
-        setDimensions(92, 92);
+    public Tree() {
+        setDimensions(164, 164);
         loadSprite();
     }
 
@@ -25,10 +25,16 @@ public class Stone extends StaticEntity {
 
     @Override
     public Shape getHitbox() {
-        return new Ellipse2D.Float(getX(), getY(), getWidth(), getHeight());
+        int logWidth = (int) (getWidth() * 0.30);
+        int logHeight = (int) (getHeight() * 0.30);
+
+        int centerX = getX() + (getWidth() - logWidth) / 2;
+        int centerY = getY() + (getHeight() - logHeight) / 2;
+
+        return new Ellipse2D.Float(centerX, centerY, logWidth, logHeight);
     }
 
     private void loadSprite() {
-        sprite = ResourcesLoader.getImage(ResourcesLoader.ENTITY_SPRITE, "obstacle-stone-01");
+        sprite = ResourcesLoader.getImage(ResourcesLoader.ENTITY_SPRITE, "obstacle-tree-03sv");
     }
 }

@@ -11,6 +11,8 @@ import com.esotericsoftware.kryonet.Connection;
 
 import pewpew.smash.engine.GameTime;
 import pewpew.smash.game.entities.Player;
+import pewpew.smash.game.entities.world.Stone;
+import pewpew.smash.game.entities.world.Tree;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.DirectionPacket;
@@ -65,6 +67,14 @@ public class ServerHandler extends Handler implements Runnable {
 
         initPacketProcessors();
         registersClasses(this.server.getKryo());
+
+        Stone stone = new Stone();
+        stone.teleport(1200, 1200);
+        entityManager.addStaticEntity(1, stone);
+
+        Tree tree = new Tree();
+        tree.teleport(1000, 1000);
+        entityManager.addStaticEntity(2, tree);
     }
 
     @Override

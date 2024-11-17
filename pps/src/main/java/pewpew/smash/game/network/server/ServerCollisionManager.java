@@ -32,7 +32,7 @@ public class ServerCollisionManager {
                     continue;
 
                 if (areEntitiesClose(entity, other)) {
-                    if (entity.isColliding(entity, other)) {
+                    if (entity.isColliding(other)) {
                         handleCollision(entity, other);
                     }
                 }
@@ -85,8 +85,20 @@ public class ServerCollisionManager {
                 (entity instanceof StaticEntity && other instanceof MovableEntity)) {
             MovableEntity movableEntity = (entity instanceof MovableEntity) ? (MovableEntity) entity
                     : (MovableEntity) other;
-            movableEntity.teleport(movableEntity.getPrevX(), movableEntity.getPrevY());
-        }
 
+            double prevX = movableEntity.getPrevX();
+            double prevY = movableEntity.getPrevY();
+            double currX = movableEntity.getX();
+            double currY = movableEntity.getY();
+
+            double deltaX = currX - prevX;
+            double deltaY = currY - prevY;
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                movableEntity.teleport((int) prevX, (int) currY);
+            } else {
+                movableEntity.teleport((int) currX, (int) prevY);
+            }
+        }
     }
 }

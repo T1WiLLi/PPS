@@ -32,8 +32,24 @@ public abstract class StaticEntity {
         this.height = height;
     }
 
-    public boolean isColliding(StaticEntity entity, StaticEntity other) {
-        return entity.getHitbox().intersects(other.getHitbox().getBounds2D());
+    public boolean isColliding(StaticEntity other) {
+        if (this.getHitbox() instanceof Ellipse2D && other.getHitbox() instanceof Ellipse2D) {
+            double thisCenterX = getX() + getWidth() / 2.0;
+            double thisCenterY = getY() + getHeight() / 2.0;
+            double otherCenterX = other.getX() + other.getWidth() / 2.0;
+            double otherCenterY = other.getY() + other.getHeight() / 2.0;
+
+            double thisRadius = getWidth() / 2.0;
+            double otherRadius = other.getWidth() / 2.0;
+
+            double dx = thisCenterX - otherCenterX;
+            double dy = thisCenterY - otherCenterY;
+            double distanceSquared = dx * dx + dy * dy;
+
+            double radiiSum = thisRadius + otherRadius;
+            return distanceSquared <= radiiSum * radiiSum;
+        }
+        return getHitbox().intersects(other.getHitbox().getBounds2D());
     }
 
     protected void renderHitbox(Canvas canvas) {
