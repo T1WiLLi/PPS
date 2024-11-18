@@ -11,20 +11,18 @@ import pewpew.smash.game.network.processor.ClientProcessor;
 import pewpew.smash.game.network.processor.PacketProcessor;
 import pewpew.smash.game.network.serializer.InventorySerializer;
 
-public class InventoryPacketProcessor extends ClientProcessor implements PacketProcessor {
+public class ClientInventoryPacketProcessor extends ClientProcessor implements PacketProcessor<InventoryPacket> {
 
-    public InventoryPacketProcessor(EntityManager entityManager, ClientWrapper client) {
+    public ClientInventoryPacketProcessor(EntityManager entityManager, ClientWrapper client) {
         super(entityManager, client);
     }
 
     @Override
-    public void handle(Connection connection, Object packet) {
-        if (packet instanceof InventoryPacket inventoryPacket) {
-            Player player = getEntityManager().getPlayerEntity(inventoryPacket.getPlayerID());
-            if (player != null) {
-                Inventory inventory = player.getInventory();
-                InventorySerializer.deserializeInventory(inventoryPacket.getItems(), inventory);
-            }
+    public void handle(Connection connection, InventoryPacket packet) {
+        Player player = getEntityManager().getPlayerEntity(packet.getPlayerID());
+        if (player != null) {
+            Inventory inventory = player.getInventory();
+            InventorySerializer.deserializeInventory(packet.getItems(), inventory);
         }
     }
 }

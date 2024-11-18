@@ -13,6 +13,7 @@ import pewpew.smash.engine.GameTime;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.manager.EntityManager;
+import pewpew.smash.game.network.packets.BasePacket;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.MouseInputPacket;
 import pewpew.smash.game.network.packets.PickupItemRequestPacket;
@@ -25,15 +26,15 @@ import pewpew.smash.game.network.packets.UseConsumableRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.processor.PacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.DirectionPacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.MouseInputPacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.PickupItemRequestPacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.PreventActionForPlayerPacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.ReloadWeaponRequestPacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.UseConsumableRequestPacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.UsernamePacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.WeaponStatePacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.WeaponSwitchRequestPacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.ServerDirectionPacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.ServerMouseInputPacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.ServerPickupItemRequestPacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.ServerPreventActionForPlayerPacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.ServerReloadWeaponRequestPacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.ServerUseConsumableRequestPacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.ServerUsernamePacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.ServerWeaponStatePacketProcessor;
+import pewpew.smash.game.network.processor.serverProcessor.ServerWeaponSwitchRequestPacketProcessor;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 import pewpew.smash.game.objects.ItemGenerator;
 import pewpew.smash.game.world.entities.WorldEntityType;
@@ -50,7 +51,7 @@ public class ServerHandler extends Handler implements Runnable {
     private ServerCollisionManager collisionManager;
     private GameTime gameTime;
 
-    private final Map<Class<?>, PacketProcessor> packetProcessors = new HashMap<>();
+    private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors = new HashMap<>();
 
     public ServerHandler(int port) {
         this.server = new ServerWrapper(port, port);
@@ -98,11 +99,17 @@ public class ServerHandler extends Handler implements Runnable {
 
     @Override
     protected void handlePacket(Connection connection, Object packet) {
-        PacketProcessor processor = packetProcessors.get(packet.getClass());
-        if (processor != null) {
-            processor.process(connection, packet);
+        if (packet instanceof BasePacket basePacket) {
+            @SuppressWarnings("unchecked")
+            PacketProcessor<BasePacket> processor = (PacketProcessor<BasePacket>) packetProcessors
+                    .get(packet.getClass());
+            if (processor != null) {
+                processor.process(connection, basePacket);
+            } else {
+                System.out.println("Unknown packet type: " + packet.getClass().getName());
+            }
         } else {
-            System.out.println("Unknown packet type: " + packet.getClass().getName());
+            System.err.println("Received an invalid packet type: " + packet.getClass().getName());
         }
     }
 
@@ -184,19 +191,19 @@ public class ServerHandler extends Handler implements Runnable {
     }
 
     private void initPacketProcessors() {
-        packetProcessors.put(PlayerUsernamePacket.class, new UsernamePacketProcessor(entityManager, server));
-        packetProcessors.put(DirectionPacket.class, new DirectionPacketProcessor(entityManager, server));
-        packetProcessors.put(MouseInputPacket.class, new MouseInputPacketProcessor(entityManager, server));
+        packetProcessors.put(PlayerUsernamePacket.class, new ServerUsernamePacketProcessor(entityManager, server));
+        packetProcessors.put(DirectionPacket.class, new ServerDirectionPacketProcessor(entityManager, server));
+        packetProcessors.put(MouseInputPacket.class, new ServerMouseInputPacketProcessor(entityManager, server));
         packetProcessors.put(ReloadWeaponRequestPacket.class,
-                new ReloadWeaponRequestPacketProcessor(entityManager, server));
+                new ServerReloadWeaponRequestPacketProcessor(entityManager, server));
         packetProcessors.put(WeaponSwitchRequestPacket.class,
-                new WeaponSwitchRequestPacketProcessor(entityManager, server));
+                new ServerWeaponSwitchRequestPacketProcessor(entityManager, server));
         packetProcessors.put(PickupItemRequestPacket.class,
-                new PickupItemRequestPacketProcessor(entityManager, server, itemUpdater));
-        packetProcessors.put(WeaponStatePacket.class, new WeaponStatePacketProcessor(entityManager, server));
+                new ServerPickupItemRequestPacketProcessor(entityManager, server, itemUpdater));
+        packetProcessors.put(WeaponStatePacket.class, new ServerWeaponStatePacketProcessor(entityManager, server));
         packetProcessors.put(UseConsumableRequestPacket.class,
-                new UseConsumableRequestPacketProcessor(entityManager, server));
+                new ServerUseConsumableRequestPacketProcessor(entityManager, server));
         packetProcessors.put(PreventActionForPlayerPacket.class,
-                new PreventActionForPlayerPacketProcessor(entityManager, server));
+                new ServerPreventActionForPlayerPacketProcessor(entityManager, server));
     }
 }

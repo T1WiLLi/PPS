@@ -3,6 +3,7 @@ package pewpew.smash.game.network.client;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,20 +18,21 @@ import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.*;
 import pewpew.smash.game.network.processor.PacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.BroadcastMessagePacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.BulletCreatePacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.BulletRemovePacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.InventoryPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ItemAddPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ItemRemovePacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.MouseActionPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.PlayerDeathPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.PlayerJoinedPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.PlayerLeftPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.PlayerStatePacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.PositionPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.WeaponStatePacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.WorldDataPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientBroadcastMessagePacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientBulletCreatePacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientBulletRemovePacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientInventoryPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientItemAddPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientItemRemovePacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientMouseActionPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientPlayerDeathPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientPlayerJoinedPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientPlayerLeftPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientPlayerStatePacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientPositionPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientWeaponStatePacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientWorldDataPacketProcessor;
+import pewpew.smash.game.world.entities.Crate;
 import pewpew.smash.game.world.entities.WorldEntityType;
 import pewpew.smash.game.world.entities.WorldStaticEntity;
 
@@ -40,8 +42,8 @@ public class ClientHandler extends Handler {
     private final EntityManager entityManager;
     private final ClientUpdater clientUpdater;
     private final ClientWrapper client;
-    private final Map<Integer, List<PositionPacket>> positionPacketQueue; // Queue for PositionPackets only
-    private final Map<Class<?>, PacketProcessor> packetProcessors = new ConcurrentHashMap<>();
+    private final Map<Integer, List<PositionPacket>> positionPacketQueue;
+    private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors = new HashMap<>();
 
     @Getter
     @Setter
@@ -71,26 +73,27 @@ public class ClientHandler extends Handler {
         WorldStaticEntity tree = new WorldStaticEntity(WorldEntityType.TREE, 1000, 1000);
         entityManager.addStaticEntity(2, tree);
 
-        WorldStaticEntity crate = new WorldStaticEntity(WorldEntityType.CRATE, 600, 600);
+        WorldStaticEntity crate = new Crate(600, 600, null);
         entityManager.addStaticEntity(3, crate);
     }
 
     private void initPacketProcessors() {
-        packetProcessors.put(PositionPacket.class, new PositionPacketProcessor(entityManager, client, this));
-        packetProcessors.put(MouseActionPacket.class, new MouseActionPacketProcessor(entityManager, client));
-        packetProcessors.put(PlayerStatePacket.class, new PlayerStatePacketProcessor(entityManager, client));
-        packetProcessors.put(BulletCreatePacket.class, new BulletCreatePacketProcessor(entityManager, client));
-        packetProcessors.put(BulletRemovePacket.class, new BulletRemovePacketProcessor(entityManager, client));
-        packetProcessors.put(WeaponStatePacket.class, new WeaponStatePacketProcessor(entityManager, client));
-        packetProcessors.put(ItemAddPacket.class, new ItemAddPacketProcessor(entityManager, client));
-        packetProcessors.put(ItemRemovePacket.class, new ItemRemovePacketProcessor(entityManager, client));
-        packetProcessors.put(InventoryPacket.class, new InventoryPacketProcessor(entityManager, client));
-        packetProcessors.put(PlayerDeathPacket.class, new PlayerDeathPacketProcessor(entityManager, client));
+        packetProcessors.put(PositionPacket.class, new ClientPositionPacketProcessor(entityManager, client, this));
+        packetProcessors.put(MouseActionPacket.class, new ClientMouseActionPacketProcessor(entityManager, client));
+        packetProcessors.put(PlayerStatePacket.class, new ClientPlayerStatePacketProcessor(entityManager, client));
+        packetProcessors.put(BulletCreatePacket.class, new ClientBulletCreatePacketProcessor(entityManager, client));
+        packetProcessors.put(BulletRemovePacket.class, new ClientBulletRemovePacketProcessor(entityManager, client));
+        packetProcessors.put(WeaponStatePacket.class, new ClientWeaponStatePacketProcessor(entityManager, client));
+        packetProcessors.put(ItemAddPacket.class, new ClientItemAddPacketProcessor(entityManager, client));
+        packetProcessors.put(ItemRemovePacket.class, new ClientItemRemovePacketProcessor(entityManager, client));
+        packetProcessors.put(InventoryPacket.class, new ClientInventoryPacketProcessor(entityManager, client));
+        packetProcessors.put(PlayerDeathPacket.class, new ClientPlayerDeathPacketProcessor(entityManager, client));
         packetProcessors.put(BroadcastMessagePacket.class,
-                new BroadcastMessagePacketProcessor(entityManager, client, this));
-        packetProcessors.put(PlayerJoinedPacket.class, new PlayerJoinedPacketProcessor(entityManager, client, this));
-        packetProcessors.put(PlayerLeftPacket.class, new PlayerLeftPacketProcessor(entityManager, client, this));
-        packetProcessors.put(WorldDataPacket.class, new WorldDataPacketProcessor(entityManager, client, this));
+                new ClientBroadcastMessagePacketProcessor(entityManager, client, this));
+        packetProcessors.put(PlayerJoinedPacket.class,
+                new ClientPlayerJoinedPacketProcessor(entityManager, client, this));
+        packetProcessors.put(PlayerLeftPacket.class, new ClientPlayerLeftPacketProcessor(entityManager, client, this));
+        packetProcessors.put(WorldDataPacket.class, new ClientWorldDataPacketProcessor(entityManager, client, this));
     }
 
     @Override
@@ -100,12 +103,18 @@ public class ClientHandler extends Handler {
     }
 
     @Override
-    protected synchronized void handlePacket(Connection connection, Object packet) {
-        PacketProcessor processor = packetProcessors.get(packet.getClass());
-        if (processor != null) {
-            processor.process(connection, packet);
+    protected void handlePacket(Connection connection, Object packet) {
+        if (packet instanceof BasePacket basePacket) {
+            @SuppressWarnings("unchecked")
+            PacketProcessor<BasePacket> processor = (PacketProcessor<BasePacket>) packetProcessors
+                    .get(packet.getClass());
+            if (processor != null) {
+                processor.process(connection, basePacket);
+            } else {
+                System.out.println("Unknown packet type: " + packet.getClass().getName());
+            }
         } else {
-            System.err.println("No processor found for packet type: " + packet.getClass().getSimpleName());
+            System.err.println("Received an invalid packet type: " + packet.getClass().getName());
         }
     }
 
@@ -151,7 +160,7 @@ public class ClientHandler extends Handler {
         try {
             isIntentionalDisconnect = true;
             this.client.stop();
-            ((BulletRemovePacketProcessor) this.packetProcessors.get(BulletRemovePacket.class)).shutdown();
+            ((ClientBulletRemovePacketProcessor) this.packetProcessors.get(BulletRemovePacket.class)).shutdown();
         } catch (IOException e) {
             e.printStackTrace();
         }

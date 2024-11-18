@@ -9,16 +9,14 @@ import pewpew.smash.game.network.packets.ItemRemovePacket;
 import pewpew.smash.game.network.processor.ClientProcessor;
 import pewpew.smash.game.network.processor.PacketProcessor;
 
-public class ItemRemovePacketProcessor extends ClientProcessor implements PacketProcessor {
+public class ClientItemRemovePacketProcessor extends ClientProcessor implements PacketProcessor<ItemRemovePacket> {
 
-    public ItemRemovePacketProcessor(EntityManager entityManager, ClientWrapper client) {
+    public ClientItemRemovePacketProcessor(EntityManager entityManager, ClientWrapper client) {
         super(entityManager, client);
     }
 
     @Override
-    public void handle(Connection connection, Object packet) {
-        if (packet instanceof ItemRemovePacket itemRemovePacket) {
-            ItemManager.getInstance(false).removeItemByID(itemRemovePacket.getId());
-        }
+    public void handle(Connection connection, ItemRemovePacket packet) {
+        ItemManager.getInstance(false).removeItemByID(packet.getId());
     }
 }

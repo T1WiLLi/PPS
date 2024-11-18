@@ -13,26 +13,24 @@ import pewpew.smash.game.network.packets.BulletRemovePacket;
 import pewpew.smash.game.network.processor.ClientProcessor;
 import pewpew.smash.game.network.processor.PacketProcessor;
 
-public class BulletRemovePacketProcessor extends ClientProcessor implements PacketProcessor {
+public class ClientBulletRemovePacketProcessor extends ClientProcessor implements PacketProcessor<BulletRemovePacket> {
 
     private final ScheduledExecutorService scheduler;
 
-    public BulletRemovePacketProcessor(EntityManager entityManager, ClientWrapper client) {
+    public ClientBulletRemovePacketProcessor(EntityManager entityManager, ClientWrapper client) {
         super(entityManager, client);
         this.scheduler = Executors.newScheduledThreadPool(1);
     }
 
     @Override
-    public void handle(Connection connection, Object packet) {
-        if (packet instanceof BulletRemovePacket bulletRemovePacket) {
-            Bullet bullet = getEntityManager().getBulletEntity(bulletRemovePacket.getBulletID());
-            if (bullet != null) {
-                bullet.setShouldRenderEffect(true);
+    public void handle(Connection connection, BulletRemovePacket packet) {
+        Bullet bullet = getEntityManager().getBulletEntity(packet.getBulletID());
+        if (bullet != null) {
+            bullet.setShouldRenderEffect(true);
 
-                scheduler.schedule(() -> {
-                    getEntityManager().removeBulletEntity(bullet.getId());
-                }, 500, TimeUnit.MILLISECONDS);
-            }
+            scheduler.schedule(() -> {
+                getEntityManager().removeBulletEntity(bullet.getId());
+            }, 500, TimeUnit.MILLISECONDS);
         }
     }
 
