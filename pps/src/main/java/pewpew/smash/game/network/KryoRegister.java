@@ -9,6 +9,7 @@ import pewpew.smash.engine.controls.Direction;
 import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.network.model.SerializedItem;
+import pewpew.smash.game.network.model.WorldEntityState;
 import pewpew.smash.game.network.packets.BasePacket;
 import pewpew.smash.game.network.packets.BroadcastMessagePacket;
 import pewpew.smash.game.network.packets.BulletCreatePacket;
@@ -32,6 +33,7 @@ import pewpew.smash.game.network.packets.UseConsumableRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.packets.WorldDataPacket;
+import pewpew.smash.game.network.packets.WorldEntityStatePacket;
 import pewpew.smash.game.objects.WeaponType;
 
 public class KryoRegister {
@@ -54,6 +56,7 @@ public class KryoRegister {
         kryo.register(PositionPacket.class);
         kryo.register(WorldDataPacket.class);
         kryo.register(PlayerStatePacket.class);
+        kryo.register(WorldEntityStatePacket.class);
         kryo.register(WeaponStatePacket.class);
         kryo.register(WeaponSwitchRequestPacket.class);
         kryo.register(InventoryPacket.class);
@@ -72,6 +75,7 @@ public class KryoRegister {
         kryo.register(Direction.class);
         kryo.register(MouseInput.class);
         kryo.register(PlayerState.class);
+        kryo.register(WorldEntityState.class);
         kryo.register(SerializedItem.ItemType.class);
         kryo.register(SerializedItem.class);
         kryo.register(WeaponType.class);

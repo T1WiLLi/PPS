@@ -12,19 +12,17 @@ import pewpew.smash.game.network.processor.PacketProcessor;
 import pewpew.smash.game.network.serializer.SerializationUtility;
 import pewpew.smash.game.objects.Item;
 
-public class ItemAddPacketProcessor extends ClientProcessor implements PacketProcessor {
+public class ClientItemAddPacketProcessor extends ClientProcessor implements PacketProcessor<ItemAddPacket> {
 
-    public ItemAddPacketProcessor(EntityManager entityManager, ClientWrapper client) {
+    public ClientItemAddPacketProcessor(EntityManager entityManager, ClientWrapper client) {
         super(entityManager, client);
     }
 
     @Override
-    public void handle(Connection connection, Object packet) {
-        if (packet instanceof ItemAddPacket itemAddPacket) {
-            SerializedItem serializedItem = itemAddPacket.getSerializedItem();
-            Item item = SerializationUtility.deserializeItem(serializedItem);
-            item.teleport(itemAddPacket.getX(), itemAddPacket.getY());
-            ItemManager.getInstance(false).addItem(item);
-        }
+    public void handle(Connection connection, ItemAddPacket packet) {
+        SerializedItem serializedItem = packet.getSerializedItem();
+        Item item = SerializationUtility.deserializeItem(serializedItem);
+        item.teleport(packet.getX(), packet.getY());
+        ItemManager.getInstance(false).addItem(item);
     }
 }

@@ -10,22 +10,21 @@ import pewpew.smash.game.network.processor.ServerProcessor;
 import pewpew.smash.game.network.server.ServerItemUpdater;
 import pewpew.smash.game.network.server.ServerWrapper;
 
-public class PickupItemRequestPacketProcessor extends ServerProcessor implements PacketProcessor {
+public class ServerPickupItemRequestPacketProcessor extends ServerProcessor
+        implements PacketProcessor<PickupItemRequestPacket> {
     private final ServerItemUpdater updater;
 
-    public PickupItemRequestPacketProcessor(EntityManager entityManager, ServerWrapper server,
+    public ServerPickupItemRequestPacketProcessor(EntityManager entityManager, ServerWrapper server,
             ServerItemUpdater updater) {
         super(entityManager, server);
         this.updater = updater;
     }
 
     @Override
-    public void handle(Connection connection, Object packet) {
-        if (packet instanceof PickupItemRequestPacket) {
-            Player player = getPlayer(connection);
-            if (player != null) {
-                updater.tryPickupItem(player, server);
-            }
+    public void handle(Connection connection, PickupItemRequestPacket packet) {
+        Player player = getPlayer(connection);
+        if (player != null) {
+            updater.tryPickupItem(player, server);
         }
     }
 }

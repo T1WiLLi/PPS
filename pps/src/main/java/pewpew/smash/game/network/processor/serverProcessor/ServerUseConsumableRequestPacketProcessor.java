@@ -19,18 +19,19 @@ import pewpew.smash.game.objects.ConsumableType;
 import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.utils.HelpMethods;
 
-public class UseConsumableRequestPacketProcessor extends ServerProcessor implements PacketProcessor {
+public class ServerUseConsumableRequestPacketProcessor extends ServerProcessor
+        implements PacketProcessor<UseConsumableRequestPacket> {
 
-    public UseConsumableRequestPacketProcessor(EntityManager entityManager, ServerWrapper server) {
+    public ServerUseConsumableRequestPacketProcessor(EntityManager entityManager, ServerWrapper server) {
         super(entityManager, server);
     }
 
     @Override
-    public void handle(Connection connection, Object packet) {
+    public void handle(Connection connection, UseConsumableRequestPacket packet) {
         Player player = getPlayer(connection);
         if (player != null && player.getHealth() < 100) {
             Optional<ConsumableType> type = HelpMethods
-                    .getConsumableType(((UseConsumableRequestPacket) packet).getKeyCode());
+                    .getConsumableType((packet).getKeyCode());
             if (type.isPresent() && player.getInventory().useConsumable(type.get()).isPresent()) {
                 Consumable consumable = ItemFactory.createItem(type.get());
                 consumable.pickup(player);

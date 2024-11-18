@@ -10,19 +10,17 @@ import pewpew.smash.game.network.processor.ServerProcessor;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 import pewpew.smash.game.network.server.ServerWrapper;
 
-public class WeaponStatePacketProcessor extends ServerProcessor implements PacketProcessor {
+public class ServerWeaponStatePacketProcessor extends ServerProcessor implements PacketProcessor<WeaponStatePacket> {
 
-    public WeaponStatePacketProcessor(EntityManager entityManager, ServerWrapper server) {
+    public ServerWeaponStatePacketProcessor(EntityManager entityManager, ServerWrapper server) {
         super(entityManager, server);
     }
 
     @Override
-    public void handle(Connection connection, Object packet) {
-        if (packet instanceof WeaponStatePacket weaponStatePacket) {
-            Player player = getPlayer(connection);
-            if (player != null) {
-                WeaponStateSerializer.deserializeWeaponState(weaponStatePacket, player);
-            }
+    public void handle(Connection connection, WeaponStatePacket packet) {
+        Player player = getPlayer(connection);
+        if (player != null) {
+            WeaponStateSerializer.deserializeWeaponState(packet, player);
         }
     }
 }

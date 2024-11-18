@@ -9,19 +9,17 @@ import pewpew.smash.game.network.processor.PacketProcessor;
 import pewpew.smash.game.network.processor.ServerProcessor;
 import pewpew.smash.game.network.server.ServerWrapper;
 
-public class MouseInputPacketProcessor extends ServerProcessor implements PacketProcessor {
+public class ServerMouseInputPacketProcessor extends ServerProcessor implements PacketProcessor<MouseInputPacket> {
 
-    public MouseInputPacketProcessor(EntityManager entityManager, ServerWrapper server) {
+    public ServerMouseInputPacketProcessor(EntityManager entityManager, ServerWrapper server) {
         super(entityManager, server);
     }
 
     @Override
-    public void handle(Connection connection, Object packet) {
-        if (packet instanceof MouseInputPacket mouseInputPacket) {
-            Player player = getPlayer(connection);
-            if (player != null) {
-                player.setMouseInput(mouseInputPacket.getInput());
-            }
+    public void handle(Connection connection, MouseInputPacket packet) {
+        Player player = getPlayer(connection);
+        if (player != null) {
+            player.setMouseInput(packet.getInput());
         }
     }
 }

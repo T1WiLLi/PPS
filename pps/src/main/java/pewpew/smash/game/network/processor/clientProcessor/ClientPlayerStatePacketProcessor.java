@@ -10,20 +10,18 @@ import pewpew.smash.game.network.packets.PlayerStatePacket;
 import pewpew.smash.game.network.processor.ClientProcessor;
 import pewpew.smash.game.network.processor.PacketProcessor;
 
-public class PlayerStatePacketProcessor extends ClientProcessor implements PacketProcessor {
+public class ClientPlayerStatePacketProcessor extends ClientProcessor implements PacketProcessor<PlayerStatePacket> {
 
-    public PlayerStatePacketProcessor(EntityManager entityManager, ClientWrapper client) {
+    public ClientPlayerStatePacketProcessor(EntityManager entityManager, ClientWrapper client) {
         super(entityManager, client);
     }
 
     @Override
-    public void handle(Connection connection, Object packet) {
-        if (packet instanceof PlayerStatePacket playerStatePacket) {
-            PlayerState newState = playerStatePacket.getState();
-            Player player = getEntityManager().getPlayerEntity(newState.getId());
-            if (player != null) {
-                player.applyState(newState);
-            }
+    public void handle(Connection connection, PlayerStatePacket packet) {
+        PlayerState newState = packet.getState();
+        Player player = getEntityManager().getPlayerEntity(newState.getId());
+        if (player != null) {
+            player.applyState(newState);
         }
     }
 }
