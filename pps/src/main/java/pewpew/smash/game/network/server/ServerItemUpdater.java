@@ -71,6 +71,7 @@ public class ServerItemUpdater {
                         new ItemAddPacket(player.getX(), player.getY(),
                                 SerializationUtility.serializeItem(currentscope)));
             }
+            item.pickup(player);
             player.getInventory().setScope((Scope) item);
         } else if (item instanceof Consumable) {
             Consumable consumable = (Consumable) item;

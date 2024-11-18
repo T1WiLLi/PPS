@@ -18,6 +18,8 @@ public class Bullet {
     private static final Color BULLET_OUTER = new Color(255, 140, 0, 180);
     private static final Color TRAIL_COLOR = new Color(255, 165, 0, 150);
 
+    private int effectLifetime = 0;
+
     @Getter
     @Setter
     private int id;
@@ -42,6 +44,9 @@ public class Bullet {
     private final float velocityX;
     private final float velocityY;
     private final float rotation;
+
+    @Setter
+    private boolean shouldRenderEffect = false;
 
     private static class TrailPoint {
         int x, y;
@@ -79,17 +84,19 @@ public class Bullet {
     }
 
     public void updateClient() {
-        prevX = x;
-        prevY = y;
-        x += velocityX;
-        y += velocityY;
+        if (!shouldRenderEffect) {
+            prevX = x;
+            prevY = y;
+            x += velocityX;
+            y += velocityY;
 
-        trailPositions.add(new TrailPoint((int) x, (int) y));
+            trailPositions.add(new TrailPoint((int) x, (int) y));
 
-        long currentTime = System.currentTimeMillis();
-        while (!trailPositions.isEmpty() &&
-                currentTime - trailPositions.peek().createTime > 150) {
-            trailPositions.poll();
+            long currentTime = System.currentTimeMillis();
+            while (!trailPositions.isEmpty() &&
+                    currentTime - trailPositions.peek().createTime > 150) {
+                trailPositions.poll();
+            }
         }
     }
 
@@ -105,19 +112,23 @@ public class Bullet {
     }
 
     public void render(Canvas canvas) {
-        renderTrail(canvas);
+        if (!shouldRenderEffect) {
+            renderTrail(canvas);
 
-        canvas.renderCircle(
-                (int) x - glowWidth / 2,
-                (int) y - glowHeight / 2,
-                glowWidth,
-                BULLET_OUTER);
+            canvas.renderCircle(
+                    (int) x - glowWidth / 2,
+                    (int) y - glowHeight / 2,
+                    glowWidth,
+                    BULLET_OUTER);
 
-        canvas.renderCircle(
-                (int) x - coreWidth / 2,
-                (int) y - coreHeight / 2,
-                coreWidth,
-                BULLET_CORE);
+            canvas.renderCircle(
+                    (int) x - coreWidth / 2,
+                    (int) y - coreHeight / 2,
+                    coreWidth,
+                    BULLET_CORE);
+        } else {
+            renderHitEffect(canvas);
+        }
     }
 
     public Shape getHitbox() {
@@ -152,6 +163,37 @@ public class Bullet {
                     trailColor);
 
             index++;
+        }
+    }
+
+    private void renderHitEffect(Canvas canvas) {
+        effectLifetime++;
+
+        int effectSize = 20;
+        Color effectColor = new Color(255, 140, 0, Math.max(0, 128 - effectLifetime * 8));
+
+        canvas.renderCircle(
+                (int) x - effectSize / 2,
+                (int) y - effectSize / 2,
+                effectSize,
+                effectColor);
+
+        int numSparks = 6;
+        double sparkSpeed = 3.0;
+        int sparkSize = 4;
+        Color sparkColor = new Color(255, 200, 0, Math.max(0, 255 - effectLifetime * 15));
+
+        for (int i = 0; i < numSparks; i++) {
+            double angle = Math.toRadians(60 * i);
+            int sparkDistance = (int) (sparkSpeed * effectLifetime);
+            int sparkX = (int) (x + Math.cos(angle) * sparkDistance);
+            int sparkY = (int) (y + Math.sin(angle) * sparkDistance);
+
+            canvas.renderCircle(
+                    sparkX - sparkSize / 2,
+                    sparkY - sparkSize / 2,
+                    sparkSize,
+                    sparkColor);
         }
     }
 }

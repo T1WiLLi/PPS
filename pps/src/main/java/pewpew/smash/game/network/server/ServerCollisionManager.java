@@ -2,11 +2,13 @@ package pewpew.smash.game.network.server;
 
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.engine.entities.StaticEntity;
+import pewpew.smash.game.entities.Bullet;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.world.WorldGenerator;
 
 import java.awt.Shape;
 import java.util.Collection;
+import java.util.Iterator;
 
 public class ServerCollisionManager {
 
@@ -38,6 +40,7 @@ public class ServerCollisionManager {
                 }
             }
         }
+        checkBulletCollision();
     }
 
     private void checkWorldBoundaries(StaticEntity entity) {
@@ -98,6 +101,29 @@ public class ServerCollisionManager {
                 movableEntity.teleport((int) prevX, (int) currY);
             } else {
                 movableEntity.teleport((int) currX, (int) prevY);
+            }
+        }
+    }
+
+    private void checkBulletCollision() {
+        Collection<Bullet> bullets = ServerBulletTracker.getInstance().getBullets();
+        Collection<StaticEntity> staticEntities = entityManager.getStaticEntities();
+
+        Iterator<Bullet> bulletIterator = bullets.iterator();
+        while (bulletIterator.hasNext()) {
+            Bullet bullet = bulletIterator.next();
+            boolean bulletRemoved = false;
+
+            for (StaticEntity staticEntity : staticEntities) {
+                if (bullet.getHitbox().intersects(staticEntity.getHitbox().getBounds2D())) {
+                    ServerBulletTracker.getInstance().removeBullet(bullet);
+                    bulletRemoved = true;
+                    break;
+                }
+            }
+
+            if (bulletRemoved) {
+                bulletIterator.remove();
             }
         }
     }
