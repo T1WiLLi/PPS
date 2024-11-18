@@ -151,6 +151,7 @@ public class ClientHandler extends Handler {
         try {
             isIntentionalDisconnect = true;
             this.client.stop();
+            ((BulletRemovePacketProcessor) this.packetProcessors.get(BulletRemovePacket.class)).shutdown();
         } catch (IOException e) {
             e.printStackTrace();
         }

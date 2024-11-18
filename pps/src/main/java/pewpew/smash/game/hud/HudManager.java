@@ -43,6 +43,7 @@ public class HudManager {
     }
 
     public void setWorldImage(BufferedImage image) {
+        System.out.println("World Image!");
         this.minimap.setWorldImage(image);
     }
 
