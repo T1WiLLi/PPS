@@ -67,8 +67,10 @@ public class Player extends MovableEntity {
             this.equippedWeapon.updateClient();
         }
 
-        if (Camera.getZoom() != this.inventory.getScope().getZoomValue()) {
-            Camera.getInstance().setZoom(this.inventory.getScope().getZoomValue());
+        if (this.id == User.getInstance().getLocalID().get()) {
+            if (Camera.getZoom() != this.inventory.getScope().getZoomValue()) {
+                Camera.getInstance().setZoom(this.inventory.getScope().getZoomValue());
+            }
         }
     }
 
