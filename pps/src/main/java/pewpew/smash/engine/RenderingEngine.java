@@ -57,10 +57,7 @@ public class RenderingEngine {
             Graphics panelGraphics = panel.getGraphics();
             if (panelGraphics != null) {
                 try {
-                    int panelWidth = panel.getWidth();
-                    int panelHeight = panel.getHeight();
-                    panelGraphics.drawImage(buffer, 0, 0, panelWidth, panelHeight, null);
-                    Toolkit.getDefaultToolkit().sync();
+                    panelGraphics.drawImage(buffer, 0, 0, panel.getWidth(), panel.getHeight(), null);
                 } finally {
                     panelGraphics.dispose();
                 }
@@ -128,7 +125,7 @@ public class RenderingEngine {
             width = 800;
             height = 600;
         }
-        buffer = gc.createCompatibleVolatileImage(width, height);
+        buffer = gc.createCompatibleVolatileImage(width, height, Transparency.OPAQUE);
         bufferGraphics = buffer.createGraphics();
     }
 
