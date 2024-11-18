@@ -14,7 +14,8 @@ public class Bandage extends Consumable {
     @Override
     public void consume() {
         if (getOwner() != null) {
-            getOwner().setHealth(Math.clamp(getOwner().getHealth() + healingAmount, 0, 100));
+            int newHealth = Math.min(getOwner().getHealth() + healingAmount, 100);
+            getOwner().setHealth(newHealth);
         }
     }
 

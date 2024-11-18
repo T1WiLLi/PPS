@@ -11,6 +11,7 @@ import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.game.Camera;
+import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.objects.Fist;
 import pewpew.smash.game.objects.ItemFactory;
@@ -44,7 +45,7 @@ public class Player extends MovableEntity {
         setSpeed(2f);
         this.rotation = 0f;
         this.id = id;
-        this.health = 100;
+        this.health = 50;
 
         this.inventory = new Inventory();
         this.fists = (Fist) ItemFactory.createItem(WeaponType.FIST);
@@ -89,7 +90,7 @@ public class Player extends MovableEntity {
         }
 
         FontFactory.DEFAULT_FONT.applyFont(canvas);
-        String displayUsername = this.username.equals("Guest") ? this.username + "-" + id : this.username;
+        String displayUsername = (id == User.getInstance().getLocalID().get()) ? "You" : "";
         canvas.renderString(displayUsername, x - width / 2, y - height / 2, Color.WHITE);
         FontFactory.resetFont(canvas);
     }
