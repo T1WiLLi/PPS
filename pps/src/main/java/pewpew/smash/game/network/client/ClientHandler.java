@@ -11,8 +11,6 @@ import lombok.Getter;
 import lombok.Setter;
 import pewpew.smash.game.Alert.AlertManager;
 import pewpew.smash.game.entities.Player;
-import pewpew.smash.game.entities.world.Stone;
-import pewpew.smash.game.entities.world.Tree;
 import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.User;
@@ -33,6 +31,8 @@ import pewpew.smash.game.network.processor.clientProcessor.PlayerStatePacketProc
 import pewpew.smash.game.network.processor.clientProcessor.PositionPacketProcessor;
 import pewpew.smash.game.network.processor.clientProcessor.WeaponStatePacketProcessor;
 import pewpew.smash.game.network.processor.clientProcessor.WorldDataPacketProcessor;
+import pewpew.smash.game.world.entities.WorldEntityType;
+import pewpew.smash.game.world.entities.WorldStaticEntity;
 
 public class ClientHandler extends Handler {
 
@@ -65,13 +65,14 @@ public class ClientHandler extends Handler {
         registersClasses(this.client.getKryo());
         initPacketProcessors();
 
-        Stone stone = new Stone();
-        stone.teleport(1200, 1200);
+        WorldStaticEntity stone = new WorldStaticEntity(WorldEntityType.STONE, 1200, 1200);
         entityManager.addStaticEntity(1, stone);
 
-        Tree tree = new Tree();
-        tree.teleport(1000, 1000);
+        WorldStaticEntity tree = new WorldStaticEntity(WorldEntityType.TREE, 1000, 1000);
         entityManager.addStaticEntity(2, tree);
+
+        WorldStaticEntity crate = new WorldStaticEntity(WorldEntityType.CRATE, 600, 600);
+        entityManager.addStaticEntity(3, crate);
     }
 
     private void initPacketProcessors() {

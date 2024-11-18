@@ -11,8 +11,6 @@ import com.esotericsoftware.kryonet.Connection;
 
 import pewpew.smash.engine.GameTime;
 import pewpew.smash.game.entities.Player;
-import pewpew.smash.game.entities.world.Stone;
-import pewpew.smash.game.entities.world.Tree;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.DirectionPacket;
@@ -38,6 +36,8 @@ import pewpew.smash.game.network.processor.serverProcessor.WeaponStatePacketProc
 import pewpew.smash.game.network.processor.serverProcessor.WeaponSwitchRequestPacketProcessor;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 import pewpew.smash.game.objects.ItemGenerator;
+import pewpew.smash.game.world.entities.WorldEntityType;
+import pewpew.smash.game.world.entities.WorldStaticEntity;
 
 public class ServerHandler extends Handler implements Runnable {
 
@@ -68,13 +68,14 @@ public class ServerHandler extends Handler implements Runnable {
         initPacketProcessors();
         registersClasses(this.server.getKryo());
 
-        Stone stone = new Stone();
-        stone.teleport(1200, 1200);
+        WorldStaticEntity stone = new WorldStaticEntity(WorldEntityType.STONE, 1200, 1200);
         entityManager.addStaticEntity(1, stone);
 
-        Tree tree = new Tree();
-        tree.teleport(1000, 1000);
+        WorldStaticEntity tree = new WorldStaticEntity(WorldEntityType.TREE, 1000, 1000);
         entityManager.addStaticEntity(2, tree);
+
+        WorldStaticEntity crate = new WorldStaticEntity(WorldEntityType.CRATE, 600, 600);
+        entityManager.addStaticEntity(3, crate);
     }
 
     @Override
