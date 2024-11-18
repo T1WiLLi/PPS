@@ -85,6 +85,7 @@ public class ItemFactory {
             default -> throw new IllegalArgumentException("Unknown consumable type");
         };
 
+        createdItem.buildConsumable(type.getHealAmount(), type.getUseTime());
         return createdItem;
     }
 
@@ -122,9 +123,9 @@ public class ItemFactory {
     private static Consumable createConsumable(ConsumableType type, BufferedImage preview) {
         int itemId = currentID++;
         Consumable consumable = switch (type) {
-            case MEDIKIT -> new Medikit(itemId, type.name(), "Heals you", preview);
-            case BANDAGE -> new Bandage(itemId, type.name(), "Heals you", preview);
-            case PILL -> new Pill(itemId, type.name(), "Heals you", preview);
+            case MEDIKIT -> new Medikit(itemId, type.name(), type.getDescription(), preview);
+            case BANDAGE -> new Bandage(itemId, type.name(), type.getDescription(), preview);
+            case PILL -> new Pill(itemId, type.name(), type.getDescription(), preview);
             default -> throw new IllegalArgumentException("Unknown consumable type");
         };
         consumable.setType(type);

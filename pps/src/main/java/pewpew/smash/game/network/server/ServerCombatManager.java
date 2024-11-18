@@ -88,7 +88,6 @@ public class ServerCombatManager {
         for (Player target : players) {
             if (target != attacker) {
                 if (damageZone.intersects(target.getX(), target.getY(), target.getWidth(), target.getHeight())) {
-                    System.out.println("Handling damage");
                     handleDamage(attacker, target, server);
                 }
             }

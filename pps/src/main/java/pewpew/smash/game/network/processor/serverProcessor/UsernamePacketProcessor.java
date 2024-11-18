@@ -21,7 +21,8 @@ public class UsernamePacketProcessor extends ServerProcessor implements PacketPr
         if (packet instanceof PlayerUsernamePacket usernamePacket) {
             Player player = getPlayer(connection);
             if (player != null) {
-                player.setUsername(usernamePacket.getUsername());
+                player.setUsername(usernamePacket.getUsername()
+                        + ((usernamePacket.getUsername().equals("Guest")) ? "-" + player.getId() : ""));
                 sendToAllUDP(new PlayerJoinedPacket(connection.getID(), usernamePacket.getUsername()));
             }
         }
