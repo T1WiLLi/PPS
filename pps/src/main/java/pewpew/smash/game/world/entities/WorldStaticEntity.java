@@ -4,10 +4,12 @@ import java.awt.Shape;
 import java.awt.image.BufferedImage;
 
 import lombok.Getter;
+import lombok.ToString;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.entities.StaticEntity;
 import pewpew.smash.game.utils.ResourcesLoader;
 
+@ToString(callSuper = true)
 public class WorldStaticEntity extends StaticEntity {
     @Getter
     private final WorldEntityType type;

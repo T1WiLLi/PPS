@@ -20,8 +20,7 @@ public class ClientWorldEntityStatePacketProcessor extends ClientProcessor
     @Override
     public void handle(Connection connection, WorldEntityStatePacket packet) {
         WorldEntityState newState = packet.getState();
-        WorldBreakableStaticEntity entity = (WorldBreakableStaticEntity) getEntityManager()
-                .getStaticEntity(newState.getId());
+        WorldBreakableStaticEntity entity = getEntityManager().gettWorldBreakableStaticEntities().get(newState.getId());
         if (entity != null) {
             entity.applyState(newState);
         }

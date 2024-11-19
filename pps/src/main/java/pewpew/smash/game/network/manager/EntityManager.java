@@ -3,10 +3,14 @@ package pewpew.smash.game.network.manager;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
+
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.engine.entities.StaticEntity;
 import pewpew.smash.game.entities.Bullet;
 import pewpew.smash.game.entities.Player;
+import pewpew.smash.game.world.entities.WorldBreakableStaticEntity;
+import pewpew.smash.game.world.entities.WorldStaticEntity;
 
 public class EntityManager {
     private final Map<Integer, MovableEntity> movableEntitiesMap;
@@ -156,6 +160,30 @@ public class EntityManager {
         readLock.lock();
         try {
             return new ArrayList<>(bulletEntitiesMap.values());
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    public List<WorldStaticEntity> getWorldStaticEntities() {
+        readLock.lock();
+        try {
+            return staticEntitiesMap.values().stream()
+                    .filter(entity -> entity instanceof WorldStaticEntity)
+                    .map(entity -> (WorldStaticEntity) entity)
+                    .collect(Collectors.toList());
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    public List<WorldBreakableStaticEntity> gettWorldBreakableStaticEntities() {
+        readLock.lock();
+        try {
+            return staticEntitiesMap.values().stream()
+                    .filter(entity -> entity instanceof WorldBreakableStaticEntity)
+                    .map(entity -> (WorldBreakableStaticEntity) entity)
+                    .collect(Collectors.toList());
         } finally {
             readLock.unlock();
         }
