@@ -14,7 +14,6 @@ import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 import pewpew.smash.game.objects.Consumable;
 import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.objects.RangedWeapon;
-import pewpew.smash.game.objects.SpecialType;
 import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.special.AmmoStack;
 import pewpew.smash.game.objects.special.Scope;
@@ -64,13 +63,11 @@ public class ServerItemUpdater {
             player.getInventory().addAmmo(ammoStack.getAmmo());
         } else if (item instanceof Scope) {
             Scope currentscope = player.getScope();
-            if (currentscope.getZoomValue() != SpecialType.SCOPE_X1.getValue()) {
-                currentscope.drop();
-                ItemManager.getInstance(true).addItem(currentscope);
-                server.sendToAllTCP(
-                        new ItemAddPacket(player.getX(), player.getY(),
-                                SerializationUtility.serializeItem(currentscope)));
-            }
+            currentscope.drop();
+            ItemManager.getInstance(true).addItem(currentscope);
+            server.sendToAllTCP(
+                    new ItemAddPacket(player.getX(), player.getY(),
+                            SerializationUtility.serializeItem(currentscope)));
             item.pickup(player);
             player.getInventory().setScope((Scope) item);
         } else if (item instanceof Consumable) {

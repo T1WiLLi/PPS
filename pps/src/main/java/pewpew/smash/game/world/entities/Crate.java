@@ -9,7 +9,6 @@ import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class Crate extends WorldBreakableStaticEntity {
-    private int health;
     private BufferedImage[] sprites;
     private int currentSpriteIndex;
     private List<Item> lootTable;
@@ -19,7 +18,7 @@ public class Crate extends WorldBreakableStaticEntity {
         loadSprites();
         this.currentSpriteIndex = 0;
         this.lootTable = lootTable;
-        this.health = 50;
+        this.health = 100;
     }
 
     @Override
@@ -58,7 +57,7 @@ public class Crate extends WorldBreakableStaticEntity {
 
     private int getCurrentSprite() {
         if (health <= 0) {
-            return 8;
+            return 7;
         } else if (health >= 100) {
             return 0;
         } else {

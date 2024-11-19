@@ -47,7 +47,7 @@ public class Player extends MovableEntity {
         this.id = id;
         this.health = 50;
 
-        this.inventory = new Inventory();
+        this.inventory = new Inventory(this);
         this.fists = (Fist) ItemFactory.createItem(WeaponType.FIST);
         this.fists.pickup(this);
         this.equippedWeapon = this.fists;

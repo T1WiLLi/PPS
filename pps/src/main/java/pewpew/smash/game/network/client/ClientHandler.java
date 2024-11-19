@@ -32,6 +32,7 @@ import pewpew.smash.game.network.processor.clientProcessor.ClientPlayerStatePack
 import pewpew.smash.game.network.processor.clientProcessor.ClientPositionPacketProcessor;
 import pewpew.smash.game.network.processor.clientProcessor.ClientWeaponStatePacketProcessor;
 import pewpew.smash.game.network.processor.clientProcessor.ClientWorldDataPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientWorldEntityStatePacketProcessor;
 import pewpew.smash.game.world.entities.Crate;
 import pewpew.smash.game.world.entities.WorldEntityType;
 import pewpew.smash.game.world.entities.WorldStaticEntity;
@@ -94,6 +95,8 @@ public class ClientHandler extends Handler {
                 new ClientPlayerJoinedPacketProcessor(entityManager, client, this));
         packetProcessors.put(PlayerLeftPacket.class, new ClientPlayerLeftPacketProcessor(entityManager, client, this));
         packetProcessors.put(WorldDataPacket.class, new ClientWorldDataPacketProcessor(entityManager, client, this));
+        packetProcessors.put(WorldEntityStatePacket.class,
+                new ClientWorldEntityStatePacketProcessor(entityManager, client));
     }
 
     @Override
@@ -105,11 +108,11 @@ public class ClientHandler extends Handler {
     @Override
     protected void handlePacket(Connection connection, Object packet) {
         if (packet instanceof BasePacket basePacket) {
-            @SuppressWarnings("unchecked")
-            PacketProcessor<BasePacket> processor = (PacketProcessor<BasePacket>) packetProcessors
-                    .get(packet.getClass());
+            PacketProcessor<? extends BasePacket> processor = packetProcessors.get(packet.getClass());
             if (processor != null) {
-                processor.process(connection, basePacket);
+                @SuppressWarnings("unchecked")
+                PacketProcessor<BasePacket> typedProcessor = (PacketProcessor<BasePacket>) processor;
+                typedProcessor.process(connection, basePacket);
             } else {
                 System.out.println("Unknown packet type: " + packet.getClass().getName());
             }

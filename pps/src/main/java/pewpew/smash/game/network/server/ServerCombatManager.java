@@ -9,10 +9,14 @@ import pewpew.smash.game.entities.Bullet;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.model.PlayerState;
+import pewpew.smash.game.network.model.WorldEntityState;
 import pewpew.smash.game.network.packets.BroadcastMessagePacket;
 import pewpew.smash.game.network.packets.PlayerDeathPacket;
 import pewpew.smash.game.network.packets.PlayerStatePacket;
+import pewpew.smash.game.network.packets.WorldEntityStatePacket;
 import pewpew.smash.game.objects.MeleeWeapon;
+import pewpew.smash.game.utils.HelpMethods;
+import pewpew.smash.game.world.entities.WorldBreakableStaticEntity;
 
 public class ServerCombatManager {
     private final EntityManager entityManager;
@@ -37,6 +41,7 @@ public class ServerCombatManager {
                     Polygon damageZone = getDamageZone(player, weapon);
                     if (!damageDealtMap.getOrDefault(player, false)) {
                         checkDamage(player, damageZone, server);
+                        checkStaticEntityDamage(player, damageZone, server);
                     }
                 } else {
                     damageDealtMap.put(player, false); // Reset when not attacking
@@ -49,6 +54,14 @@ public class ServerCombatManager {
         ServerBulletTracker.getInstance().update(server);
 
         for (Bullet bullet : ServerBulletTracker.getInstance().getBullets()) {
+            for (WorldBreakableStaticEntity entity : entityManager.gettWorldBreakableStaticEntities()) {
+                if (bullet.getHitbox().intersects(entity.getHitbox().getBounds())) {
+                    handleStaticEntityDamage(entity, server);
+                    damageDealtMap.put(entityManager.getPlayerEntity(bullet.getPlayerOwnerID()), true);
+                    ServerBulletTracker.getInstance().removeBullet(bullet);
+                }
+            }
+
             for (Player targetPlayer : entityManager.getPlayerEntities()) {
                 if (targetPlayer.getId() != bullet.getPlayerOwnerID()
                         && bullet.getHitbox().intersects(targetPlayer.getX(), targetPlayer.getY(),
@@ -58,6 +71,27 @@ public class ServerCombatManager {
                 }
             }
         }
+    }
+
+    private void checkStaticEntityDamage(Player player, Polygon damageZone, ServerWrapper server) {
+        for (WorldBreakableStaticEntity entity : entityManager.gettWorldBreakableStaticEntities()) {
+            if (damageZone.intersects(entity.getHitbox().getBounds())) {
+                handleStaticEntityDamage(entity, server);
+                damageDealtMap.put(player, true);
+            }
+        }
+    }
+
+    private void handleStaticEntityDamage(WorldBreakableStaticEntity entity, ServerWrapper server) {
+        entity.setHealth(entity.getHealth() - 10);
+
+        if (entity.getHealth() <= 0) {
+            entity.onBreak();
+        }
+
+        WorldEntityState state = new WorldEntityState(entity.getId(), entity.getHealth());
+        WorldEntityStatePacket packet = new WorldEntityStatePacket(state);
+        server.sendToAllTCP(packet);
     }
 
     private Polygon getDamageZone(Player player, MeleeWeapon weapon) {
@@ -129,6 +163,8 @@ public class ServerCombatManager {
                 attacker.getUsername(), attacker.getEquippedWeapon().getName());
         BroadcastMessagePacket messagePacket = new BroadcastMessagePacket(deathMessage);
         server.sendToAllTCP(messagePacket);
+
+        HelpMethods.dropInventoryOfDeadPlayer(target.getInventory(), server);
 
         PlayerDeathPacket deathPacket = new PlayerDeathPacket(target.getId(), attacker.getId());
         server.sendToAllTCP(deathPacket);

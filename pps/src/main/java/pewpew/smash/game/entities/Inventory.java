@@ -16,6 +16,10 @@ import pewpew.smash.game.objects.special.Scope;
 
 @ToString
 public class Inventory {
+
+    @Getter
+    private Player owner;
+
     private RangedWeapon primaryWeapon;
     @Getter
     private final Map<ConsumableType, Integer> consumables;
@@ -25,10 +29,13 @@ public class Inventory {
     @Setter
     private Scope scope;
 
-    public Inventory() {
+    public Inventory(Player owner) {
+        this.owner = owner;
         this.consumables = new HashMap<>();
         this.ammoStack = new AmmoStack(0, "Ammo", "Stack of ammunition");
+        this.ammoStack.pickup(owner);
         this.scope = (Scope) ItemFactory.createItem(SpecialType.SCOPE_X1);
+        this.scope.pickup(owner);
     }
 
     public void changeWeapon(RangedWeapon weapon) {
