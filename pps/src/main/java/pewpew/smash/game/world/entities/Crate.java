@@ -24,7 +24,6 @@ public class Crate extends WorldBreakableStaticEntity {
     @Override
     public void render(Canvas canvas) {
         canvas.renderImage(sprites[getCurrentSprite()], x, y, width, height);
-        renderHitbox(canvas);
     }
 
     public void onBreak() {

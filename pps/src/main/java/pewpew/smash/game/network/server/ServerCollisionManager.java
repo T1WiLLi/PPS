@@ -5,6 +5,7 @@ import pewpew.smash.engine.entities.StaticEntity;
 import pewpew.smash.game.entities.Bullet;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.world.WorldGenerator;
+import pewpew.smash.game.world.entities.Bush;
 
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
@@ -34,7 +35,7 @@ public class ServerCollisionManager {
                 if (entity == other)
                     continue;
 
-                if (areEntitiesClose(entity, other)) {
+                if (!(entity instanceof Bush) && !(other instanceof Bush) && areEntitiesClose(entity, other)) {
                     if (entity.isColliding(other)) {
                         handleCollision(entity, other);
                     }
@@ -129,6 +130,10 @@ public class ServerCollisionManager {
             boolean bulletRemoved = false;
 
             for (StaticEntity staticEntity : staticEntities) {
+                if (staticEntity instanceof Bush) {
+                    continue;
+                }
+
                 if (bullet.getHitbox().intersects(staticEntity.getHitbox().getBounds2D())) {
                     ServerBulletTracker.getInstance().removeBullet(bullet);
                     bulletRemoved = true;

@@ -37,6 +37,7 @@ import pewpew.smash.game.network.processor.serverProcessor.ServerWeaponStatePack
 import pewpew.smash.game.network.processor.serverProcessor.ServerWeaponSwitchRequestPacketProcessor;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 import pewpew.smash.game.objects.ItemGenerator;
+import pewpew.smash.game.world.entities.Bush;
 import pewpew.smash.game.world.entities.Crate;
 import pewpew.smash.game.world.entities.WorldEntityType;
 import pewpew.smash.game.world.entities.WorldStaticEntity;
@@ -76,7 +77,7 @@ public class ServerHandler extends Handler implements Runnable {
         WorldStaticEntity tree = new WorldStaticEntity(WorldEntityType.TREE, 1000, 1000);
         entityManager.addStaticEntity(2, tree);
 
-        WorldStaticEntity bush = new WorldStaticEntity(WorldEntityType.BUSH, 750, 300);
+        Bush bush = new Bush(750, 300);
         entityManager.addStaticEntity(3, bush);
 
         Crate crate = new Crate(600, 600, null);

@@ -13,9 +13,11 @@ import pewpew.smash.game.world.WorldGenerator;
 public final class ServerWorldManager {
     private final WorldGenerator worldGenerator;
     private final byte[][] worldData;
+    private final long seed;
 
     public ServerWorldManager() {
-        this.worldGenerator = new WorldGenerator();
+        this.seed = WorldGenerator.generateSeed();
+        this.worldGenerator = new WorldGenerator(this.seed);
         this.worldData = this.worldGenerator.getWorldData();
     }
 
@@ -28,7 +30,7 @@ public final class ServerWorldManager {
     }
 
     public void sendWorldDataToClient(ServerWrapper server, int clientID) {
-        server.sendToTCP(clientID, new WorldDataPacket(this.worldData));
+        server.sendToTCP(clientID, new WorldDataPacket(this.seed));
         ItemManager.getInstance(true).getItems().forEach(i -> {
             SerializedItem serializedItem = SerializationUtility.serializeItem(i);
             server.sendToTCP(clientID, new ItemAddPacket(i.getX(), i.getY(), serializedItem));
