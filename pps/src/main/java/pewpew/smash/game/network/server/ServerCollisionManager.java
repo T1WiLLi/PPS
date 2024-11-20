@@ -7,6 +7,7 @@ import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.world.WorldGenerator;
 
 import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -59,8 +60,21 @@ public class ServerCollisionManager {
         Shape hitbox1 = entity.getHitbox();
         Shape hitbox2 = other.getHitbox();
 
-        return hitbox1.getBounds2D().intersects(hitbox2.getBounds2D()) ||
-                hitbox1.intersects(hitbox2.getBounds2D());
+        if (hitbox1 instanceof Ellipse2D.Float && hitbox2 instanceof Ellipse2D.Float) {
+            Ellipse2D.Float circle1 = (Ellipse2D.Float) hitbox1;
+            Ellipse2D.Float circle2 = (Ellipse2D.Float) hitbox2;
+
+            double dx = circle1.getCenterX() - circle2.getCenterX();
+            double dy = circle1.getCenterY() - circle2.getCenterY();
+            double distance = Math.sqrt(dx * dx + dy * dy);
+
+            double radius1 = circle1.getWidth() / 2.0;
+            double radius2 = circle2.getWidth() / 2.0;
+
+            return distance <= (radius1 + radius2);
+        }
+
+        return hitbox1.getBounds2D().intersects(hitbox2.getBounds2D()) || hitbox1.intersects(hitbox2.getBounds2D());
     }
 
     private void handleCollision(StaticEntity entity, StaticEntity other) {

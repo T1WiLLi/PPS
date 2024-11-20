@@ -74,8 +74,11 @@ public class ClientHandler extends Handler {
         WorldStaticEntity tree = new WorldStaticEntity(WorldEntityType.TREE, 1000, 1000);
         entityManager.addStaticEntity(2, tree);
 
-        WorldStaticEntity crate = new Crate(600, 600, null);
-        entityManager.addStaticEntity(3, crate);
+        WorldStaticEntity bush = new WorldStaticEntity(WorldEntityType.BUSH, 750, 300);
+        entityManager.addStaticEntity(3, bush);
+
+        Crate crate = new Crate(600, 600, null);
+        entityManager.addStaticEntity(4, crate);
     }
 
     private void initPacketProcessors() {
