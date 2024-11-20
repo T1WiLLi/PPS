@@ -8,6 +8,7 @@ import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.WorldDataPacket;
 import pewpew.smash.game.network.processor.ClientProcessor;
 import pewpew.smash.game.network.processor.PacketProcessor;
+import pewpew.smash.game.world.WorldGenerator;
 
 public class ClientWorldDataPacketProcessor extends ClientProcessor implements PacketProcessor<WorldDataPacket> {
 
@@ -21,7 +22,8 @@ public class ClientWorldDataPacketProcessor extends ClientProcessor implements P
 
     @Override
     public void handle(Connection connection, WorldDataPacket packet) {
-        clientHandler.setWorldData(packet.getWorldData());
+        WorldGenerator worldGenerator = new WorldGenerator(packet.getSeed());
+        clientHandler.setWorldData(worldGenerator.getWorldData());
         clientHandler.setWorldDataReceived(true);
     }
 }

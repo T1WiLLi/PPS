@@ -47,7 +47,8 @@ public enum WorldEntityType {
                                 int centerX = entity.getX() + (entity.getWidth() - logWidth) / 2;
                                 int centerY = entity.getY() + (entity.getHeight() - logHeight) / 2;
                                 return new Ellipse2D.Float(centerX, centerY, logWidth, logHeight);
-                        });
+                        }); // No hitbox as we want to allow the player to
+                            // walk through it
 
         private final String textureName;
         private final boolean isBreakable;

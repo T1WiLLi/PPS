@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class WorldDataPacket extends BasePacket {
-    private byte[][] worldData;
+    private long seed;
 }

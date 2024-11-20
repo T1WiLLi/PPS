@@ -2,36 +2,40 @@ package pewpew.smash.game.world;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import java.awt.Color;
 
-import pewpew.smash.game.utils.HelpMethods;
-
-public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
+public class WorldGenerator {
     private static final int tileSize = 5;
     private static int worldWidth = 400;
     private static int worldHeight = 400;
     private byte[][] world;
     private double[][] noiseCache;
+    private final long seed;
 
     public static final byte GRASS = 1;
     public static final byte WATER = 2;
     public static final byte SAND = 3;
 
-    public WorldGenerator() {
+    public static long generateSeed() {
+        return System.currentTimeMillis() ^ new Random().nextLong();
+    }
+
+    public WorldGenerator(long seed) {
+        this.seed = seed;
         this.world = new byte[worldWidth][worldHeight];
         this.noiseCache = new double[worldWidth][worldHeight];
-        long startTime = System.currentTimeMillis();
         generateWorld();
-        long endTime = System.currentTimeMillis();
-        System.out.println("Map generation took " + (endTime - startTime) + " milliseconds.");
     }
 
     public byte[][] getWorldData() {
         return this.world;
+    }
+
+    public long getSeed() {
+        return this.seed;
     }
 
     public static int getWorldWidth() {
@@ -43,11 +47,12 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
     }
 
     private void generateWorld() {
-        PerlinNoise noise = new PerlinNoise(System.currentTimeMillis());
+        PerlinNoise noise = new PerlinNoise(seed);
         precomputeNoise(noise);
         generateLargeIsland();
         smoothCoastline();
         generateBeaches();
+        spawnWorldEntitiesAndWeapons();
     }
 
     private void precomputeNoise(PerlinNoise noise) {
@@ -112,10 +117,8 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
             for (int y = 1; y < worldHeight - 1; y++) {
                 if (this.world[x][y] == GRASS) {
                     boolean isCoast = false;
-                    int dxRange = HelpMethods.getRandomBetween(10, 25);
-                    int dyRange = HelpMethods.getRandomBetween(10, 25);
-                    for (int dx = -dxRange; dx <= dxRange; dx++) {
-                        for (int dy = -dyRange; dy <= dyRange; dy++) {
+                    for (int dx = -1; dx <= 1; dx++) {
+                        for (int dy = -1; dy <= 1; dy++) {
                             int nx = x + dx;
                             int ny = y + dy;
                             if (nx >= 0 && nx < worldWidth && ny >= 0 && ny < worldHeight
@@ -135,15 +138,23 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
         }
     }
 
+    private void spawnWorldEntitiesAndWeapons() {
+        Random random = new Random(seed);
+        IntStream.range(0, 50).forEach(i -> {
+            int x = random.nextInt(worldWidth);
+            int y = random.nextInt(worldHeight);
+            if (world[x][y] == GRASS) {
+                System.out.println("Spawned an entity at: " + x + ", " + y);
+            }
+        });
+    }
+
     public static BufferedImage getWorldImage(byte[][] world) {
         int worldWidth = world.length;
         int worldHeight = world[0].length;
         BufferedImage image = new BufferedImage(worldWidth * tileSize, worldHeight * tileSize,
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
-
-        TextureFactory textureFactory = TextureFactory.getInstance();
-        int[][] distanceToLand = calculateDistanceToLand(world);
 
         for (int y = 0; y < worldHeight; y++) {
             for (int x = 0; x < worldWidth; x++) {
@@ -153,14 +164,10 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
                     g.setColor(new Color(34, 139, 34));
                     g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
                 } else if (tileType == WATER) {
-                    int distance = distanceToLand[x][y];
-                    BufferedImage waterTexture = textureFactory.generateWaterTexture(distance);
-                    g.drawImage(waterTexture, x * tileSize, y * tileSize, null);
+                    g.setColor(new Color(0, 0, 255));
+                    g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
                 } else if (tileType == SAND) {
                     g.setColor(new Color(238, 214, 175));
-                    g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-                } else {
-                    g.setColor(Color.BLACK);
                     g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
                 }
             }
@@ -168,48 +175,5 @@ public class WorldGenerator { // 1, 2, 3, 4, 5, 6, 7, 8, 9
 
         g.dispose();
         return image;
-    }
-
-    private static int[][] calculateDistanceToLand(byte[][] world) {
-        int worldWidth = world.length;
-        int worldHeight = world[0].length;
-        int[][] distance = new int[worldWidth][worldHeight];
-        Queue<Point> queue = new LinkedList<>();
-
-        for (int x = 0; x < worldWidth; x++) {
-            for (int y = 0; y < worldHeight; y++) {
-                if (world[x][y] == GRASS || world[x][y] == SAND) {
-                    distance[x][y] = 0;
-                    queue.offer(new Point(x, y));
-                } else {
-                    distance[x][y] = Integer.MAX_VALUE;
-                }
-            }
-        }
-
-        int[][] directions = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
-        while (!queue.isEmpty()) {
-            Point p = queue.poll();
-            for (int[] dir : directions) {
-                int nx = p.x + dir[0];
-                int ny = p.y + dir[1];
-                if (nx >= 0 && nx < worldWidth && ny >= 0 && ny < worldHeight) {
-                    if (distance[nx][ny] > distance[p.x][p.y] + 1) {
-                        distance[nx][ny] = distance[p.x][p.y] + 1;
-                        queue.offer(new Point(nx, ny));
-                    }
-                }
-            }
-        }
-        return distance;
-    }
-
-    private static class Point {
-        int x, y;
-
-        Point(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
     }
 }

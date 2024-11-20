@@ -23,9 +23,11 @@ public class CircleLoaderManager {
 
     public void render(Canvas canvas) {
         if (isLoading) {
+            canvas.scale(Camera.getZoom(), Camera.getZoom());
             canvas.translate(-Camera.getInstance().getX(), -Camera.getInstance().getY());
             circleLoader.render(canvas);
             canvas.translate(Camera.getInstance().getX(), Camera.getInstance().getY());
+            canvas.resetScale();
         }
     }
 
