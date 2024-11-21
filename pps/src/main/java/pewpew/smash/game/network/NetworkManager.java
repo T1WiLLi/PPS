@@ -46,11 +46,11 @@ public class NetworkManager {
         return client.isWorldDataReceived();
     }
 
-    public byte[][] getWorldData() {
+    public long getWorldData() {
         if (client == null) {
             throw new IllegalStateException("NetworkManager not initialized");
         }
-        return client.getWorldData();
+        return client.getSeed();
     }
 
     public String getBroadcastMessage() {

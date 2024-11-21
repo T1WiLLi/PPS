@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 
 import javax.imageio.ImageIO;
@@ -82,14 +83,16 @@ public class ResourcesLoader {
 
         try (InputStream is = ResourcesLoader.class.getResourceAsStream(path)) {
             if (is != null) {
-                AudioInputStream audioStream = AudioSystem.getAudioInputStream(is);
-                AudioFormat format = audioStream.getFormat();
-                byte[] audioData = audioStream.readAllBytes();
-                audioStream.close();
+                try (BufferedInputStream bis = new BufferedInputStream(is)) {
+                    AudioInputStream audioStream = AudioSystem.getAudioInputStream(bis);
+                    AudioFormat format = audioStream.getFormat();
+                    byte[] audioData = audioStream.readAllBytes();
+                    audioStream.close();
 
-                AudioData newAudioData = new AudioData(format, audioData);
-                audioCache.put(path, newAudioData);
-                return newAudioData;
+                    AudioData newAudioData = new AudioData(format, audioData);
+                    audioCache.put(path, newAudioData);
+                    return newAudioData;
+                }
             } else {
                 System.err.println("Audio file not found: " + path);
                 return null;

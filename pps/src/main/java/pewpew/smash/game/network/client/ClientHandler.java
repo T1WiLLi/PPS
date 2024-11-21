@@ -32,11 +32,8 @@ import pewpew.smash.game.network.processor.clientProcessor.ClientPlayerStatePack
 import pewpew.smash.game.network.processor.clientProcessor.ClientPositionPacketProcessor;
 import pewpew.smash.game.network.processor.clientProcessor.ClientWeaponStatePacketProcessor;
 import pewpew.smash.game.network.processor.clientProcessor.ClientWorldDataPacketProcessor;
+import pewpew.smash.game.network.processor.clientProcessor.ClientWorldEntityAddPacketProcessor;
 import pewpew.smash.game.network.processor.clientProcessor.ClientWorldEntityStatePacketProcessor;
-import pewpew.smash.game.world.entities.Bush;
-import pewpew.smash.game.world.entities.Crate;
-import pewpew.smash.game.world.entities.WorldEntityType;
-import pewpew.smash.game.world.entities.WorldStaticEntity;
 
 public class ClientHandler extends Handler {
 
@@ -49,7 +46,7 @@ public class ClientHandler extends Handler {
 
     @Getter
     @Setter
-    private byte[][] worldData;
+    private long seed;
     @Getter
     @Setter
     private boolean isWorldDataReceived;
@@ -69,17 +66,6 @@ public class ClientHandler extends Handler {
         registersClasses(this.client.getKryo());
         initPacketProcessors();
 
-        WorldStaticEntity stone = new WorldStaticEntity(WorldEntityType.STONE, 1200, 1200);
-        entityManager.addStaticEntity(1, stone);
-
-        WorldStaticEntity tree = new WorldStaticEntity(WorldEntityType.TREE, 1000, 1000);
-        entityManager.addStaticEntity(2, tree);
-
-        Bush bush = new Bush(750, 300);
-        entityManager.addStaticEntity(3, bush);
-
-        Crate crate = new Crate(600, 600, null);
-        entityManager.addStaticEntity(4, crate);
     }
 
     private void initPacketProcessors() {
@@ -101,6 +87,8 @@ public class ClientHandler extends Handler {
         packetProcessors.put(WorldDataPacket.class, new ClientWorldDataPacketProcessor(entityManager, client, this));
         packetProcessors.put(WorldEntityStatePacket.class,
                 new ClientWorldEntityStatePacketProcessor(entityManager, client));
+        packetProcessors.put(WorldEntityAddPacket.class,
+                new ClientWorldEntityAddPacketProcessor(entityManager, client));
     }
 
     @Override
@@ -175,6 +163,7 @@ public class ClientHandler extends Handler {
 
     public synchronized void update() {
         this.clientUpdater.update(this.client);
+        System.out.println("Current amount of static entities: " + entityManager.getStaticEntities().size());
     }
 
     public synchronized String getCurrentBroadcastedMessage() {

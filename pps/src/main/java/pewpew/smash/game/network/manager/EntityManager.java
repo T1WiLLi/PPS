@@ -40,6 +40,10 @@ public class EntityManager {
         staticEntitiesMap.put(id, entity);
     }
 
+    public synchronized void addWorldStaticEntity(List<WorldStaticEntity> entities) {
+        entities.forEach(entity -> staticEntitiesMap.put(entity.getId(), entity));
+    }
+
     public synchronized void addPlayerEntity(int id, Player entity) {
         playerEntitiesMap.put(id, entity);
     }

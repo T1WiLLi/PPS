@@ -36,11 +36,6 @@ import pewpew.smash.game.network.processor.serverProcessor.ServerUsernamePacketP
 import pewpew.smash.game.network.processor.serverProcessor.ServerWeaponStatePacketProcessor;
 import pewpew.smash.game.network.processor.serverProcessor.ServerWeaponSwitchRequestPacketProcessor;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
-import pewpew.smash.game.objects.ItemGenerator;
-import pewpew.smash.game.world.entities.Bush;
-import pewpew.smash.game.world.entities.Crate;
-import pewpew.smash.game.world.entities.WorldEntityType;
-import pewpew.smash.game.world.entities.WorldStaticEntity;
 
 public class ServerHandler extends Handler implements Runnable {
 
@@ -62,26 +57,16 @@ public class ServerHandler extends Handler implements Runnable {
         this.entityUpdater = new ServerEntityUpdater(entityManager);
         this.itemUpdater = new ServerItemUpdater();
         this.collisionManager = new ServerCollisionManager(entityManager);
-        this.worldManager = new ServerWorldManager();
+        this.worldManager = new ServerWorldManager(server, 25, 40);
         this.gameTime = GameTime.getServerInstance();
+
+        this.entityManager.addWorldStaticEntity(this.worldManager.getStaticEntities());
 
         // this.worldManager.displayWorld();
         ServerBulletTracker.getInstance().setServerReference(this.server);
 
         initPacketProcessors();
         registersClasses(this.server.getKryo());
-
-        WorldStaticEntity stone = new WorldStaticEntity(WorldEntityType.STONE, 1200, 1200);
-        entityManager.addStaticEntity(1, stone);
-
-        WorldStaticEntity tree = new WorldStaticEntity(WorldEntityType.TREE, 1000, 1000);
-        entityManager.addStaticEntity(2, tree);
-
-        Bush bush = new Bush(750, 300);
-        entityManager.addStaticEntity(3, bush);
-
-        Crate crate = new Crate(600, 600, null);
-        entityManager.addStaticEntity(4, crate);
     }
 
     @Override
@@ -93,7 +78,6 @@ public class ServerHandler extends Handler implements Runnable {
 
     @Override
     public void run() {
-        new ItemGenerator().generateItems(server, this.worldManager.getWorldData(), 15);
         while (!Thread.currentThread().isInterrupted()) {
             if (gameTime.shouldUpdate()) {
                 update(gameTime.getDeltaTime());
@@ -138,7 +122,7 @@ public class ServerHandler extends Handler implements Runnable {
                 .serializeWeaponState(player.getEquippedWeapon());
         this.server.sendToTCP(connection.getID(), playerWeaponStatePacket);
         this.entityManager.addPlayerEntity(player.getId(), player);
-        this.worldManager.sendWorldDataToClient(server, connection.getID());
+        this.worldManager.sendWorldData(connection.getID());
     }
 
     @Override

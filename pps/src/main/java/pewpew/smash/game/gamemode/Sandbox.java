@@ -60,7 +60,8 @@ public class Sandbox implements GameMode {
     @Override
     public void update(double deltaTime) {
         if (networkManager.isWorldDataReceived() && this.worldImage == null) {
-            this.worldImage = WorldGenerator.getWorldImage(networkManager.getWorldData());
+            this.worldImage = WorldGenerator
+                    .getWorldImage(new WorldGenerator(networkManager.getWorldData()).getWorldData());
             HudManager.getInstance().setWorldImage(this.worldImage);
         }
 

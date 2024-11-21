@@ -20,7 +20,7 @@ public class ViewUtils {
                 scaledY >= bounds.minY && scaledY <= bounds.maxY;
     }
 
-    private static ViewBounds calculateBounds() {
+    public static ViewBounds calculateBounds() {
         double scaleX = ScaleUtils.getScaleX();
         double scaleY = ScaleUtils.getScaleY();
         double zoom = Camera.getZoom();
