@@ -8,11 +8,10 @@ import java.util.stream.IntStream;
 import java.awt.Color;
 
 public class WorldGenerator {
-    private static final int tileSize = 5;
-    private static int worldWidth = 400;
-    private static int worldHeight = 400;
+    public static final int TILE_SIZE = 5;
+    private static int worldWidth = 800;
+    private static int worldHeight = 800;
     private byte[][] world;
-    private double[][] noiseCache;
     private final long seed;
 
     public static final byte GRASS = 1;
@@ -26,7 +25,6 @@ public class WorldGenerator {
     public WorldGenerator(long seed) {
         this.seed = seed;
         this.world = new byte[worldWidth][worldHeight];
-        this.noiseCache = new double[worldWidth][worldHeight];
         generateWorld();
     }
 
@@ -39,11 +37,11 @@ public class WorldGenerator {
     }
 
     public static int getWorldWidth() {
-        return worldWidth * tileSize;
+        return worldWidth * TILE_SIZE;
     }
 
     public static int getWorldHeight() {
-        return worldHeight * tileSize;
+        return worldHeight * TILE_SIZE;
     }
 
     private void generateWorld() {
@@ -52,14 +50,14 @@ public class WorldGenerator {
         generateLargeIsland();
         smoothCoastline();
         generateBeaches();
-        spawnWorldEntitiesAndWeapons();
+
     }
 
     private void precomputeNoise(PerlinNoise noise) {
         double noiseScale = 0.003;
         IntStream.range(0, worldWidth).parallel().forEach(x -> {
             for (int y = 0; y < worldHeight; y++) {
-                noiseCache[x][y] = (noise.noise(x * noiseScale, y * noiseScale) + 1) / 2;
+                world[x][y] = (byte) ((noise.noise(x * noiseScale, y * noiseScale) + 1) / 2);
             }
         });
     }
@@ -73,7 +71,7 @@ public class WorldGenerator {
                 double ny = y / (double) worldHeight - 0.5;
 
                 double distanceFromCenter = Math.sqrt(nx * nx + ny * ny) * 2;
-                double noiseValue = noiseCache[x][y];
+                double noiseValue = world[x][y];
 
                 double combined = distanceFromCenter * 0.7 + noiseValue * 0.3;
 
@@ -138,21 +136,10 @@ public class WorldGenerator {
         }
     }
 
-    private void spawnWorldEntitiesAndWeapons() {
-        Random random = new Random(seed);
-        IntStream.range(0, 50).forEach(i -> {
-            int x = random.nextInt(worldWidth);
-            int y = random.nextInt(worldHeight);
-            if (world[x][y] == GRASS) {
-                System.out.println("Spawned an entity at: " + x + ", " + y);
-            }
-        });
-    }
-
     public static BufferedImage getWorldImage(byte[][] world) {
         int worldWidth = world.length;
         int worldHeight = world[0].length;
-        BufferedImage image = new BufferedImage(worldWidth * tileSize, worldHeight * tileSize,
+        BufferedImage image = new BufferedImage(worldWidth * TILE_SIZE, worldHeight * TILE_SIZE,
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
 
@@ -162,13 +149,13 @@ public class WorldGenerator {
 
                 if (tileType == GRASS) {
                     g.setColor(new Color(34, 139, 34));
-                    g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 } else if (tileType == WATER) {
                     g.setColor(new Color(0, 0, 255));
-                    g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 } else if (tileType == SAND) {
                     g.setColor(new Color(238, 214, 175));
-                    g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 }
             }
         }

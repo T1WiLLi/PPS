@@ -26,7 +26,7 @@
     }
   },
   "audio" : {
-    "generalVolume" : 1.0,
+    "generalVolume" : 0.5064102411270142,
     "sfxVolume" : 1.0,
     "music" : false,
     "sfx" : true,
