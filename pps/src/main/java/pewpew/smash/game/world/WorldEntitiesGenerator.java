@@ -12,6 +12,7 @@ import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.objects.SpecialType;
 import pewpew.smash.game.objects.WeaponType;
+import pewpew.smash.game.objects.special.AmmoStack;
 import pewpew.smash.game.world.entities.Bush;
 import pewpew.smash.game.world.entities.Crate;
 import pewpew.smash.game.world.entities.WorldEntityType;
@@ -84,9 +85,34 @@ public class WorldEntitiesGenerator {
         return entity;
     }
 
-    // TODO: This is a placeholder for now. We need to generate a loot table
     private List<Item> generateLootTable() {
-        return null;
+        List<Item> items = new ArrayList<>();
+        Random random = new Random();
+
+        boolean containsGun = random.nextBoolean();
+
+        if (containsGun) {
+            WeaponType weapon = switch (random.nextInt(100)) {
+                case 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 -> WeaponType.GLOCK;
+                case 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 -> WeaponType.MP5;
+                case 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 -> WeaponType.MAC10;
+                case 30, 31, 32, 33, 34 -> WeaponType.DEAGLE;
+                case 35, 36, 37, 38, 39, 40, 41 -> WeaponType.COLT45;
+                case 42, 43, 44, 45, 46, 47, 48, 49 -> WeaponType.AK47;
+                case 50, 51, 52, 53, 54, 55, 56, 57, 58, 59 -> WeaponType.M1A1;
+                default -> WeaponType.HK416;
+            };
+            items.add(ItemFactory.createItem(weapon));
+        } else {
+            ConsumableType heal = switch (random.nextInt(3)) {
+                case 0 -> ConsumableType.MEDIKIT;
+                case 1 -> ConsumableType.PILL;
+                default -> ConsumableType.BANDAGE;
+            };
+            items.add(ItemFactory.createItem(heal));
+        }
+        items.add(ItemFactory.createAmmoStack());
+        return items;
     }
 
     private boolean isValidPlacement(WorldStaticEntity entity) {
