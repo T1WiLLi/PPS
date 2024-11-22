@@ -10,9 +10,10 @@ import pewpew.smash.game.network.processor.PacketProcessor;
 import pewpew.smash.game.network.processor.ServerProcessor;
 import pewpew.smash.game.network.server.ServerWrapper;
 
-public class ServerUsernamePacketProcessor extends ServerProcessor implements PacketProcessor<PlayerUsernamePacket> {
+public class ServerPlayerUsernamePacketProcessor extends ServerProcessor
+        implements PacketProcessor<PlayerUsernamePacket> {
 
-    public ServerUsernamePacketProcessor(EntityManager entityManager, ServerWrapper server) {
+    public ServerPlayerUsernamePacketProcessor(EntityManager entityManager, ServerWrapper server) {
         super(entityManager, server);
     }
 

@@ -3,7 +3,6 @@ package pewpew.smash.game.network.client;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,22 +17,7 @@ import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.*;
 import pewpew.smash.game.network.processor.PacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientBroadcastMessagePacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientBulletCreatePacketProcessor;
 import pewpew.smash.game.network.processor.clientProcessor.ClientBulletRemovePacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientInventoryPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientItemAddPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientItemRemovePacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientMouseActionPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientPlayerDeathPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientPlayerJoinedPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientPlayerLeftPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientPlayerStatePacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientPositionPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientWeaponStatePacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientWorldDataPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientWorldEntityAddPacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientWorldEntityStatePacketProcessor;
 
 public class ClientHandler extends Handler {
 
@@ -42,7 +26,7 @@ public class ClientHandler extends Handler {
     private final ClientUpdater clientUpdater;
     private final ClientWrapper client;
     private final Map<Integer, List<PositionPacket>> positionPacketQueue;
-    private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors = new HashMap<>();
+    private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors;
 
     @Getter
     @Setter
@@ -64,31 +48,8 @@ public class ClientHandler extends Handler {
         this.clientUpdater = new ClientUpdater(this.entityManager);
         this.positionPacketQueue = new ConcurrentHashMap<>();
         registersClasses(this.client.getKryo());
-        initPacketProcessors();
-
-    }
-
-    private void initPacketProcessors() {
-        packetProcessors.put(PositionPacket.class, new ClientPositionPacketProcessor(entityManager, client, this));
-        packetProcessors.put(MouseActionPacket.class, new ClientMouseActionPacketProcessor(entityManager, client));
-        packetProcessors.put(PlayerStatePacket.class, new ClientPlayerStatePacketProcessor(entityManager, client));
-        packetProcessors.put(BulletCreatePacket.class, new ClientBulletCreatePacketProcessor(entityManager, client));
-        packetProcessors.put(BulletRemovePacket.class, new ClientBulletRemovePacketProcessor(entityManager, client));
-        packetProcessors.put(WeaponStatePacket.class, new ClientWeaponStatePacketProcessor(entityManager, client));
-        packetProcessors.put(ItemAddPacket.class, new ClientItemAddPacketProcessor(entityManager, client));
-        packetProcessors.put(ItemRemovePacket.class, new ClientItemRemovePacketProcessor(entityManager, client));
-        packetProcessors.put(InventoryPacket.class, new ClientInventoryPacketProcessor(entityManager, client));
-        packetProcessors.put(PlayerDeathPacket.class, new ClientPlayerDeathPacketProcessor(entityManager, client));
-        packetProcessors.put(BroadcastMessagePacket.class,
-                new ClientBroadcastMessagePacketProcessor(entityManager, client, this));
-        packetProcessors.put(PlayerJoinedPacket.class,
-                new ClientPlayerJoinedPacketProcessor(entityManager, client, this));
-        packetProcessors.put(PlayerLeftPacket.class, new ClientPlayerLeftPacketProcessor(entityManager, client, this));
-        packetProcessors.put(WorldDataPacket.class, new ClientWorldDataPacketProcessor(entityManager, client, this));
-        packetProcessors.put(WorldEntityStatePacket.class,
-                new ClientWorldEntityStatePacketProcessor(entityManager, client));
-        packetProcessors.put(WorldEntityAddPacket.class,
-                new ClientWorldEntityAddPacketProcessor(entityManager, client));
+        ClientPacketRegistry clientRegistry = new ClientPacketRegistry(entityManager, client, this);
+        packetProcessors = clientRegistry.getPacketProcessors();
     }
 
     @Override
@@ -163,7 +124,6 @@ public class ClientHandler extends Handler {
 
     public synchronized void update() {
         this.clientUpdater.update(this.client);
-        System.out.println("Current amount of static entities: " + entityManager.getStaticEntities().size());
     }
 
     public synchronized String getCurrentBroadcastedMessage() {

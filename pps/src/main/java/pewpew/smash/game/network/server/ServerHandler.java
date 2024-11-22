@@ -1,7 +1,6 @@
 package pewpew.smash.game.network.server;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,27 +13,10 @@ import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.BasePacket;
-import pewpew.smash.game.network.packets.DirectionPacket;
-import pewpew.smash.game.network.packets.MouseInputPacket;
-import pewpew.smash.game.network.packets.PickupItemRequestPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
-import pewpew.smash.game.network.packets.PlayerUsernamePacket;
-import pewpew.smash.game.network.packets.PreventActionForPlayerPacket;
-import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
-import pewpew.smash.game.network.packets.UseConsumableRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
-import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.processor.PacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.ServerDirectionPacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.ServerMouseInputPacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.ServerPickupItemRequestPacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.ServerPreventActionForPlayerPacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.ServerReloadWeaponRequestPacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.ServerUseConsumableRequestPacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.ServerUsernamePacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.ServerWeaponStatePacketProcessor;
-import pewpew.smash.game.network.processor.serverProcessor.ServerWeaponSwitchRequestPacketProcessor;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
 
 public class ServerHandler extends Handler implements Runnable {
@@ -48,7 +30,7 @@ public class ServerHandler extends Handler implements Runnable {
     private ServerCollisionManager collisionManager;
     private GameTime gameTime;
 
-    private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors = new HashMap<>();
+    private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors;
 
     public ServerHandler(int port) {
         this.server = new ServerWrapper(port, port);
@@ -59,14 +41,11 @@ public class ServerHandler extends Handler implements Runnable {
         this.collisionManager = new ServerCollisionManager(entityManager);
         this.worldManager = new ServerWorldManager(server, 25, 40);
         this.gameTime = GameTime.getServerInstance();
-
         this.entityManager.addWorldStaticEntity(this.worldManager.getStaticEntities());
-
-        // this.worldManager.displayWorld();
         ServerBulletTracker.getInstance().setServerReference(this.server);
-
-        initPacketProcessors();
         registersClasses(this.server.getKryo());
+        ServerPacketRegistry serverRegistry = new ServerPacketRegistry(entityManager, server, itemUpdater);
+        packetProcessors = serverRegistry.getPacketProcessors();
     }
 
     @Override
@@ -177,22 +156,5 @@ public class ServerHandler extends Handler implements Runnable {
 
     private void sendPlayerMouseInput() {
         this.entityUpdater.sendPlayerMouseInput(this.server);
-    }
-
-    private void initPacketProcessors() {
-        packetProcessors.put(PlayerUsernamePacket.class, new ServerUsernamePacketProcessor(entityManager, server));
-        packetProcessors.put(DirectionPacket.class, new ServerDirectionPacketProcessor(entityManager, server));
-        packetProcessors.put(MouseInputPacket.class, new ServerMouseInputPacketProcessor(entityManager, server));
-        packetProcessors.put(ReloadWeaponRequestPacket.class,
-                new ServerReloadWeaponRequestPacketProcessor(entityManager, server));
-        packetProcessors.put(WeaponSwitchRequestPacket.class,
-                new ServerWeaponSwitchRequestPacketProcessor(entityManager, server));
-        packetProcessors.put(PickupItemRequestPacket.class,
-                new ServerPickupItemRequestPacketProcessor(entityManager, server, itemUpdater));
-        packetProcessors.put(WeaponStatePacket.class, new ServerWeaponStatePacketProcessor(entityManager, server));
-        packetProcessors.put(UseConsumableRequestPacket.class,
-                new ServerUseConsumableRequestPacketProcessor(entityManager, server));
-        packetProcessors.put(PreventActionForPlayerPacket.class,
-                new ServerPreventActionForPlayerPacketProcessor(entityManager, server));
     }
 }
