@@ -7,12 +7,10 @@ import pewpew.smash.game.world.entities.WorldStaticEntity;
 
 public class WorldStaticEntitySerializer {
     public static SerializedWorldStaticEntity serialize(WorldStaticEntity entity) {
-        System.out.println("Serialzing an entity with ID : " + entity.getId());
         return new SerializedWorldStaticEntity(entity.getId(), entity.getType(), entity.getX(), entity.getY());
     }
 
     public static WorldStaticEntity deserialize(SerializedWorldStaticEntity serialized) {
-        System.out.println("Deserialzing an entity with ID : " + serialized.getId());
         int x = serialized.getX();
         int y = serialized.getY();
         WorldStaticEntity entity = switch (serialized.getType()) {

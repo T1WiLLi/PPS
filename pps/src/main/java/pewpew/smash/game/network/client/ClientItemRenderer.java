@@ -28,8 +28,11 @@ public class ClientItemRenderer {
     }
 
     private boolean isPlayerNearItem(Player player, Item item) {
-        double distance = calculateDistance(player.getX(), player.getY(), item.getX(), item.getY());
-        return distance <= PICKUP_RADIUS;
+        if (player != null) {
+            double distance = calculateDistance(player.getX(), player.getY(), item.getX(), item.getY());
+            return distance <= PICKUP_RADIUS;
+        }
+        return false;
     }
 
     private double calculateDistance(int x1, int y1, int x2, int y2) {
