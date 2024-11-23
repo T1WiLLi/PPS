@@ -1,11 +1,14 @@
 package pewpew.smash.game.overlay;
 
 import java.awt.Color;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.gamemode.GameModeManager;
 import pewpew.smash.game.gamemode.GameModeType;
+import pewpew.smash.game.network.upnp.NetworkUtils;
 import pewpew.smash.game.states.GameStateType;
 import pewpew.smash.game.states.StateManager;
 import pewpew.smash.game.ui.Button;
@@ -13,6 +16,7 @@ import pewpew.smash.game.ui.Checkbox;
 import pewpew.smash.game.ui.Cycler;
 import pewpew.smash.game.ui.TextField;
 import pewpew.smash.game.utils.FontFactory;
+import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class HostOverlay extends Overlay {
@@ -35,6 +39,10 @@ public class HostOverlay extends Overlay {
     private Checkbox respawnEnabled;
 
     private String selectedMode = "Sandbox";
+    private String userIP = "Unknown";
+    private int userPort = 25565;
+    private String errorMessage = "";
+    private Timer errorResetTimer;
 
     public HostOverlay(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -49,12 +57,25 @@ public class HostOverlay extends Overlay {
         loadSandboxSettings();
         loadBattleRoyaleSettings();
         loadArenaSettings();
+
+        userIP = NetworkUtils.getExternalIP();
     }
 
     @Override
     public void update() {
         updateCommonComponents();
         updateGameModeSettings();
+
+        try {
+            userPort = Integer.parseInt(portField.getText().trim());
+            if (!NetworkUtils.validatePort(userPort)) {
+                throw new NumberFormatException("Port out of range");
+            }
+        } catch (NumberFormatException e) {
+            userPort = 25565;
+            errorMessage = "Invalid Port. Please enter a number between 1 and 65535.";
+            resetErrorMessageAfterDelay();
+        }
     }
 
     private void updateCommonComponents() {
@@ -76,6 +97,25 @@ public class HostOverlay extends Overlay {
         renderBackground(canvas);
         renderCommonComponents(canvas);
         renderGameModeSettings(canvas);
+        renderIPAndPort(canvas);
+        renderErrorMessage(canvas);
+    }
+
+    private void renderErrorMessage(Canvas canvas) {
+        if (!errorMessage.isEmpty()) {
+            FontFactory.IMPACT_SMALL.applyFont(canvas);
+            canvas.setColor(Color.RED);
+            canvas.renderString(errorMessage, width - 450, 450);
+            FontFactory.resetFont(canvas);
+        }
+    }
+
+    private void renderIPAndPort(Canvas canvas) {
+        FontFactory.IMPACT_SMALL.applyFont(canvas);
+        canvas.setColor(Color.WHITE);
+        canvas.renderString("Your IP: " + userIP, 50, 460);
+        canvas.renderString("Port: " + userPort, 50, 490);
+        FontFactory.resetFont(canvas);
     }
 
     private void renderBackground(Canvas canvas) {
@@ -95,6 +135,19 @@ public class HostOverlay extends Overlay {
             case "Battle Royale" -> renderBattleRoyaleSettings(canvas);
             case "Arena" -> renderArenaSettings(canvas);
         }
+    }
+
+    private void resetErrorMessageAfterDelay() {
+        if (errorResetTimer != null) {
+            errorResetTimer.cancel();
+        }
+        errorResetTimer = new Timer();
+        errorResetTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                errorMessage = "";
+            }
+        }, 2000);
     }
 
     private void loadBackground() {
@@ -293,9 +346,36 @@ public class HostOverlay extends Overlay {
     }
 
     private void loadGame() {
+        GameModeType gameMode = HelpMethods.getGameModeTypeFromString(selectedMode);
+        if (gameMode == null) {
+            errorMessage = "Invalid game mode selected.";
+            return;
+        }
+
+        String port = portField.getText().trim().isEmpty() ? "25565" : portField.getText().trim();
+        if (!NetworkUtils.validatePort(Integer.parseInt(port))) {
+            errorMessage = "Invalid Port. Please enter a number between 1 and 65535.";
+            return;
+        }
+
+        String[] params;
+        switch (gameMode) {
+            case SANDBOX -> {
+                String host = sandboxMultiplayerOn.isChecked() ? userIP : "127.0.0.1";
+                params = new String[] { host, port, "true" };
+            }
+            case BATTLE_ROYALE -> params = new String[] { "mockBRHost", "mockBRPort", "mockBRParams" };
+            case ARENA -> params = new String[] { "mockArenaHost", "mockArenaPort", "mockArenaParams" };
+            default -> {
+                errorMessage = "Unsupported game mode.";
+                return;
+            }
+        }
+
+        errorMessage = "";
         StateManager.getInstance().setState(GameStateType.PLAYING);
-        GameModeManager.getInstance().setGameMode(GameModeType.SANDBOX);
-        GameModeManager.getInstance().getCurrentGameMode().build(new String[] { "127.0.0.1", "12345", "true" });
+        GameModeManager.getInstance().setGameMode(gameMode);
+        GameModeManager.getInstance().getCurrentGameMode().build(params);
         close();
     }
 }
