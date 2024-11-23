@@ -45,6 +45,14 @@ public class HelpMethods {
         };
     }
 
+    public static void sendDroppedItem(Item item, ServerWrapper server) {
+        spreadItem(item);
+        server.sendToAllTCP(new ItemAddPacket(
+                item.getX(),
+                item.getY(),
+                SerializationUtility.serializeItem(item)));
+    }
+
     public static void dropInventoryOfDeadPlayer(Inventory inventory, ServerWrapper server) {
         inventory.getPrimaryWeapon().ifPresent(weapon -> {
             weapon.drop();

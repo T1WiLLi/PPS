@@ -3,6 +3,7 @@ package pewpew.smash.game.world.entities;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+import lombok.Getter;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.network.model.WorldEntityState;
 import pewpew.smash.game.objects.Item;
@@ -10,13 +11,12 @@ import pewpew.smash.game.utils.ResourcesLoader;
 
 public class Crate extends WorldBreakableStaticEntity {
     private BufferedImage[] sprites;
-    private int currentSpriteIndex;
+    @Getter
     private List<Item> lootTable;
 
     public Crate(int x, int y, List<Item> lootTable) {
         super(WorldEntityType.CRATE, x, y);
         loadSprites();
-        this.currentSpriteIndex = 0;
         this.lootTable = lootTable;
         this.health = 100;
     }
@@ -26,12 +26,14 @@ public class Crate extends WorldBreakableStaticEntity {
         canvas.renderImage(sprites[getCurrentSprite()], x, y, width, height);
     }
 
-    public void onBreak() {
-
-    }
-
+    @Override
     public void applyState(WorldEntityState state) {
         this.health = state.getHealth();
+    }
+
+    @Override
+    public boolean isDestroyed() {
+        return health <= 0;
     }
 
     private void loadSprites() {

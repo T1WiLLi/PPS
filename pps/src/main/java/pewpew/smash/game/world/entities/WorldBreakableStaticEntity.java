@@ -12,7 +12,7 @@ public abstract class WorldBreakableStaticEntity extends WorldStaticEntity {
     @Setter
     protected int health;
 
-    public abstract void onBreak();
+    public abstract boolean isDestroyed();
 
     public abstract void applyState(WorldEntityState state);
 

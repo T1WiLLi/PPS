@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Random;
 
 import pewpew.smash.game.network.manager.ItemManager;
+import pewpew.smash.game.objects.Consumable;
 import pewpew.smash.game.objects.ConsumableType;
 import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.objects.SpecialType;
+import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.WeaponType;
 import pewpew.smash.game.objects.special.AmmoStack;
 import pewpew.smash.game.world.entities.Bush;
@@ -78,21 +80,21 @@ public class WorldEntitiesGenerator {
     private WorldStaticEntity createEntityInstance(WorldEntityType type, int x, int y) {
         WorldStaticEntity entity = switch (type) {
             case BUSH -> new Bush(x, y);
-            case CRATE -> new Crate(x, y, generateLootTable());
+            case CRATE -> new Crate(x, y, generateLootTable(x, y));
             default -> new WorldStaticEntity(type, x, y);
         };
         entity.setId(entityID++);
         return entity;
     }
 
-    private List<Item> generateLootTable() {
+    private List<Item> generateLootTable(int x, int y) {
         List<Item> items = new ArrayList<>();
         Random random = new Random();
 
         boolean containsGun = random.nextBoolean();
 
         if (containsGun) {
-            WeaponType weapon = switch (random.nextInt(100)) {
+            WeaponType weaponType = switch (random.nextInt(100)) {
                 case 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 -> WeaponType.GLOCK;
                 case 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 -> WeaponType.MP5;
                 case 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 -> WeaponType.MAC10;
@@ -102,16 +104,22 @@ public class WorldEntitiesGenerator {
                 case 50, 51, 52, 53, 54, 55, 56, 57, 58, 59 -> WeaponType.M1A1;
                 default -> WeaponType.HK416;
             };
-            items.add(ItemFactory.createItem(weapon));
+            Weapon weapon = ItemFactory.createItem(weaponType);
+            weapon.teleport(x, y);
+            items.add(weapon);
         } else {
-            ConsumableType heal = switch (random.nextInt(3)) {
+            ConsumableType healType = switch (random.nextInt(3)) {
                 case 0 -> ConsumableType.MEDIKIT;
                 case 1 -> ConsumableType.PILL;
                 default -> ConsumableType.BANDAGE;
             };
-            items.add(ItemFactory.createItem(heal));
+            Consumable consumable = ItemFactory.createItem(healType);
+            consumable.teleport(x, y);
+            items.add(consumable);
         }
-        items.add(ItemFactory.createAmmoStack());
+        AmmoStack ammoStack = ItemFactory.createAmmoStack();
+        ammoStack.teleport(x, y);
+        items.add(ammoStack);
         return items;
     }
 

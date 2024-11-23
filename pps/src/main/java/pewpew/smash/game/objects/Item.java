@@ -68,9 +68,11 @@ public abstract class Item {
     // still calling the super)
     public void drop() {
         ItemManager.getInstance(true).addItem(this);
-        this.x = owner.getX();
-        this.y = owner.getY();
-        this.owner = null;
+        if (owner != null) {
+            this.x = owner.getX();
+            this.y = owner.getY();
+            this.owner = null;
+        }
         isOnScreen = true;
     }
 }
