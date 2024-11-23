@@ -13,9 +13,11 @@ import pewpew.smash.game.network.model.WorldEntityState;
 import pewpew.smash.game.network.packets.BroadcastMessagePacket;
 import pewpew.smash.game.network.packets.PlayerDeathPacket;
 import pewpew.smash.game.network.packets.PlayerStatePacket;
+import pewpew.smash.game.network.packets.WorldEntityRemovePacket;
 import pewpew.smash.game.network.packets.WorldEntityStatePacket;
 import pewpew.smash.game.objects.MeleeWeapon;
 import pewpew.smash.game.utils.HelpMethods;
+import pewpew.smash.game.world.entities.Crate;
 import pewpew.smash.game.world.entities.WorldBreakableStaticEntity;
 
 public class ServerCombatManager {
@@ -85,8 +87,17 @@ public class ServerCombatManager {
     private void handleStaticEntityDamage(WorldBreakableStaticEntity entity, ServerWrapper server) {
         entity.setHealth(entity.getHealth() - 10);
 
-        if (entity.getHealth() <= 0) {
-            entity.onBreak();
+        if (entity.isDestroyed()) {
+            if (entity instanceof Crate crate) {
+                crate.getLootTable().forEach(i -> {
+                    i.drop();
+                    HelpMethods.sendDroppedItem(i, server);
+                });
+            }
+
+            entityManager.removeStaticEntity(entity.getId());
+            WorldEntityRemovePacket removePacket = new WorldEntityRemovePacket(entity.getId());
+            server.sendToAllTCP(removePacket);
         }
 
         WorldEntityState state = new WorldEntityState(entity.getId(), entity.getHealth());

@@ -35,6 +35,7 @@ import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.packets.WorldDataPacket;
 import pewpew.smash.game.network.packets.WorldEntityAddPacket;
+import pewpew.smash.game.network.packets.WorldEntityRemovePacket;
 import pewpew.smash.game.network.packets.WorldEntityStatePacket;
 import pewpew.smash.game.objects.WeaponType;
 import pewpew.smash.game.world.entities.WorldEntityType;
@@ -73,6 +74,7 @@ public class KryoRegister {
         kryo.register(UseConsumableRequestPacket.class);
         kryo.register(PreventActionForPlayerPacket.class);
         kryo.register(WorldEntityAddPacket.class);
+        kryo.register(WorldEntityRemovePacket.class);
     }
 
     private void registerObjects(Kryo kryo) {
