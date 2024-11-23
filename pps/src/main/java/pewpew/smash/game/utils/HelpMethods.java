@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.entities.Inventory;
+import pewpew.smash.game.gamemode.GameModeType;
 import pewpew.smash.game.network.packets.ItemAddPacket;
 import pewpew.smash.game.network.serializer.SerializationUtility;
 import pewpew.smash.game.network.server.ServerWrapper;
@@ -43,6 +45,13 @@ public class HelpMethods {
             case KeyEvent.VK_5 -> Optional.of(ConsumableType.PILL);
             default -> Optional.empty();
         };
+    }
+
+    public static GameModeType getGameModeTypeFromString(String str) {
+        return Stream.of(GameModeType.values())
+                .filter(g -> g.name().equalsIgnoreCase(str))
+                .findFirst()
+                .orElse(GameModeType.SANDBOX); // default
     }
 
     public static void sendDroppedItem(Item item, ServerWrapper server) {

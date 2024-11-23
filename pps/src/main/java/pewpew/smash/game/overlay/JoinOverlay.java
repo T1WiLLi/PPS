@@ -1,10 +1,13 @@
 package pewpew.smash.game.overlay;
 
 import java.awt.Color;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.gamemode.GameModeManager;
 import pewpew.smash.game.gamemode.GameModeType;
+import pewpew.smash.game.network.upnp.NetworkUtils;
 import pewpew.smash.game.states.GameStateType;
 import pewpew.smash.game.states.StateManager;
 import pewpew.smash.game.ui.Button;
@@ -18,7 +21,9 @@ public class JoinOverlay extends Overlay {
     private TextField portInput;
     private Button playButton;
     private Button backButton;
+
     private String errorMessage = "";
+    private Timer errorResetTimer;
 
     public JoinOverlay(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -45,6 +50,19 @@ public class JoinOverlay extends Overlay {
         playButton.render(canvas);
         backButton.render(canvas);
         renderErrorMessage(canvas);
+    }
+
+    private void resetErrorMessageAfterDelay() {
+        if (errorResetTimer != null) {
+            errorResetTimer.cancel();
+        }
+        errorResetTimer = new Timer();
+        errorResetTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                errorMessage = "";
+            }
+        }, 2000);
     }
 
     private void loadInputs() {
@@ -87,16 +105,39 @@ public class JoinOverlay extends Overlay {
     }
 
     private void validateInputs() {
+        String ip = ipInput.getText().trim();
+        String port = portInput.getText().trim();
+
+        if (ip.isEmpty() || port.isEmpty()) {
+            errorMessage = "Both IP and Port fields must be filled.";
+            resetErrorMessageAfterDelay();
+            return;
+        }
+
+        if (!NetworkUtils.validateIP(ip)) {
+            errorMessage = "Invalid IP address.";
+            resetErrorMessageAfterDelay();
+            return;
+        }
+
+        try {
+            if (!NetworkUtils.validatePort(Integer.parseInt(port))) {
+                errorMessage = "Invalid Port. Port must be between 1 and 65535.";
+                resetErrorMessageAfterDelay();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            errorMessage = "Port must be a number.";
+            resetErrorMessageAfterDelay();
+        }
+
+        errorMessage = "";
+
         StateManager.getInstance().setState(GameStateType.PLAYING);
         GameModeManager.getInstance().setGameMode(GameModeType.SANDBOX);
-        GameModeManager.getInstance().getCurrentGameMode().build(new String[] { "127.0.0.1", "12345", "false" });
+        GameModeManager.getInstance().getCurrentGameMode().build(new String[] { ip, port, "false" });
+
         close();
-        if (ipInput.getText().isEmpty() || portInput.getText().isEmpty()) {
-            errorMessage = "Both IP and Port fields must be filled.";
-        } else {
-            errorMessage = "";
-            System.out.println("Joining server at IP: " + ipInput.getText() + " on port: " + portInput.getText());
-        }
     }
 
     private void loadBackground() {

@@ -34,6 +34,39 @@ public class NetworkUtils {
         return null;
     }
 
+    public static boolean validateIP(String ip) {
+        if (ip == null || ip.isEmpty()) {
+            return false;
+        }
+
+        if (ip.contains(".")) {
+            String[] parts = ip.split("\\.");
+            if (parts.length != 4) {
+                return false;
+            }
+
+            for (String part : parts) {
+                if (!isValidNumber(part)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static boolean validatePort(int port) {
+        return port >= 0 && port <= 65535;
+    }
+
+    private static boolean isValidNumber(String number) {
+        try {
+            int i = Integer.parseInt(number);
+            return i >= 0 && i <= 255;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     private static boolean isValidIP(String ip) {
         if (ip == null || ip.isEmpty()) {
             return false;
