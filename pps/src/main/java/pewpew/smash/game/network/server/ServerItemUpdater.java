@@ -75,13 +75,11 @@ public class ServerItemUpdater {
             player.getInventory().addConsumable(consumable.getType());
         } else if (item instanceof RangedWeapon) {
             player.getInventory().getPrimaryWeapon().ifPresent(currentWeapon -> {
-                System.out.println("The weapon added has ammo: " + currentWeapon.getCurrentAmmo());
                 currentWeapon.drop();
                 ItemManager.getInstance(true).addItem(currentWeapon);
                 server.sendToAllTCP(new ItemAddPacket(player.getX(), player.getY(),
                         SerializationUtility.serializeItem(currentWeapon)));
             });
-            System.out.println("ID of pickup item: " + item.getId());
             player.changeWeapon((RangedWeapon) item);
             server.sendToAllTCP(WeaponStateSerializer.serializeWeaponState((Weapon) item));
         }

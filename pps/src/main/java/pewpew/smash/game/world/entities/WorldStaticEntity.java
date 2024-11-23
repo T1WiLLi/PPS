@@ -37,7 +37,6 @@ public class WorldStaticEntity extends StaticEntity {
     @Override
     public void render(Canvas canvas) {
         canvas.renderImage(defaultSprite, x, y, width, height);
-        renderHitbox(canvas);
     }
 
     @Override
