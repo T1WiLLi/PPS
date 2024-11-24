@@ -15,8 +15,6 @@
     "misc" : {
       "use" : "E",
       "reload" : "R",
-      "map" : "M",
-      "inventory" : "I",
       "pause" : "P"
     }
   },

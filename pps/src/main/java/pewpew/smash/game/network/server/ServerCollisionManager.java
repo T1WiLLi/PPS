@@ -21,7 +21,9 @@ public class ServerCollisionManager {
 
     private EntityManager entityManager;
 
-    public ServerCollisionManager(EntityManager entityManager) {
+    private byte[][] worldData;
+
+    public ServerCollisionManager(EntityManager entityManager, byte[][] worldData) {
         this.entityManager = entityManager;
     }
 
@@ -43,6 +45,10 @@ public class ServerCollisionManager {
             }
         }
         checkBulletCollision();
+    }
+
+    public void checkWaterCollision() {
+
     }
 
     private void checkWorldBoundaries(StaticEntity entity) {
