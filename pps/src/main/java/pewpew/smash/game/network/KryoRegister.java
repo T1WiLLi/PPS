@@ -23,8 +23,10 @@ import pewpew.smash.game.network.packets.MouseActionPacket;
 import pewpew.smash.game.network.packets.MouseInputPacket;
 import pewpew.smash.game.network.packets.PickupItemRequestPacket;
 import pewpew.smash.game.network.packets.PlayerDeathPacket;
+import pewpew.smash.game.network.packets.PlayerInWaterWarningPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
+import pewpew.smash.game.network.packets.PlayerOutOfWaterPacket;
 import pewpew.smash.game.network.packets.PlayerStatePacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
 import pewpew.smash.game.network.packets.PositionPacket;
@@ -75,6 +77,8 @@ public class KryoRegister {
         kryo.register(PreventActionForPlayerPacket.class);
         kryo.register(WorldEntityAddPacket.class);
         kryo.register(WorldEntityRemovePacket.class);
+        kryo.register(PlayerInWaterWarningPacket.class);
+        kryo.register(PlayerOutOfWaterPacket.class);
     }
 
     private void registerObjects(Kryo kryo) {

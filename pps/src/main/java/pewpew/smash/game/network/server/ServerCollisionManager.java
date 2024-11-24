@@ -3,28 +3,51 @@ package pewpew.smash.game.network.server;
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.engine.entities.StaticEntity;
 import pewpew.smash.game.entities.Bullet;
+import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.manager.EntityManager;
+import pewpew.smash.game.network.model.PlayerState;
+import pewpew.smash.game.network.packets.BroadcastMessagePacket;
+import pewpew.smash.game.network.packets.PlayerDeathPacket;
+import pewpew.smash.game.network.packets.PlayerInWaterWarningPacket;
+import pewpew.smash.game.network.packets.PlayerOutOfWaterPacket;
+import pewpew.smash.game.network.packets.PlayerStatePacket;
+import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.world.WorldGenerator;
 import pewpew.smash.game.world.entities.Bush;
 
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class ServerCollisionManager {
+
+    private static final int DAMAGE_INTERVAL = 1000;
+    private static final int WATER_DAMAGE = 10;
+    private static final int WARNING_DELAY = 3000;
 
     private static final int WORLD_MIN_X = 0;
     private static final int WORLD_MIN_Y = 0;
     private static final int WORLD_MAX_X = WorldGenerator.getWorldWidth();
     private static final int WORLD_MAX_Y = WorldGenerator.getWorldHeight();
 
+    private ServerWrapper server;
     private EntityManager entityManager;
+
+    private final Map<Integer, Long> waterTimers = new HashMap<>();
+    private final Map<Integer, Long> lastDamageTime = new HashMap<>();
+    private final Set<Integer> playersInWater = new HashSet<>();
 
     private byte[][] worldData;
 
-    public ServerCollisionManager(EntityManager entityManager, byte[][] worldData) {
+    public ServerCollisionManager(ServerWrapper server, EntityManager entityManager, byte[][] worldData) {
+        this.server = server;
         this.entityManager = entityManager;
+        this.worldData = worldData;
     }
 
     public void checkCollisions() {
@@ -48,7 +71,74 @@ public class ServerCollisionManager {
     }
 
     public void checkWaterCollision() {
+        long currentTime = System.currentTimeMillis();
 
+        entityManager.getPlayerEntities().forEach(player -> {
+            int playerTileX = player.getX() / WorldGenerator.TILE_SIZE;
+            int playerTileY = player.getY() / WorldGenerator.TILE_SIZE;
+
+            if (playerTileX >= 0 && playerTileX < worldData.length && playerTileY >= 0
+                    && playerTileY < worldData[0].length) {
+                boolean isInWater = worldData[playerTileX][playerTileY] == 2;
+
+                if (isInWater) {
+                    handlePlayerInWater(player, currentTime);
+                } else {
+                    handlePlayerOutOfWater(player);
+                }
+            }
+        });
+    }
+
+    private void handlePlayerInWater(Player player, long currentTime) {
+        int playerId = player.getId();
+
+        if (!playersInWater.contains(playerId)) {
+            player.setSpeed(1f);
+            playersInWater.add(playerId);
+            waterTimers.put(playerId, currentTime);
+            PlayerInWaterWarningPacket warningPacket = new PlayerInWaterWarningPacket(playerId);
+            server.sendToUDP(playerId, warningPacket);
+        }
+
+        if (currentTime - waterTimers.getOrDefault(playerId, 0L) >= WARNING_DELAY) {
+            if (currentTime - lastDamageTime.getOrDefault(playerId, 0L) >= DAMAGE_INTERVAL) {
+                player.setHealth(player.getHealth() - WATER_DAMAGE);
+                lastDamageTime.put(playerId, currentTime);
+
+                PlayerStatePacket statePacket = new PlayerStatePacket(
+                        new PlayerState(player.getId(), player.getHealth()));
+                server.sendToUDP(playerId, statePacket);
+
+                if (player.getHealth() <= 0) {
+                    entityManager.removePlayerEntity(player.getId());
+
+                    String deathMessage = String.format("%s tried to swim", player.getUsername());
+                    BroadcastMessagePacket messagePacket = new BroadcastMessagePacket(deathMessage);
+                    server.sendToAllTCP(messagePacket);
+
+                    HelpMethods.dropInventoryOfDeadPlayer(player.getInventory(), server);
+
+                    PlayerDeathPacket deathPacket = new PlayerDeathPacket(player.getId(),
+                            entityManager.getRandomAlivePlayerID());
+                    server.sendToAllTCP(deathPacket);
+                }
+            }
+        }
+    }
+
+    private void handlePlayerOutOfWater(Player player) {
+        int playerId = player.getId();
+
+        if (playersInWater.contains(playerId)) {
+            player.setSpeed(2f);
+            playersInWater.remove(playerId);
+            waterTimers.remove(playerId);
+            lastDamageTime.remove(playerId);
+
+            PlayerOutOfWaterPacket outOfWaterPacket = new PlayerOutOfWaterPacket(playerId);
+            server.sendToUDP(playerId, outOfWaterPacket);
+        }
     }
 
     private void checkWorldBoundaries(StaticEntity entity) {

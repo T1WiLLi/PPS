@@ -39,7 +39,7 @@ public class ServerHandler extends Handler implements Runnable {
         this.entityUpdater = new ServerEntityUpdater(entityManager);
         this.itemUpdater = new ServerItemUpdater();
         this.worldManager = new ServerWorldManager(server, 25, 40);
-        this.collisionManager = new ServerCollisionManager(entityManager, worldManager.getWorldData());
+        this.collisionManager = new ServerCollisionManager(server, entityManager, worldManager.getWorldData());
         this.gameTime = GameTime.getServerInstance();
         this.entityManager.addWorldStaticEntity(this.worldManager.getStaticEntities());
         ServerBulletTracker.getInstance().setServerReference(this.server);
@@ -142,6 +142,7 @@ public class ServerHandler extends Handler implements Runnable {
     private void update(double deltaTime) {
         this.entityUpdater.update(this.server);
         this.collisionManager.checkCollisions();
+        this.collisionManager.checkWaterCollision();
     }
 
     // Do other state update, such as hp, collision, bullet, ammo, inventory , etc.
