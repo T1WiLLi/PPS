@@ -15,7 +15,7 @@
                 "Programming Language: Java",
                 "Technology used include, but not limited to: Kryonet, JUnit, lombok, Java Swing, Jackson, weUPnP",
                 "Disclaimer: PewPewSmash is not in any way affiliated with Surviv.io or its developers.",
-                "This project was made for educationnal purpose only"
+                "This project was made for educational purpose only"
               ]
             }
           ]
@@ -119,7 +119,7 @@
             {
               "author": "William Beaudin",
               "website": "https://github.com/T1WiLLi/PewPewSmash",
-              "license":"Attribution 4.0 International",
+              "license": "Attribution 4.0 International",
               "assets": [
                 "MainTheme"
               ]
@@ -161,7 +161,12 @@
               "license": "N/A",
               "assets": [
                 "obstacle-stone-01",
-                "obstacle-tree-03sv"
+                "obstacle-tree-03sv",
+                "obstacle-bush-01",
+                "obstacle-bush-02",
+                "obstacle-crate-01",
+                "obstacle-stone-07",
+                "obstacle-tree-05c"
               ]
             }
           ]
@@ -205,6 +210,28 @@
                 "gold_badge",
                 "platinum_badge",
                 "diamond_badge"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "Special Thanks",
+      "content": [
+        {
+          "title": "Acknowledgments",
+          "artists": [
+            {
+              "author": "Jordian Rioux-Leclair",
+              "assets": [
+                "For teaching and helping with networking and structure"
+              ]
+            },
+            {
+              "author": "Nathan Handfield",
+              "assets": [
+                "For quality assurance (QA)"
               ]
             }
           ]

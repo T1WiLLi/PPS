@@ -80,7 +80,7 @@ public class WorldEntitiesGenerator {
     private WorldStaticEntity createEntityInstance(WorldEntityType type, int x, int y) {
         WorldStaticEntity entity = switch (type) {
             case BUSH -> new Bush(x, y);
-            case CRATE -> new Crate(x, y, generateLootTable(x, y));
+            case CRATE, SOVIET_CRATE -> new Crate(type, x, y, generateLootTable(x, y));
             default -> new WorldStaticEntity(type, x, y);
         };
         entity.setId(entityID++);

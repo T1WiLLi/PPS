@@ -36,14 +36,6 @@ public class GamePad extends MovementController {
         return isKeyPressed("reload");
     }
 
-    public boolean isMapKeyPressed() {
-        return isKeyPressed("map");
-    }
-
-    public boolean isInventoryKeyPressed() {
-        return isKeyPressed("inventory");
-    }
-
     public boolean isPauseKeyPressed() {
         return isKeyPressed("pause");
     }

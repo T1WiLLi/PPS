@@ -14,9 +14,9 @@ public class Crate extends WorldBreakableStaticEntity {
     @Getter
     private List<Item> lootTable;
 
-    public Crate(int x, int y, List<Item> lootTable) {
-        super(WorldEntityType.CRATE, x, y);
-        loadSprites();
+    public Crate(WorldEntityType type, int x, int y, List<Item> lootTable) {
+        super(type, x, y);
+        loadSprites(type);
         this.lootTable = lootTable;
         this.health = 100;
     }
@@ -36,9 +36,8 @@ public class Crate extends WorldBreakableStaticEntity {
         return health <= 0;
     }
 
-    private void loadSprites() {
-        BufferedImage spriteSheet = ResourcesLoader.getImage(ResourcesLoader.ENTITY_SPRITE,
-                "obstacle-crate-spritesheet");
+    private void loadSprites(WorldEntityType type) {
+        BufferedImage spriteSheet = ResourcesLoader.getImage(ResourcesLoader.ENTITY_SPRITE, type.getTextureName());
 
         final int spriteWidth = 384;
         final int spriteHeight = 384;
@@ -58,12 +57,12 @@ public class Crate extends WorldBreakableStaticEntity {
 
     private int getCurrentSprite() {
         if (health <= 0) {
-            return 7;
+            return sprites.length - 1;
         } else if (health >= 100) {
             return 0;
         } else {
-            int index = (int) ((100 - health) / 12.5);
-            return Math.min(index, 7);
+            int index = (int) ((100 - health) / (100.0 / (sprites.length - 1)));
+            return Math.min(index, sprites.length - 1);
         }
     }
 }

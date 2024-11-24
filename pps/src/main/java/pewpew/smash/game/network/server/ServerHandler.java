@@ -38,8 +38,8 @@ public class ServerHandler extends Handler implements Runnable {
         this.entityManager = new EntityManager();
         this.entityUpdater = new ServerEntityUpdater(entityManager);
         this.itemUpdater = new ServerItemUpdater();
-        this.collisionManager = new ServerCollisionManager(entityManager);
         this.worldManager = new ServerWorldManager(server, 25, 40);
+        this.collisionManager = new ServerCollisionManager(entityManager, worldManager.getWorldData());
         this.gameTime = GameTime.getServerInstance();
         this.entityManager.addWorldStaticEntity(this.worldManager.getStaticEntities());
         ServerBulletTracker.getInstance().setServerReference(this.server);

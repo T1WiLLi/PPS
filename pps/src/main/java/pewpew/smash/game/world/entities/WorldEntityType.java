@@ -49,10 +49,16 @@ public enum WorldEntityType {
                         (entity) -> new Ellipse2D.Float(entity.getX(), entity.getY(), entity.getWidth(),
                                         entity.getHeight())),
         CRATE(
-                        "obstacle-crate-01",
+                        "obstacle-crate-01-spritesheet",
                         true,
                         100,
                         100,
+                        (entity) -> new Rectangle(entity.getX(), entity.getY(), entity.getWidth(), entity.getHeight())),
+        SOVIET_CRATE(
+                        "obstacle-crate-02-spritesheet",
+                        true,
+                        76,
+                        76,
                         (entity) -> new Rectangle(entity.getX(), entity.getY(), entity.getWidth(), entity.getHeight())),
         BUSH(
                         "obstacle-bush-01",
