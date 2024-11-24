@@ -7,6 +7,7 @@ import lombok.Setter;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.objects.RangedWeapon;
+import pewpew.smash.game.utils.FontFactory;
 
 // Only 1 per client
 public class HudManager {
@@ -26,6 +27,10 @@ public class HudManager {
 
     @Setter
     private int amountOfPlayerAlive;
+
+    private long waterWarningStartTime;
+    private int warningDuration;
+    private boolean isInWater;
 
     public static HudManager getInstance() {
         if (instance == null) {
@@ -71,6 +76,10 @@ public class HudManager {
         this.ammoDisplayer.render(canvas);
         this.minimap.render(canvas);
         this.circleLoaderManager.render(canvas);
+
+        if (isInWater) {
+            renderWaterWarning(canvas);
+        }
     }
 
     public void reset() {
@@ -90,7 +99,50 @@ public class HudManager {
         this.circleLoaderManager = new CircleLoaderManager();
     }
 
+    public void startWaterWarning(int durationInSeconds) {
+        this.waterWarningStartTime = System.currentTimeMillis();
+        this.warningDuration = durationInSeconds;
+        this.isInWater = true;
+    }
+
+    public void stopWaterWarning() {
+        this.isInWater = false;
+    }
+
     public void startLoader(long secondDelay, Runnable action, Player player) {
         this.circleLoaderManager.startLoader(secondDelay, action, player);
     }
+
+    private void renderWaterWarning(Canvas canvas) {
+        long elapsedTime = (System.currentTimeMillis() - waterWarningStartTime) / 1000;
+        int timeRemaining = warningDuration - (int) elapsedTime;
+
+        FontFactory.IMPACT_X_LARGE.applyFont(canvas);
+
+        String firstLine, secondLine;
+
+        if (timeRemaining > 0) {
+            firstLine = "You can't swim!";
+            secondLine = String.format("You have %d seconds to leave the waters", timeRemaining);
+        } else {
+            firstLine = "Get out!";
+            secondLine = "You are taking damage";
+        }
+
+        canvas.setColor(elapsedTime % 2 == 0 ? Color.RED : Color.DARK_GRAY);
+
+        int firstLineWidth = FontFactory.IMPACT_X_LARGE.getFontWidth(firstLine, canvas);
+        int secondLineWidth = FontFactory.IMPACT_X_LARGE.getFontWidth(secondLine, canvas);
+        int textHeight = FontFactory.IMPACT_X_LARGE.getFontHeight(canvas);
+
+        int centerXFirstLine = (800 - firstLineWidth) / 2;
+        int centerXSecondLine = (800 - secondLineWidth) / 2;
+        int centerY = (600 - (textHeight * 2)) / 2;
+
+        canvas.renderString(firstLine, centerXFirstLine, centerY);
+        canvas.renderString(secondLine, centerXSecondLine, centerY + textHeight);
+
+        FontFactory.resetFont(canvas);
+    }
+
 }

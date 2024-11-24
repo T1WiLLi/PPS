@@ -1,5 +1,6 @@
 package pewpew.smash.game.network.manager;
 
+import java.lang.annotation.ElementType;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -86,6 +87,12 @@ public class EntityManager {
             player = deadPlayersMap.get(id);
         }
         return player;
+    }
+
+    public synchronized int getRandomAlivePlayerID() {
+        Random r = new Random();
+        List<Integer> alivePlayerIDs = new ArrayList<>(playerEntitiesMap.keySet());
+        return alivePlayerIDs.get(r.nextInt(alivePlayerIDs.size()));
     }
 
     public synchronized Bullet getBulletEntity(int id) {
