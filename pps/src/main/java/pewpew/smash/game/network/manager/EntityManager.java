@@ -1,6 +1,5 @@
 package pewpew.smash.game.network.manager;
 
-import java.lang.annotation.ElementType;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
