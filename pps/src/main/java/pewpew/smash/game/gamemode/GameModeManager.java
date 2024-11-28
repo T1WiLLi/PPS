@@ -25,9 +25,9 @@ public class GameModeManager {
         this.currentGameMode = GameModeFactory.getGameMode(type);
     }
 
-    public void update(double deltaTime) {
+    public void update() {
         if (currentGameMode != null) {
-            currentGameMode.update(deltaTime);
+            currentGameMode.update();
         } else {
             System.out.println("Gamemode null");
         }

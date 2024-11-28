@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.esotericsoftware.kryonet.Connection;
 
-import pewpew.smash.engine.GameTime;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.manager.EntityManager;
@@ -28,11 +27,12 @@ public class ServerHandler extends Handler implements Runnable {
     private ServerItemUpdater itemUpdater;
     private ServerWorldManager worldManager;
     private ServerCollisionManager collisionManager;
-    private GameTime gameTime;
+    private ServerTime serverTime;
 
     private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors;
 
     public ServerHandler(int port) {
+        ServerTime.reset();
         this.server = new ServerWrapper(port, port);
         this.executor = Executors.newSingleThreadExecutor();
         this.entityManager = new EntityManager();
@@ -40,7 +40,7 @@ public class ServerHandler extends Handler implements Runnable {
         this.itemUpdater = new ServerItemUpdater();
         this.worldManager = new ServerWorldManager(server, 25, 40);
         this.collisionManager = new ServerCollisionManager(server, entityManager, worldManager.getWorldData());
-        this.gameTime = GameTime.getServerInstance();
+        this.serverTime = ServerTime.getInstance();
         this.entityManager.addWorldStaticEntity(this.worldManager.getStaticEntities());
         ServerBulletTracker.getInstance().setServerReference(this.server);
         registersClasses(this.server.getKryo());
@@ -58,9 +58,10 @@ public class ServerHandler extends Handler implements Runnable {
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
-            if (gameTime.shouldUpdate()) {
-                update(gameTime.getDeltaTime());
+            if (serverTime.shouldUpdate()) {
+                update();
                 sendStateUpdate();
+                System.out.println("Current UPS: " + ServerTime.getInstance().getCurrentUps());
             }
         }
     }
@@ -139,7 +140,7 @@ public class ServerHandler extends Handler implements Runnable {
         }
     }
 
-    private void update(double deltaTime) {
+    private void update() {
         this.entityUpdater.update(this.server);
         this.collisionManager.checkCollisions();
         this.collisionManager.checkWaterCollision();

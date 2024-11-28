@@ -11,7 +11,6 @@ public class GameTime {
     private int UPS_TARGET = 240;
 
     private static volatile GameTime gameInstance;
-    private static volatile GameTime serverInstance;
 
     private static volatile int currentFps;
     private static volatile int currentUps;
@@ -24,7 +23,6 @@ public class GameTime {
     private volatile long lastUpdateTime;
     private volatile long lastRenderTime;
     private volatile long accumulatedTime;
-    private volatile double deltaTime;
     private final long UPDATE_INTERVAL;
 
     private GameTime() {
@@ -33,7 +31,6 @@ public class GameTime {
         lastRenderTime = System.nanoTime();
         UPDATE_INTERVAL = 1000000000 / UPS_TARGET;
         accumulatedTime = 0;
-        deltaTime = 0.0;
     }
 
     public synchronized static GameTime getInstance() {
@@ -45,21 +42,6 @@ public class GameTime {
             }
         }
         return gameInstance;
-    }
-
-    public synchronized static GameTime getServerInstance() {
-        if (serverInstance == null) {
-            synchronized (GameTime.class) {
-                if (serverInstance == null) {
-                    serverInstance = new GameTime();
-                }
-            }
-        }
-        return serverInstance;
-    }
-
-    public double getDeltaTime() {
-        return deltaTime;
     }
 
     public synchronized boolean shouldUpdate() {

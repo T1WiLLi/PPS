@@ -29,8 +29,8 @@ public class PewPewSmash extends Game {
     }
 
     @Override
-    public void update(double deltaTime) {
-        this.stateManager.update(deltaTime);
+    public void update() {
+        this.stateManager.update();
     }
 
     @Override

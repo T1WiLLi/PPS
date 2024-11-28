@@ -33,7 +33,7 @@ public class Menu implements State {
     }
 
     @Override
-    public void update(double deltaTime) {
+    public void update() {
         if (overlayManager.hasActiveOverlays()) {
             overlayManager.update();
             return;
@@ -53,7 +53,6 @@ public class Menu implements State {
         }
 
         canvas.renderString("FPS: " + GameTime.getCurrentFps(), 10, 20, Color.WHITE);
-        canvas.renderString("UPS: " + GameTime.getCurrentUps(), 10, 40, Color.WHITE);
     }
 
     @Override

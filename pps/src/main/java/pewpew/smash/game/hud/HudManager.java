@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import lombok.Setter;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.entities.Player;
+import pewpew.smash.game.network.server.ServerTime;
 import pewpew.smash.game.objects.RangedWeapon;
 import pewpew.smash.game.utils.FontFactory;
 
@@ -76,6 +77,9 @@ public class HudManager {
         this.ammoDisplayer.render(canvas);
         this.minimap.render(canvas);
         this.circleLoaderManager.render(canvas);
+        FontFactory.MEDIUM_FONT.applyFont(canvas);
+        canvas.renderString(ServerTime.getInstance().getFormattedElapsedTime(), 615, 25, Color.WHITE);
+        FontFactory.resetFont(canvas);
 
         if (isInWater) {
             renderWaterWarning(canvas);

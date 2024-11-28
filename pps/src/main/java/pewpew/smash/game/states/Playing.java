@@ -28,8 +28,8 @@ public class Playing implements State {
     }
 
     @Override
-    public void update(double deltaTime) {
-        this.gameModeManager.update(deltaTime);
+    public void update() {
+        this.gameModeManager.update();
         HudManager.getInstance().update();
         this.overlayManager.update();
         if (this.gamePad.isPauseKeyPressed()) {
@@ -44,8 +44,7 @@ public class Playing implements State {
         this.overlayManager.render(canvas);
 
         FontFactory.IMPACT_SMALL.applyFont(canvas);
-        canvas.renderString("FPS: " + GameTime.getCurrentFps(), 220, 20, Color.WHITE);
-        canvas.renderString("UPS: " + GameTime.getCurrentUps(), 220, 40, Color.WHITE);
+        canvas.renderString("FPS: " + GameTime.getCurrentFps(), 220, 30, Color.WHITE);
         FontFactory.resetFont(canvas);
     }
 
