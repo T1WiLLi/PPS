@@ -116,10 +116,10 @@ public class Sandbox implements GameMode {
         }
 
         canvas.renderString(networkManager.getBroadcastMessage(), 140, 580, Color.WHITE);
-        canvas.resetScale();
         canvas.translate(-camera.getX(), -camera.getY());
         stormEvent.render(canvas);
         canvas.translate(camera.getX(), camera.getY());
+        canvas.resetScale();
     }
 
     @Override

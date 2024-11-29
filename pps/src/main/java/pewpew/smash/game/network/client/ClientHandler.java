@@ -129,4 +129,8 @@ public class ClientHandler extends Handler {
     public synchronized String getCurrentBroadcastedMessage() {
         return this.currentBroadcastedMessage;
     }
+
+    public synchronized void resetCurrentBroadcastedMessage() {
+        this.currentBroadcastedMessage = "";
+    }
 }

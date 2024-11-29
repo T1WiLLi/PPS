@@ -54,6 +54,7 @@ public class NetworkManager {
         return client.getSeed();
     }
 
+    // Start a 5 sec timer, after that call client.resetCurrentBroadcastedMessage();
     public String getBroadcastMessage() {
         if (client == null) {
             throw new IllegalStateException("NetworkManager not initialized");

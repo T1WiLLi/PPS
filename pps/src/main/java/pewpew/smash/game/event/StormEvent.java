@@ -14,7 +14,9 @@ public class StormEvent {
     private int centerX, centerY;
     private int radius;
     private long stormStepDuration; // in milliseconds
+    private int hitdamage = 2; // default is 2 damage per sec :)
     private Area stormArea;
+    private Ellipse2D innerStorm;
 
     public StormEvent(int radius) {
         this.radius = radius;
@@ -22,6 +24,8 @@ public class StormEvent {
         this.centerY = 1000;
         this.stormArea = new Area(new Rectangle(0, 0, WorldGenerator.getWorldWidth(),
                 WorldGenerator.getWorldHeight()));
+        this.innerStorm = getBounds();
+        this.stormArea.subtract(new Area(innerStorm));
     }
 
     public void update() {
@@ -30,14 +34,15 @@ public class StormEvent {
 
     public void render(Canvas canvas) {
         Graphics2D g2d = canvas.getGraphics2D();
-        Ellipse2D innerStorm = getBounds();
-        stormArea.subtract(new Area(innerStorm));
 
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
         g2d.setColor(new Color(128, 0, 128));
         g2d.fill(stormArea);
 
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+
+        canvas.renderCircleBorder(getBounds(), 2, Color.RED);
+        canvas.renderCircle(centerX - 5, centerY - 5, 10, Color.RED);
     }
 
     public void setCenter(int centerX, int centerY) {
