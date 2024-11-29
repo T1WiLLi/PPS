@@ -6,6 +6,8 @@ import pewpew.smash.game.world.WorldGenerator;
 public class Camera {
     private volatile static Camera instance;
 
+    private static final float SMOOTHING_FACTOR = 0.05f;
+
     private float x, y;
     private final int MAP_WIDTH = WorldGenerator.getWorldWidth();
     private final int MAP_HEIGHT = WorldGenerator.getWorldHeight();
@@ -36,8 +38,10 @@ public class Camera {
     }
 
     public void centerOn(StaticEntity entity) {
-        this.x = entity.getX() - (getViewportWidth() / 2) + (entity.getWidth() / 2);
-        this.y = entity.getY() - (getViewportHeight() / 2) + (entity.getHeight() / 2);
+        float targetX = entity.getX() - (getViewportWidth() / 2) + (entity.getWidth() / 2);
+        float targetY = entity.getY() - (getViewportHeight() / 2) + (entity.getHeight() / 2);
+        this.x += (targetX - this.x) * SMOOTHING_FACTOR;
+        this.y += (targetY - this.y) * SMOOTHING_FACTOR;
         clamp();
     }
 

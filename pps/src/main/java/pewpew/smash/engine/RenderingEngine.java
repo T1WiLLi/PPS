@@ -4,7 +4,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.VolatileImage;
+
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import lombok.Getter;
 
@@ -16,6 +18,7 @@ public class RenderingEngine {
     private JPanel panel;
     private VolatileImage buffer;
     private Graphics2D bufferGraphics;
+    private boolean resizing = false;
 
     private final AffineTransform defaultTransform = new AffineTransform();
 
@@ -49,6 +52,10 @@ public class RenderingEngine {
     }
 
     public void renderCanvasOnScreen() {
+        if (resizing) {
+            return; // Skip rendering while resizing
+        }
+
         do {
             int returnCode = buffer.validate(panel.getGraphicsConfiguration());
             if (returnCode == VolatileImage.IMAGE_INCOMPATIBLE) {
@@ -58,6 +65,7 @@ public class RenderingEngine {
             if (panelGraphics != null) {
                 try {
                     panelGraphics.drawImage(buffer, 0, 0, panel.getWidth(), panel.getHeight(), null);
+                    Toolkit.getDefaultToolkit().sync();
                 } finally {
                     panelGraphics.dispose();
                 }
@@ -102,12 +110,27 @@ public class RenderingEngine {
     private void initPanel() {
         panel.setBackground(Color.BLUE);
         panel.setFocusable(true);
-        panel.setDoubleBuffered(true);
+        panel.setDoubleBuffered(false);
         panel.requestFocusInWindow();
         panel.addComponentListener(new ComponentAdapter() {
+            private Timer resizeTimer;
+
             public void componentResized(ComponentEvent evt) {
-                updateScale();
-                updateBuffer();
+                if (resizeTimer != null) {
+                    resizeTimer.stop();
+                }
+
+                resizing = true;
+                resizeTimer = new Timer(100, e -> {
+                    updateScale();
+                    panel.revalidate();
+                    panel.repaint();
+                    updateBuffer();
+                    resizing = false;
+                    resizeTimer.stop();
+                });
+                resizeTimer.setRepeats(false);
+                resizeTimer.start();
             }
         });
         updateScale();

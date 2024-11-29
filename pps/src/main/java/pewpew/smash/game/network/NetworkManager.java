@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import java.io.IOException;
 
+import pewpew.smash.game.gamemode.GameModeType;
 import pewpew.smash.game.network.client.ClientHandler;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.server.ServerHandler;
@@ -18,11 +19,11 @@ public class NetworkManager {
         this.isHost = new AtomicBoolean(false);
     }
 
-    public void initialize(String host, int port, boolean isHosting) throws IOException {
+    public void initialize(String host, int port, boolean isHosting, GameModeType type) throws IOException {
         this.isHost.set(isHosting);
 
         if (isHosting) {
-            server = new ServerHandler(port);
+            server = new ServerHandler(port, type);
             server.start();
 
             client = new ClientHandler(LOCALHOST, port);

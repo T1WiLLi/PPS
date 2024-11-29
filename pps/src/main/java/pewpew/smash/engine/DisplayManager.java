@@ -1,6 +1,7 @@
 package pewpew.smash.engine;
 
 import java.awt.Color;
+import java.awt.DisplayMode;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -45,7 +46,7 @@ public class DisplayManager {
         this.panel = new JPanel();
         this.panel.setBackground(Color.BLUE);
         this.panel.setFocusable(true);
-        this.panel.setDoubleBuffered(true);
+        this.panel.setDoubleBuffered(false);
     }
 
     private void initFrame(String title, int width, int height) {
@@ -76,6 +77,8 @@ public class DisplayManager {
             this.frame.setUndecorated(true);
             this.frame.setResizable(false);
             this.device.setFullScreenWindow(frame);
+            DisplayMode currentMode = device.getDisplayMode();
+            this.frame.setSize(currentMode.getWidth(), currentMode.getHeight());
             this.isFullscreen = true;
         } else {
             this.device.setFullScreenWindow(null);

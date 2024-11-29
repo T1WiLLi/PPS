@@ -3,6 +3,7 @@ package pewpew.smash.game.entities;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.engine.entities.StaticEntity;
 import pewpew.smash.game.objects.RangedWeapon;
 
 @ToString
@@ -129,6 +131,29 @@ public class Bullet {
         } else {
             renderHitEffect(canvas);
         }
+    }
+
+    public boolean isCollidingWith(StaticEntity other) {
+        if (this.getHitbox() instanceof Ellipse2D && other.getHitbox() instanceof Ellipse2D) {
+            Rectangle2D thisBounds = this.getHitbox().getBounds2D();
+            Rectangle2D otherBounds = other.getHitbox().getBounds2D();
+
+            double thisCenterX = thisBounds.getCenterX();
+            double thisCenterY = thisBounds.getCenterY();
+            double otherCenterX = otherBounds.getCenterX();
+            double otherCenterY = otherBounds.getCenterY();
+
+            double thisRadius = Math.min(thisBounds.getWidth(), thisBounds.getHeight()) / 2.0;
+            double otherRadius = Math.min(otherBounds.getWidth(), otherBounds.getHeight()) / 2.0;
+
+            double dx = thisCenterX - otherCenterX;
+            double dy = thisCenterY - otherCenterY;
+            double distanceSquared = dx * dx + dy * dy;
+
+            double radiiSum = thisRadius + otherRadius;
+            return distanceSquared <= radiiSum * radiiSum;
+        }
+        return getHitbox().intersects(other.getHitbox().getBounds2D());
     }
 
     public Shape getHitbox() {

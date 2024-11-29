@@ -8,6 +8,9 @@ import pewpew.smash.game.Camera;
 
 public class MouseHandler extends MouseController {
 
+    private static final float ROTATION_SMOOTHING_FACTOR = 0.05f;
+    private static double currentRotation = 0;
+
     public MouseHandler() {
         RenderingEngine.getInstance().addMouseListener(this);
     }
@@ -32,7 +35,17 @@ public class MouseHandler extends MouseController {
         super.mouseDragged(e);
     }
 
-    public static double getAngle(double entityX, double entityY) {
+    public static double getSmoothedAngle(double entityX, double entityY) {
+        double targetRotation = calculateTargetAngle(entityX, entityY);
+        double delta = ((targetRotation - currentRotation + 540) % 360) - 180;
+        currentRotation = (currentRotation + delta * ROTATION_SMOOTHING_FACTOR) % 360;
+        if (currentRotation < 0) {
+            currentRotation += 360;
+        }
+        return currentRotation;
+    }
+
+    private static double calculateTargetAngle(double entityX, double entityY) {
         double scaleX = RenderingEngine.getInstance().getScale()[0];
         double scaleY = RenderingEngine.getInstance().getScale()[1];
 

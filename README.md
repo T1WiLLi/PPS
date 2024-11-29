@@ -8,7 +8,7 @@ If you want to use your own database the script.sql is provided and you will nee
 <div align="center">
   <img src="banner.jpg" alt="PewPewSmash Banner" style="width:100%; max-width:800px; border-radius:10px;">
   
-  [![Java](https://img.shields.io/badge/Java-11-orange.svg)](https://www.oracle.com/java/)
+  [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
   [![Multiplayer](https://img.shields.io/badge/Multiplayer-Enabled-brightgreen.svg)](https://github.com/T1WiLLi/PPS)
   [![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
   

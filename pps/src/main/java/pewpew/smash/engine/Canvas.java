@@ -164,4 +164,9 @@ public class Canvas {
             return font;
         }
     }
+
+    public void reset() {
+        graphics2D.clearRect(0, 0, (int) graphics2D.getDeviceConfiguration().getBounds().getWidth(),
+                (int) graphics2D.getDeviceConfiguration().getBounds().getHeight());
+    }
 }

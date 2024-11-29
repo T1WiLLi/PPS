@@ -230,7 +230,7 @@ public class ServerCollisionManager {
                     continue;
                 }
 
-                if (bullet.getHitbox().intersects(staticEntity.getHitbox().getBounds2D())) {
+                if (bullet.isCollidingWith(staticEntity)) {
                     ServerBulletTracker.getInstance().removeBullet(bullet);
                     bulletRemoved = true;
                     break;

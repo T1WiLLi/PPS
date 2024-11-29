@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import com.esotericsoftware.kryonet.Connection;
 
 import pewpew.smash.game.entities.Player;
+import pewpew.smash.game.gamemode.GameModeType;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.BasePacket;
@@ -27,11 +28,12 @@ public class ServerHandler extends Handler implements Runnable {
     private ServerItemUpdater itemUpdater;
     private ServerWorldManager worldManager;
     private ServerCollisionManager collisionManager;
+    private ServerEventManager eventManager;
     private ServerTime serverTime;
 
     private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors;
 
-    public ServerHandler(int port) {
+    public ServerHandler(int port, GameModeType type) {
         ServerTime.reset();
         this.server = new ServerWrapper(port, port);
         this.executor = Executors.newSingleThreadExecutor();
@@ -42,6 +44,7 @@ public class ServerHandler extends Handler implements Runnable {
         this.collisionManager = new ServerCollisionManager(server, entityManager, worldManager.getWorldData());
         this.serverTime = ServerTime.getInstance();
         this.entityManager.addWorldStaticEntity(this.worldManager.getStaticEntities());
+        this.eventManager = new ServerEventManager(type);
         ServerBulletTracker.getInstance().setServerReference(this.server);
         registersClasses(this.server.getKryo());
         ServerPacketRegistry serverRegistry = new ServerPacketRegistry(entityManager, server, itemUpdater);
@@ -61,7 +64,7 @@ public class ServerHandler extends Handler implements Runnable {
             if (serverTime.shouldUpdate()) {
                 update();
                 sendStateUpdate();
-                System.out.println("Current UPS: " + ServerTime.getInstance().getCurrentUps());
+                eventManager.update();
             }
         }
     }
