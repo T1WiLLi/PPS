@@ -8,10 +8,10 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import lombok.Getter;
-import pewpew.smash.game.utils.FontFactory;
 
 @Getter
 public class Canvas {
@@ -105,6 +105,11 @@ public class Canvas {
         graphics2D.drawLine(x1, y1, x2, y2);
     }
 
+    public void renderArea(Area area, Color color) {
+        setColor(color);
+        graphics2D.fill(area);
+    }
+
     public void renderGlow(int x, int y, int width, int height, Color glowColor) {
         graphics2D.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 50));
         for (int i = 1; i <= 3; i++) {
@@ -140,7 +145,7 @@ public class Canvas {
     }
 
     public void resetFont() {
-        FontFactory.resetFont(this);
+        graphics2D.setFont(GameFont.DEFAULT_FONT.getFont());
     }
 
     // Private Utility Methods
@@ -149,8 +154,20 @@ public class Canvas {
         graphics2D.setStroke(new BasicStroke(strokeWidth));
     }
 
-    public void reset() {
-        graphics2D.clearRect(0, 0, (int) graphics2D.getDeviceConfiguration().getBounds().getWidth(),
-                (int) graphics2D.getDeviceConfiguration().getBounds().getHeight());
+    // GameFont Enum
+    public enum GameFont {
+        DEFAULT_FONT(new Font("Segoe UI", Font.BOLD, 12)),
+        SMALL_FONT(new Font("Verdana", Font.PLAIN, 8)),
+        LARGE_FONT(new Font("Georgia", Font.BOLD, 24));
+
+        private final Font font;
+
+        GameFont(Font font) {
+            this.font = font;
+        }
+
+        public Font getFont() {
+            return font;
+        }
     }
 }

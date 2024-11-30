@@ -110,16 +110,15 @@ public class Sandbox implements GameMode {
         itemRenderer.render(canvas, camera, networkManager.getEntityManager()
                 .getPlayerEntity(User.getInstance().getLocalID().get()));
         entityRenderer.render(canvas, camera);
-
-        if (User.getInstance().isDead()) {
-            SpectatorManager.getInstance().render(canvas);
-        }
-
-        canvas.renderString(networkManager.getBroadcastMessage(), 140, 580, Color.WHITE);
         canvas.translate(-camera.getX(), -camera.getY());
         stormEvent.render(canvas);
         canvas.translate(camera.getX(), camera.getY());
         canvas.resetScale();
+
+        if (User.getInstance().isDead()) {
+            SpectatorManager.getInstance().render(canvas);
+        }
+        canvas.renderString(networkManager.getBroadcastMessage(), 140, 580, Color.WHITE);
     }
 
     @Override

@@ -42,12 +42,12 @@ public class StormEvent {
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
         canvas.renderCircleBorder(getBounds(), 2, Color.RED);
-        canvas.renderCircle(centerX - 5, centerY - 5, 10, Color.RED);
     }
 
     public void setCenter(int centerX, int centerY) {
         this.centerX = centerX;
         this.centerY = centerY;
+        this.innerStorm = getBounds();
     }
 
     public Ellipse2D.Float getBounds() {

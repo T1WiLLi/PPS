@@ -35,7 +35,6 @@ public class PewPewSmash extends Game {
 
     @Override
     public void render(Canvas canvas) {
-        canvas.reset();
         this.stateManager.render(canvas);
         FontFactory.DEFAULT_FONT.applyFont(canvas);
     }

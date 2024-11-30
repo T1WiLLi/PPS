@@ -20,8 +20,6 @@ public class ClientEntityRenderer {
         renderPlayers(canvas, camera);
         renderStaticEntities(canvas, camera);
         renderMovableEntities(canvas, camera);
-
-        canvas.resetScale();
     }
 
     private void renderPlayers(Canvas canvas, Camera camera) {
