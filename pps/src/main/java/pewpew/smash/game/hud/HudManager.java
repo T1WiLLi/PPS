@@ -33,7 +33,7 @@ public class HudManager {
     private int warningDuration;
     private boolean isInWater;
 
-    public static HudManager getInstance() {
+    public synchronized static HudManager getInstance() {
         if (instance == null) {
             instance = new HudManager();
         }
@@ -49,25 +49,28 @@ public class HudManager {
     }
 
     public void setWorldImage(BufferedImage image) {
-        System.out.println("World Image!");
         this.minimap.setWorldImage(image);
     }
 
     public void update() {
-        if (this.local != null) {
-            this.healthBar.setValue(this.local.getHealth());
-            this.ammoDisplayer.setAmmo(this.local.getInventory().getAmmoCount());
-            this.alivePlayerDisplayer.setAmountOfPlayerAlive(this.amountOfPlayerAlive);
-            this.scopeElementDisplayer.setScope(this.local.getScope().getPreview());
-            this.circleLoaderManager.update(this.local);
-            if (this.local.getEquippedWeapon() instanceof RangedWeapon) {
-                this.ammoBar.setMaxValue(((RangedWeapon) this.local.getEquippedWeapon()).getAmmoCapacity());
-                this.ammoBar.setValue(((RangedWeapon) this.local.getEquippedWeapon()).getCurrentAmmo());
-            }
+        if (this.local == null) {
+            return;
+        }
+        this.healthBar.setValue(this.local.getHealth());
+        this.ammoDisplayer.setAmmo(this.local.getInventory().getAmmoCount());
+        this.alivePlayerDisplayer.setAmountOfPlayerAlive(this.amountOfPlayerAlive);
+        this.scopeElementDisplayer.setScope(this.local.getScope().getPreview());
+        this.circleLoaderManager.update(this.local);
+        if (this.local.getEquippedWeapon() instanceof RangedWeapon) {
+            this.ammoBar.setMaxValue(((RangedWeapon) this.local.getEquippedWeapon()).getAmmoCapacity());
+            this.ammoBar.setValue(((RangedWeapon) this.local.getEquippedWeapon()).getCurrentAmmo());
         }
     }
 
     public void render(Canvas canvas) {
+        if (this.local == null) {
+            return;
+        }
         this.healthBar.render(canvas);
         this.ammoBar.render(canvas);
         this.weaponDisplayer.render(canvas);
@@ -127,7 +130,7 @@ public class HudManager {
 
         if (timeRemaining > 0) {
             firstLine = "You can't swim!";
-            secondLine = String.format("You have %d seconds to leave the waters", timeRemaining);
+            secondLine = String.format("You have %d sec to leave the waters", timeRemaining);
         } else {
             firstLine = "Get out!";
             secondLine = "You are taking damage";

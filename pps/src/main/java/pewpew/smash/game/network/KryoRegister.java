@@ -7,9 +7,11 @@ import com.esotericsoftware.kryo.Kryo;
 
 import pewpew.smash.engine.controls.Direction;
 import pewpew.smash.engine.controls.MouseInput;
+import pewpew.smash.game.event.StormStage;
 import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.network.model.SerializedItem;
 import pewpew.smash.game.network.model.SerializedWorldStaticEntity;
+import pewpew.smash.game.network.model.StormState;
 import pewpew.smash.game.network.model.WorldEntityState;
 import pewpew.smash.game.network.packets.BasePacket;
 import pewpew.smash.game.network.packets.BroadcastMessagePacket;
@@ -32,6 +34,7 @@ import pewpew.smash.game.network.packets.PlayerUsernamePacket;
 import pewpew.smash.game.network.packets.PositionPacket;
 import pewpew.smash.game.network.packets.PreventActionForPlayerPacket;
 import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
+import pewpew.smash.game.network.packets.StormStatePacket;
 import pewpew.smash.game.network.packets.UseConsumableRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
@@ -79,6 +82,7 @@ public class KryoRegister {
         kryo.register(WorldEntityRemovePacket.class);
         kryo.register(PlayerInWaterWarningPacket.class);
         kryo.register(PlayerOutOfWaterPacket.class);
+        kryo.register(StormStatePacket.class);
     }
 
     private void registerObjects(Kryo kryo) {
@@ -91,6 +95,8 @@ public class KryoRegister {
         kryo.register(WeaponType.class);
         kryo.register(SerializedWorldStaticEntity.class);
         kryo.register(WorldEntityType.class);
+        kryo.register(StormStage.class);
+        kryo.register(StormState.class);
     }
 
     private void registerStructures(Kryo kryo) {

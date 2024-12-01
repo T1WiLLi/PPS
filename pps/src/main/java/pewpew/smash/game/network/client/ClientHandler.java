@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pewpew.smash.game.Alert.AlertManager;
 import pewpew.smash.game.entities.Player;
+import pewpew.smash.game.gamemode.GameModeType;
 import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.User;
@@ -24,6 +25,8 @@ public class ClientHandler extends Handler {
     @Getter
     private final EntityManager entityManager;
     private final ClientUpdater clientUpdater;
+    @Getter
+    private final ClientEventManager clientEventManager;
     private final ClientWrapper client;
     private final Map<Integer, List<PositionPacket>> positionPacketQueue;
     private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors;
@@ -42,13 +45,14 @@ public class ClientHandler extends Handler {
     @Setter
     private String currentBroadcastedMessage = "";
 
-    public ClientHandler(String host, int port) {
+    public ClientHandler(String host, int port, GameModeType type) {
         this.client = new ClientWrapper(host, port, port);
         this.entityManager = new EntityManager();
+        this.clientEventManager = new ClientEventManager(type);
         this.clientUpdater = new ClientUpdater(this.entityManager);
         this.positionPacketQueue = new ConcurrentHashMap<>();
         registersClasses(this.client.getKryo());
-        ClientPacketRegistry clientRegistry = new ClientPacketRegistry(entityManager, client, this);
+        ClientPacketRegistry clientRegistry = new ClientPacketRegistry(entityManager, client, this, clientEventManager);
         packetProcessors = clientRegistry.getPacketProcessors();
     }
 
@@ -88,7 +92,7 @@ public class ClientHandler extends Handler {
     }
 
     @Override
-    protected synchronized void onConnect(Connection connection) {
+    protected void onConnect(Connection connection) {
         System.out.println("Connecting to the server ... ");
         User.getInstance().setID(connection.getID());
 
@@ -122,15 +126,16 @@ public class ClientHandler extends Handler {
         }
     }
 
-    public synchronized void update() {
+    public void update() {
         this.clientUpdater.update(this.client);
+        this.clientEventManager.update();
     }
 
-    public synchronized String getCurrentBroadcastedMessage() {
+    public String getCurrentBroadcastedMessage() {
         return this.currentBroadcastedMessage;
     }
 
-    public synchronized void resetCurrentBroadcastedMessage() {
+    public void resetCurrentBroadcastedMessage() {
         this.currentBroadcastedMessage = "";
     }
 }

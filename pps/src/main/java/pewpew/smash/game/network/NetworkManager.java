@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.io.IOException;
 
 import pewpew.smash.game.gamemode.GameModeType;
+import pewpew.smash.game.network.client.ClientEventManager;
 import pewpew.smash.game.network.client.ClientHandler;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.server.ServerHandler;
@@ -26,9 +27,9 @@ public class NetworkManager {
             server = new ServerHandler(port, type);
             server.start();
 
-            client = new ClientHandler(LOCALHOST, port);
+            client = new ClientHandler(LOCALHOST, port, type);
         } else {
-            client = new ClientHandler(host, port);
+            client = new ClientHandler(host, port, type);
         }
         client.start();
     }
@@ -38,6 +39,13 @@ public class NetworkManager {
             throw new IllegalStateException("NetworkManager not initialized");
         }
         return client.getEntityManager();
+    }
+
+    public ClientEventManager getEventsManager() {
+        if (client == null) {
+            throw new IllegalStateException("NetworkManager not initialized");
+        }
+        return client.getClientEventManager();
     }
 
     public boolean isWorldDataReceived() {

@@ -16,7 +16,6 @@ import pewpew.smash.game.world.WorldGenerator;
 import pewpew.smash.game.Camera;
 import pewpew.smash.game.SpectatorManager;
 import pewpew.smash.game.entities.Player;
-import pewpew.smash.game.event.StormEvent;
 import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.input.GamePad;
 
@@ -29,8 +28,6 @@ public class Sandbox implements GameMode {
     private ClientEntityUpdater entityUpdater;
     private BufferedImage worldImage;
     private Camera camera;
-
-    private StormEvent stormEvent = new StormEvent(500);
 
     public Sandbox() {
         this.camera = Camera.getInstance();
@@ -48,7 +45,7 @@ public class Sandbox implements GameMode {
             boolean isHosting = Boolean.parseBoolean(args[2]);
 
             networkManager = new NetworkManager();
-            networkManager.initialize(host, port, isHosting, GameModeType.SANDBOX);
+            networkManager.initialize(host, port, isHosting, GameModeType.BATTLE_ROYALE);
             SpectatorManager.getInstance().initialize(networkManager.getEntityManager());
             entityRenderer = new ClientEntityRenderer(networkManager.getEntityManager());
             entityUpdater = new ClientEntityUpdater(networkManager.getEntityManager());
@@ -110,9 +107,7 @@ public class Sandbox implements GameMode {
         itemRenderer.render(canvas, camera, networkManager.getEntityManager()
                 .getPlayerEntity(User.getInstance().getLocalID().get()));
         entityRenderer.render(canvas, camera);
-        canvas.translate(-camera.getX(), -camera.getY());
-        stormEvent.render(canvas);
-        canvas.translate(camera.getX(), camera.getY());
+        networkManager.getEventsManager().render(canvas, camera);
         canvas.resetScale();
 
         if (User.getInstance().isDead()) {

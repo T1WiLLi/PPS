@@ -62,6 +62,7 @@ public class Playing implements State {
     }
 
     private void init() {
+        HudManager.getInstance();
         this.gameModeManager = GameModeManager.getInstance();
         this.overlayManager = OverlayManager.getInstance();
         this.gamePad = GamePad.getInstance();

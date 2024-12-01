@@ -64,7 +64,7 @@ public class ServerHandler extends Handler implements Runnable {
             if (serverTime.shouldUpdate()) {
                 update();
                 sendStateUpdate();
-                eventManager.update();
+                eventManager.update(this.server);
             }
         }
     }
@@ -88,7 +88,7 @@ public class ServerHandler extends Handler implements Runnable {
     @Override
     protected void onConnect(Connection connection) {
         Player player = new Player(connection.getID());
-        player.teleport(100, 100);
+        player.teleport(1000, 1000);
         player.setRotation(0);
 
         this.entityManager.getPlayerEntities().forEach(existingPlayer -> {

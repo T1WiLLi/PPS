@@ -14,17 +14,18 @@ import java.util.Set;
 public class ClientPacketRegistry {
     private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors = new HashMap<>();
 
-    public ClientPacketRegistry(EntityManager entityManager, ClientWrapper client, ClientHandler clientHandler) {
+    public ClientPacketRegistry(EntityManager entityManager, ClientWrapper client, ClientHandler clientHandler,
+            ClientEventManager clientEventManager) {
         Reflections reflections = new Reflections("pewpew.smash.game.network.processor.clientProcessor");
         Set<Class<? extends ClientProcessor>> processorClasses = reflections.getSubTypesOf(ClientProcessor.class);
 
         for (Class<? extends ClientProcessor> processorClass : processorClasses) {
-            registerProcessor(processorClass, entityManager, client, clientHandler);
+            registerProcessor(processorClass, entityManager, client, clientHandler, clientEventManager);
         }
     }
 
     private void registerProcessor(Class<? extends ClientProcessor> processorClass, EntityManager entityManager,
-            ClientWrapper client, ClientHandler clientHandler) {
+            ClientWrapper client, ClientHandler clientHandler, ClientEventManager clientEventManager) {
         try {
             // Match constructor by parameter count
             Constructor<?>[] constructors = processorClass.getConstructors();
@@ -39,9 +40,13 @@ public class ClientPacketRegistry {
                     processor = (PacketProcessor<?>) constructor.newInstance(entityManager, client);
                 } else if (parameterTypes.length == 3 &&
                         parameterTypes[0] == EntityManager.class &&
-                        parameterTypes[1] == ClientWrapper.class &&
-                        parameterTypes[2] == ClientHandler.class) {
-                    processor = (PacketProcessor<?>) constructor.newInstance(entityManager, client, clientHandler);
+                        parameterTypes[1] == ClientWrapper.class) {
+                    if (parameterTypes[2] == ClientHandler.class) {
+                        processor = (PacketProcessor<?>) constructor.newInstance(entityManager, client, clientHandler);
+                    } else if (parameterTypes[2] == ClientEventManager.class) {
+                        processor = (PacketProcessor<?>) constructor.newInstance(entityManager, client,
+                                clientEventManager);
+                    }
                 }
 
                 if (processor != null) {
@@ -65,7 +70,7 @@ public class ClientPacketRegistry {
      * cast. This is safe in this specific case because we control the naming
      * convention for processor classes and expect packet classes to be created
      * correctly. If an invalid processor class is encountered, a
-     * `ClassNotFoundException` will be thrown.
+     * `ClassNotFoundException` will be thrown which makes sense.
      */
     @SuppressWarnings("unchecked")
     private Class<? extends BasePacket> getPacketTypeFromProcessor(Class<? extends ClientProcessor> processorClass) {
