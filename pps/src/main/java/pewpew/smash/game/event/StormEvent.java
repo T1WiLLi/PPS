@@ -22,6 +22,7 @@ public class StormEvent {
     private int hitDamage;
     private Area stormArea;
     private Ellipse2D.Float innerStorm;
+    @Getter
     private int targetRadius;
 
     @Getter
@@ -48,7 +49,8 @@ public class StormEvent {
 
     public void update() {
         if (radius > targetRadius) {
-            radius -= stormSpeed;
+            System.out.println("Storm is shrinking: " + radius);
+            radius = Math.max(radius - stormSpeed, targetRadius);
             updateStormArea();
         }
     }
@@ -68,10 +70,12 @@ public class StormEvent {
 
     // Server
     public void transitionToNextStage() {
-        this.currentStage = currentStage.next();
-        this.stormSpeed = this.currentStage.getStormSpeed();
-        this.hitDamage = this.currentStage.getHitDamage();
-        this.targetRadius = this.currentStage.getTargetRadius();
+        if (radius <= targetRadius && currentStage.hasNext()) {
+            this.currentStage = currentStage.next();
+            this.stormSpeed = this.currentStage.getStormSpeed();
+            this.hitDamage = this.currentStage.getHitDamage();
+            this.targetRadius = this.currentStage.getTargetRadius();
+        }
     }
 
     // Client
@@ -87,10 +91,9 @@ public class StormEvent {
 
     public long getStageDuration(StormStage stage) {
         return switch (stage) {
-            case STAGE_1 -> 60 * 1000;
-            case STAGE_2 -> 2 * 60 * 1000;
-            case STAGE_3 -> 2 * 60 * 1000;
-            case STAGE_4 -> 60 * 1000;
+            case INITIAL -> 10 * 1000;
+            case STAGE_1, STAGE_2, STAGE_3 -> 2 * 10 * 1000;
+            case STAGE_4 -> 1 * 10 * 1000;
         };
     }
 

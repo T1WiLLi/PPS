@@ -44,7 +44,7 @@ public class ServerHandler extends Handler implements Runnable {
         this.collisionManager = new ServerCollisionManager(server, entityManager, worldManager.getWorldData());
         this.serverTime = ServerTime.getInstance();
         this.entityManager.addWorldStaticEntity(this.worldManager.getStaticEntities());
-        this.eventManager = new ServerEventManager(type);
+        this.eventManager = new ServerEventManager(type, this.server);
         ServerBulletTracker.getInstance().setServerReference(this.server);
         registersClasses(this.server.getKryo());
         ServerPacketRegistry serverRegistry = new ServerPacketRegistry(entityManager, server, itemUpdater);
@@ -80,8 +80,6 @@ public class ServerHandler extends Handler implements Runnable {
             } else {
                 System.out.println("Unknown packet type: " + packet.getClass().getName());
             }
-        } else {
-            System.err.println("Received an invalid packet type: " + packet.getClass().getName());
         }
     }
 

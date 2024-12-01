@@ -73,8 +73,6 @@ public class ClientHandler extends Handler {
             } else {
                 System.out.println("Unknown packet type: " + packet.getClass().getName());
             }
-        } else {
-            System.err.println("Received an invalid packet type: " + packet.getClass().getName());
         }
     }
 

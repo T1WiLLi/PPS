@@ -17,9 +17,9 @@ public class ServerEventManager {
 
     private long lastEventUpdateTime;
 
-    public ServerEventManager(GameModeType type) {
+    public ServerEventManager(GameModeType type, ServerWrapper server) {
         this.type = type;
-        initEvents();
+        initEvents(server);
     }
 
     public void update(ServerWrapper server) {
@@ -37,19 +37,12 @@ public class ServerEventManager {
     }
 
     private void updateEventBattleRoyale(ServerWrapper server, long currentTime) {
-        if (currentTime > 1000 * 10 && stormEvent == null) {
-            initializeStorm(server);
-        }
-
         if (stormEvent == null) {
             return;
         }
 
-        stormEvent.update();
-
-        if (stormEvent.getCurrentStage() != null
-                && currentTime - lastEventUpdateTime >= stormEvent.getStageDuration(stormEvent.getCurrentStage())) {
-            if (stormEvent.getCurrentStage().hasNext()) {
+        if (currentTime - lastEventUpdateTime >= stormEvent.getStageDuration(stormEvent.getCurrentStage())) {
+            if (stormEvent.getRadius() <= stormEvent.getTargetRadius()) {
                 stormEvent.transitionToNextStage();
                 lastEventUpdateTime = currentTime;
 
@@ -61,19 +54,20 @@ public class ServerEventManager {
                 server.sendToAllTCP(packet);
             }
         }
+        stormEvent.update();
     }
 
     private void updateEventArena() {
 
     }
 
-    private void initEvents() {
+    private void initEvents(ServerWrapper server) {
         switch (type) {
             case SANDBOX -> {
                 System.out.println("Event of sandbox !");
             }
             case BATTLE_ROYALE -> {
-
+                initializeStorm(server);
             }
             case ARENA -> {
 
@@ -84,7 +78,7 @@ public class ServerEventManager {
 
     private void initializeStorm(ServerWrapper server) {
         System.out.println("Storm Init");
-        stormEvent = new StormEvent(WorldGenerator.getWorldWidth() / 2, StormStage.STAGE_1);
+        stormEvent = new StormEvent(WorldGenerator.getWorldWidth() / 2, StormStage.INITIAL);
         StormStatePacket packet = new StormStatePacket(new StormState(
                 stormEvent.getCenterX(),
                 stormEvent.getCenterY(),

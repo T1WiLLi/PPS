@@ -1,16 +1,15 @@
 package pewpew.smash.game.event;
 
-import java.util.Random;
-
 import lombok.Getter;
 import pewpew.smash.game.world.WorldGenerator;
 
 @Getter
 public enum StormStage {
-    STAGE_1(0.5f, 2, generateTargetRadius(1.0f)),
-    STAGE_2(1.0f, 3, generateTargetRadius(0.8f)),
-    STAGE_3(2.0f, 4, generateTargetRadius(0.6f)),
-    STAGE_4(3.0f, 5, generateTargetRadius(0.4f));
+    INITIAL(0.0f, 0, WorldGenerator.getWorldWidth() / 2),
+    STAGE_1(0.5f, 2, calculateTargetRadius(0.8f)),
+    STAGE_2(1.0f, 3, calculateTargetRadius(0.6f)),
+    STAGE_3(1.5f, 4, calculateTargetRadius(0.4f)),
+    STAGE_4(2.0f, 5, 500);
 
     private final float stormSpeed;
     private final int hitDamage;
@@ -33,14 +32,8 @@ public enum StormStage {
         return this;
     }
 
-    public static int generateTargetRadius(float shrinkFactor) {
-        Random random = new Random();
-        int worldWidth = WorldGenerator.getWorldWidth();
-        int worldHeight = WorldGenerator.getWorldHeight();
-
-        int maxRadius = Math.min(worldWidth, worldHeight) / 2;
-        int minRadius = (int) (maxRadius * shrinkFactor);
-
-        return random.nextInt(maxRadius - minRadius + 1) + minRadius;
+    private static int calculateTargetRadius(float shrinkFactor) {
+        int maxRadius = WorldGenerator.getWorldWidth() / 2;
+        return (int) (maxRadius * shrinkFactor);
     }
 }
