@@ -15,7 +15,7 @@ public class WorldStaticEntitySerializer {
         int y = serialized.getY();
         WorldStaticEntity entity = switch (serialized.getType()) {
             case BUSH -> new Bush(x, y);
-            case CRATE, SOVIET_CRATE -> new Crate(serialized.getType(), x, y, null);
+            case CRATE, SOVIET_CRATE, AMMO_CRATE -> new Crate(serialized.getType(), x, y, null);
             default -> new WorldStaticEntity(serialized.getType(), x, y);
         };
         entity.setId(serialized.getId());

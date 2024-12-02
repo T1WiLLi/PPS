@@ -114,14 +114,14 @@ public class WorldEntitiesGenerator {
 
         switch (type) {
             case CRATE -> {
-                items.addAll(generateWeapons(random, x, y, 1, 3));
+                items.add(generateWeapon(random, x, y, false));
                 items.add(generateAmmo(x, y));
-                items.add(generateHealingItem(random, x, y));
+                items.add(generateHealingOrScope(random, x, y));
             }
             case SOVIET_CRATE -> {
-                items.addAll(generateWeapons(random, x, y, 2, 5));
+                items.add(generateWeapon(random, x, y, true));
                 items.add(generateAmmo(x, y));
-                items.add(generateSpecialItem(random, x, y));
+                items.add(generateHealingOrScope(random, x, y));
             }
             case AMMO_CRATE -> {
                 for (int i = 0; i < random.nextInt(3) + 1; i++) {
@@ -134,16 +134,14 @@ public class WorldEntitiesGenerator {
         return items;
     }
 
-    private List<Item> generateWeapons(Random random, int x, int y, int min, int max) {
-        List<Item> weapons = new ArrayList<>();
-        int weaponCount = random.nextInt(max - min + 1) + min;
-        for (int i = 0; i < weaponCount; i++) {
-            WeaponType weaponType = WeaponType.values()[random.nextInt(WeaponType.values().length)];
-            Weapon weapon = ItemFactory.createItem(weaponType);
-            weapon.teleport(x, y);
-            weapons.add(weapon);
-        }
-        return weapons;
+    private Item generateWeapon(Random random, int x, int y, boolean highTier) {
+        WeaponType[] weaponPool = highTier
+                ? new WeaponType[] { WeaponType.AK47, WeaponType.HK416, WeaponType.DEAGLE, WeaponType.M1A1 }
+                : new WeaponType[] { WeaponType.GLOCK, WeaponType.MAC10, WeaponType.MP5, WeaponType.COLT45 };
+        WeaponType weaponType = weaponPool[random.nextInt(weaponPool.length)];
+        Weapon weapon = ItemFactory.createItem(weaponType);
+        weapon.teleport(x, y);
+        return weapon;
     }
 
     private Item generateAmmo(int x, int y) {
@@ -152,27 +150,43 @@ public class WorldEntitiesGenerator {
         return ammoStack;
     }
 
-    private Item generateHealingItem(Random random, int x, int y) {
-        ConsumableType healType = ConsumableType.BANDAGE;
+    private Item generateHealingOrScope(Random random, int x, int y) {
+        int chance = random.nextInt(100);
+        if (chance < 70) {
+            return generateHealingItem(random, x, y, true);
+        } else {
+            return generateRandomScope(random, x, y);
+        }
+    }
+
+    private Item generateHealingItem(Random random, int x, int y, boolean allowPillsAndMedikits) {
+        ConsumableType healType = allowPillsAndMedikits
+                ? ConsumableType.values()[random.nextInt(ConsumableType.values().length)]
+                : ConsumableType.BANDAGE;
         Consumable consumable = ItemFactory.createItem(healType);
         consumable.teleport(x, y);
         return consumable;
     }
 
-    private Item generateSpecialItem(Random random, int x, int y) {
-        SpecialType specialType = SpecialType.SCOPE_X2;
-        Item specialItem = ItemFactory.createItem(specialType);
-        specialItem.teleport(x, y);
-        return specialItem;
+    private Item generateRandomScope(Random random, int x, int y) {
+        int scopeChance = random.nextInt(100);
+        SpecialType scopeType = switch (scopeChance) {
+            case 0, 1, 2 -> SpecialType.SCOPE_X4;
+            case 3, 4, 5, 6, 7 -> SpecialType.SCOPE_X3;
+            default -> SpecialType.SCOPE_X2;
+        };
+        Item scope = ItemFactory.createItem(scopeType);
+        scope.teleport(x, y);
+        return scope;
     }
 
     private Item generateRandomWorldItem() {
         Random random = new Random();
         int itemType = random.nextInt(1000);
 
-        if (itemType < 600) {
+        if (itemType < 400) {
             return ItemFactory.createAmmoStack();
-        } else if (itemType < 950) {
+        } else if (itemType < 900) {
             WeaponType weapon = switch (random.nextInt(40)) {
                 case 0, 1, 2 -> WeaponType.GLOCK;
                 case 3, 4 -> WeaponType.MAC10;

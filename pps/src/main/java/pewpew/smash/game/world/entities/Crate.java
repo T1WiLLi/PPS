@@ -38,20 +38,12 @@ public class Crate extends WorldBreakableStaticEntity {
 
     private void loadSprites(WorldEntityType type) {
         BufferedImage spriteSheet = ResourcesLoader.getImage(ResourcesLoader.ENTITY_SPRITE, type.getTextureName());
-
         final int spriteWidth = 384;
         final int spriteHeight = 384;
-
         int cols = spriteSheet.getWidth() / spriteWidth;
-        int rows = spriteSheet.getHeight() / spriteHeight;
-        sprites = new BufferedImage[cols * rows];
-
-        int index = 0;
-        for (int y = 0; y < rows; y++) {
-            for (int x = 0; x < cols; x++) {
-                sprites[index++] = spriteSheet.getSubimage(x * spriteWidth, y * spriteHeight, spriteWidth,
-                        spriteHeight);
-            }
+        sprites = new BufferedImage[cols];
+        for (int x = 0; x < cols; x++) {
+            sprites[x] = spriteSheet.getSubimage(x * spriteWidth, 0, spriteWidth, spriteHeight);
         }
     }
 
