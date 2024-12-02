@@ -80,6 +80,12 @@ public class ServerTime {
         }
     }
 
+    public void setTime(long time) {
+        long providedTimeInNanos = time * 1_000_000;
+        this.gameStartTime = System.nanoTime() - providedTimeInNanos;
+        this.lastUpdateTime = System.nanoTime();
+    }
+
     public static void reset() {
         instance = null;
     }

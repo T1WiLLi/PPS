@@ -15,6 +15,7 @@ import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.BasePacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
+import pewpew.smash.game.network.packets.SyncTimePacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.processor.PacketProcessor;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
@@ -105,6 +106,7 @@ public class ServerHandler extends Handler implements Runnable {
         this.server.sendToTCP(connection.getID(), playerWeaponStatePacket);
         this.entityManager.addPlayerEntity(player.getId(), player);
         this.worldManager.sendWorldData(connection.getID());
+        this.server.sendToTCP(connection.getID(), new SyncTimePacket(ServerTime.getInstance().getElapsedTimeMillis()));
     }
 
     @Override

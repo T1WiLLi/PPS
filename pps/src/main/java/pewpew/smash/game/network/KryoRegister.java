@@ -41,6 +41,7 @@ import pewpew.smash.game.network.packets.PreventActionForPlayerPacket;
 import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
 import pewpew.smash.game.network.packets.StormEventCreationPacket;
 import pewpew.smash.game.network.packets.StormStatePacket;
+import pewpew.smash.game.network.packets.SyncTimePacket;
 import pewpew.smash.game.network.packets.UseConsumableRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
@@ -88,6 +89,7 @@ public class KryoRegister {
         kryo.register(PlayerOutOfWaterPacket.class);
         kryo.register(StormStatePacket.class);
         kryo.register(StormEventCreationPacket.class);
+        kryo.register(SyncTimePacket.class);
     }
 
     private void registerObjects(Kryo kryo) {
