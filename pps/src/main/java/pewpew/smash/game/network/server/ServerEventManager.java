@@ -1,89 +1,63 @@
 package pewpew.smash.game.network.server;
 
-import pewpew.smash.game.event.StormEvent;
-import pewpew.smash.game.event.StormStage;
-import pewpew.smash.game.gamemode.GameModeType;
-import pewpew.smash.game.network.model.StormState;
-import pewpew.smash.game.network.packets.StormStatePacket;
-import pewpew.smash.game.world.WorldGenerator;
+import java.util.Timer;
+import java.util.TimerTask;
 
-// Will be used to manage 'event' such as 'Item generation', 'Storm', 'Broadcast', 'Special Event' basiaclly whatever... :)
+import pewpew.smash.game.event.StormManager;
+import pewpew.smash.game.gamemode.GameModeType;
+import pewpew.smash.game.network.packets.StormEventCreationPacket;
+
 public class ServerEventManager {
 
-    private final GameModeType type;
+    private final GameModeType gameModeType;
+    private StormManager stormManager;
 
-    // Battle Royale event
-    private StormEvent stormEvent;
-
-    private long lastEventUpdateTime;
-
-    public ServerEventManager(GameModeType type, ServerWrapper server) {
-        this.type = type;
-        initEvents(server);
+    public ServerEventManager(GameModeType gameModeType) {
+        this.gameModeType = gameModeType;
     }
 
     public void update(ServerWrapper server) {
-        long currentTime = ServerTime.getInstance().getElapsedTimeMillis();
-
-        switch (type) {
+        switch (gameModeType) {
             case SANDBOX -> updateEventSandbox();
-            case BATTLE_ROYALE -> updateEventBattleRoyale(server, currentTime);
+            case BATTLE_ROYALE -> updateEventBattleRoyale(server);
             case ARENA -> updateEventArena();
         }
     }
 
-    private void updateEventSandbox() {
-
-    }
-
-    private void updateEventBattleRoyale(ServerWrapper server, long currentTime) {
-        if (stormEvent == null) {
-            return;
-        }
-
-        if (currentTime - lastEventUpdateTime >= stormEvent.getStageDuration(stormEvent.getCurrentStage())) {
-            if (stormEvent.getRadius() <= stormEvent.getTargetRadius()) {
-                stormEvent.transitionToNextStage();
-                lastEventUpdateTime = currentTime;
-
-                StormStatePacket packet = new StormStatePacket(new StormState(
-                        stormEvent.getCenterX(),
-                        stormEvent.getCenterY(),
-                        stormEvent.getRadius(),
-                        stormEvent.getCurrentStage()));
-                server.sendToAllTCP(packet);
+    public void initEvents(ServerWrapper server) {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                switch (gameModeType) {
+                    case SANDBOX -> System.out.println("Sandbox mode does not have events.");
+                    case BATTLE_ROYALE -> initializeStorm(server);
+                    case ARENA -> System.out.println("Arena mode events are not implemented.");
+                }
             }
-        }
-        stormEvent.update();
-    }
-
-    private void updateEventArena() {
-
-    }
-
-    private void initEvents(ServerWrapper server) {
-        switch (type) {
-            case SANDBOX -> {
-                System.out.println("Event of sandbox !");
-            }
-            case BATTLE_ROYALE -> {
-                initializeStorm(server);
-            }
-            case ARENA -> {
-
-            }
-        }
-        ;
+        }, 100);
     }
 
     private void initializeStorm(ServerWrapper server) {
-        System.out.println("Storm Init");
-        stormEvent = new StormEvent(WorldGenerator.getWorldWidth() / 2, StormStage.INITIAL);
-        StormStatePacket packet = new StormStatePacket(new StormState(
-                stormEvent.getCenterX(),
-                stormEvent.getCenterY(),
-                stormEvent.getRadius(),
-                stormEvent.getCurrentStage()));
-        server.sendToAllTCP(packet);
+        stormManager = new StormManager();
+        System.out.println("Storm initialized.");
+        StormEventCreationPacket creationPacket = new StormEventCreationPacket(
+                stormManager.getStormEvent().getCenterX(),
+                stormManager.getStormEvent().getCenterY(),
+                stormManager.getStormEvent().getRadius());
+        server.sendToAllTCP(creationPacket);
+    }
+
+    private void updateEventSandbox() {
+        // No event logic for Sandbox mode
+    }
+
+    private void updateEventBattleRoyale(ServerWrapper server) {
+        if (stormManager != null) {
+            stormManager.update(server);
+        }
+    }
+
+    private void updateEventArena() {
+        // No event logic for Arena mode
     }
 }

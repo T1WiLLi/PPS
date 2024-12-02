@@ -48,7 +48,7 @@ public class ClientHandler extends Handler {
     public ClientHandler(String host, int port, GameModeType type) {
         this.client = new ClientWrapper(host, port, port);
         this.entityManager = new EntityManager();
-        this.clientEventManager = new ClientEventManager(type);
+        this.clientEventManager = new ClientEventManager();
         this.clientUpdater = new ClientUpdater(this.entityManager);
         this.positionPacketQueue = new ConcurrentHashMap<>();
         registersClasses(this.client.getKryo());

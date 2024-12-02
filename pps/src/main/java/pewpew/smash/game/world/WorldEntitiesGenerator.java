@@ -21,6 +21,7 @@ import pewpew.smash.game.world.entities.WorldEntityType;
 import pewpew.smash.game.world.entities.WorldStaticEntity;
 
 // Generate entities for the game world.
+// TODO: Make the normal case generate lesser good items. While the Soviet case generates better items.
 public class WorldEntitiesGenerator {
 
     private static final int ITEM_SIZE = 48;

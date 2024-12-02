@@ -21,37 +21,45 @@ public class StormEvent {
     @Getter
     private int hitDamage;
     private Area stormArea;
-    private Ellipse2D.Float innerStorm;
+    private Area innerStorm;
     @Getter
     private int targetRadius;
 
     @Getter
     private StormStage currentStage;
 
-    // Server only
-    public StormEvent(float initalRadius, StormStage stage) {
-        this.radius = initalRadius;
-        this.centerX = WorldGenerator.getWorldWidth() / 2; // Later this will be random
-        this.centerY = WorldGenerator.getWorldHeight() / 2; // Later this will be random
-        this.currentStage = stage;
-        this.stormSpeed = this.currentStage.getStormSpeed();
-        this.hitDamage = this.currentStage.getHitDamage();
-        this.targetRadius = this.currentStage.getTargetRadius();
+    private float lastRadius;
 
-        updateStormArea();
+    public StormEvent(float initialRadius, StormStage stage) {
+        this.radius = initialRadius;
+        this.centerX = WorldGenerator.getWorldWidth() / 2;
+        this.centerY = WorldGenerator.getWorldHeight() / 2;
+        this.currentStage = stage;
+        this.stormSpeed = stage.getStormSpeed();
+        this.hitDamage = stage.getHitDamage();
+        this.targetRadius = stage.getTargetRadius();
+
+        this.stormArea = new Area(new Rectangle(0, 0, WorldGenerator.getWorldWidth(), WorldGenerator.getWorldHeight()));
+        this.innerStorm = new Area(getBounds());
+        this.stormArea.subtract(this.innerStorm);
+        lastRadius = radius;
     }
 
-    // Client only
     public StormEvent(StormState state) {
         applyState(state);
-        updateStormArea();
+        this.stormArea = new Area(new Rectangle(0, 0, WorldGenerator.getWorldWidth(), WorldGenerator.getWorldHeight()));
+        this.innerStorm = new Area(getBounds());
+        this.stormArea.subtract(this.innerStorm);
+        lastRadius = radius;
     }
 
     public void update() {
         if (radius > targetRadius) {
-            System.out.println("Storm is shrinking: " + radius);
-            radius = Math.max(radius - stormSpeed, targetRadius);
-            updateStormArea();
+            float newRadius = Math.max(radius - stormSpeed, targetRadius);
+            if (newRadius != radius) {
+                radius = newRadius;
+                updateStormArea();
+            }
         }
     }
 
@@ -62,39 +70,34 @@ public class StormEvent {
     public void setCenter(int centerX, int centerY) {
         this.centerX = centerX;
         this.centerY = centerY;
+        updateStormArea();
     }
 
     public boolean isInside(StaticEntity entity) {
-        return getBounds().intersects(entity.getX(), entity.getY(), entity.getWidth(), entity.getHeight());
+        return innerStorm.intersects(entity.getX(), entity.getY(), entity.getWidth(), entity.getHeight());
     }
 
-    // Server
-    public void transitionToNextStage() {
-        if (radius <= targetRadius && currentStage.hasNext()) {
-            this.currentStage = currentStage.next();
-            this.stormSpeed = this.currentStage.getStormSpeed();
-            this.hitDamage = this.currentStage.getHitDamage();
-            this.targetRadius = this.currentStage.getTargetRadius();
-        }
-    }
-
-    // Client
     public void applyState(StormState state) {
         currentStage = state.getStage();
         this.centerX = state.getCenterX();
         this.centerY = state.getCenterY();
         this.radius = state.getRadius();
-        this.stormSpeed = this.currentStage.getStormSpeed();
-        this.hitDamage = this.currentStage.getHitDamage();
-        this.targetRadius = this.currentStage.getTargetRadius();
+        this.stormSpeed = currentStage.getStormSpeed();
+        this.hitDamage = currentStage.getHitDamage();
+        this.targetRadius = currentStage.getTargetRadius();
+        updateStormArea();
     }
 
-    public long getStageDuration(StormStage stage) {
-        return switch (stage) {
-            case INITIAL -> 10 * 1000;
-            case STAGE_1, STAGE_2, STAGE_3 -> 2 * 10 * 1000;
-            case STAGE_4 -> 1 * 10 * 1000;
-        };
+    public StormState toStormState() {
+        return new StormState(centerX, centerY, radius, currentStage);
+    }
+
+    public void transitionToStage(StormStage newStage) {
+        this.currentStage = newStage;
+        this.stormSpeed = newStage.getStormSpeed();
+        this.hitDamage = newStage.getHitDamage();
+        this.targetRadius = newStage.getTargetRadius();
+        updateStormArea();
     }
 
     private Ellipse2D.Float getBounds() {
@@ -102,8 +105,14 @@ public class StormEvent {
     }
 
     private void updateStormArea() {
+        if (lastRadius == radius) {
+            return;
+        }
+
         this.stormArea = new Area(new Rectangle(0, 0, WorldGenerator.getWorldWidth(), WorldGenerator.getWorldHeight()));
-        this.innerStorm = getBounds();
-        this.stormArea.subtract(new Area(innerStorm));
+        this.innerStorm = new Area(getBounds());
+        this.stormArea.subtract(this.innerStorm);
+
+        lastRadius = radius;
     }
 }

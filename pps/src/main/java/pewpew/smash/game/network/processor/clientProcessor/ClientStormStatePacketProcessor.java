@@ -2,7 +2,6 @@ package pewpew.smash.game.network.processor.clientProcessor;
 
 import com.esotericsoftware.kryonet.Connection;
 
-import pewpew.smash.game.event.StormEvent;
 import pewpew.smash.game.network.client.ClientEventManager;
 import pewpew.smash.game.network.client.ClientWrapper;
 import pewpew.smash.game.network.manager.EntityManager;
@@ -24,12 +23,8 @@ public class ClientStormStatePacketProcessor extends ClientProcessor implements 
     @Override
     public void handle(Connection connection, StormStatePacket packet) {
         StormState state = packet.getState();
-        StormEvent storm = this.clientEventManager.getStorm();
-        if (storm != null) {
-            storm.applyState(state);
-        } else {
-            storm = new StormEvent(state);
-            this.clientEventManager.setStorm(storm);
+        if (this.clientEventManager.getStorm() != null) {
+            this.clientEventManager.getStorm().applyState(state);
         }
     }
 }
