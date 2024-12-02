@@ -23,6 +23,7 @@ public enum WorldEntityType {
                                 int centerY = entity.getY() + (entity.getHeight() - logHeight) / 2;
                                 return new Ellipse2D.Float(centerX, centerY, logWidth, logHeight);
                         }),
+
         TREE_DEAD(
                         "obstacle-tree-05c",
                         false,
@@ -65,6 +66,13 @@ public enum WorldEntityType {
                         76,
                         76,
                         100,
+                        (entity) -> new Rectangle(entity.getX(), entity.getY(), entity.getWidth(), entity.getHeight())),
+        AMMO_CRATE(
+                        "obstacle-crate-23-spritesheet",
+                        true,
+                        48,
+                        48,
+                        50,
                         (entity) -> new Rectangle(entity.getX(), entity.getY(), entity.getWidth(), entity.getHeight())),
         BUSH(
                         "obstacle-bush-01",

@@ -7,21 +7,10 @@ import java.util.List;
 import java.util.Random;
 
 import pewpew.smash.game.network.manager.ItemManager;
-import pewpew.smash.game.objects.Consumable;
-import pewpew.smash.game.objects.ConsumableType;
-import pewpew.smash.game.objects.Item;
-import pewpew.smash.game.objects.ItemFactory;
-import pewpew.smash.game.objects.SpecialType;
-import pewpew.smash.game.objects.Weapon;
-import pewpew.smash.game.objects.WeaponType;
+import pewpew.smash.game.objects.*;
 import pewpew.smash.game.objects.special.AmmoStack;
-import pewpew.smash.game.world.entities.Bush;
-import pewpew.smash.game.world.entities.Crate;
-import pewpew.smash.game.world.entities.WorldEntityType;
-import pewpew.smash.game.world.entities.WorldStaticEntity;
+import pewpew.smash.game.world.entities.*;
 
-// Generate entities for the game world.
-// TODO: Make the normal case generate lesser good items. While the Soviet case generates better items.
 public class WorldEntitiesGenerator {
 
     private static final int ITEM_SIZE = 48;
@@ -46,7 +35,7 @@ public class WorldEntitiesGenerator {
             int y = tileY * WorldGenerator.TILE_SIZE;
 
             if (data[tileX][tileY] == WorldGenerator.GRASS) {
-                WorldEntityType type = WorldEntityType.values()[random.nextInt(WorldEntityType.values().length)];
+                WorldEntityType type = getRandomEntityType(random);
                 WorldStaticEntity entity = createEntityInstance(type, x, y);
 
                 if (entity != null && isValidPlacement(entity)) {
@@ -78,50 +67,103 @@ public class WorldEntitiesGenerator {
         return this.items;
     }
 
+    private WorldEntityType getRandomEntityType(Random random) {
+        WorldEntityType[] entityTypes = WorldEntityType.values();
+        int[] weights = new int[entityTypes.length];
+
+        for (int i = 0; i < entityTypes.length; i++) {
+            switch (entityTypes[i]) {
+                case TREE, TREE_DEAD -> weights[i] = 30;
+                case STONE, STONE_GRASS -> weights[i] = 20;
+                case CRATE -> weights[i] = 15;
+                case SOVIET_CRATE -> weights[i] = 10;
+                case AMMO_CRATE -> weights[i] = 5;
+                case BUSH -> weights[i] = 20;
+            }
+        }
+
+        int totalWeight = 0;
+        for (int weight : weights) {
+            totalWeight += weight;
+        }
+
+        int randomValue = random.nextInt(totalWeight);
+        for (int i = 0; i < weights.length; i++) {
+            randomValue -= weights[i];
+            if (randomValue < 0) {
+                return entityTypes[i];
+            }
+        }
+
+        return entityTypes[0];
+    }
+
     private WorldStaticEntity createEntityInstance(WorldEntityType type, int x, int y) {
         WorldStaticEntity entity = switch (type) {
             case BUSH -> new Bush(x, y);
-            case CRATE, SOVIET_CRATE -> new Crate(type, x, y, generateLootTable(x, y));
+            case CRATE, SOVIET_CRATE, AMMO_CRATE -> new Crate(type, x, y, generateLootTable(type, x, y));
             default -> new WorldStaticEntity(type, x, y);
         };
         entity.setId(entityID++);
         return entity;
     }
 
-    private List<Item> generateLootTable(int x, int y) {
+    private List<Item> generateLootTable(WorldEntityType type, int x, int y) {
         List<Item> items = new ArrayList<>();
         Random random = new Random();
 
-        boolean containsGun = random.nextBoolean();
+        switch (type) {
+            case CRATE -> {
+                items.addAll(generateWeapons(random, x, y, 1, 3));
+                items.add(generateAmmo(x, y));
+                items.add(generateHealingItem(random, x, y));
+            }
+            case SOVIET_CRATE -> {
+                items.addAll(generateWeapons(random, x, y, 2, 5));
+                items.add(generateAmmo(x, y));
+                items.add(generateSpecialItem(random, x, y));
+            }
+            case AMMO_CRATE -> {
+                for (int i = 0; i < random.nextInt(3) + 1; i++) {
+                    items.add(generateAmmo(x, y));
+                }
+            }
+            default -> {
+            } // Do nothing
+        }
+        return items;
+    }
 
-        if (containsGun) {
-            WeaponType weaponType = switch (random.nextInt(100)) {
-                case 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 -> WeaponType.GLOCK;
-                case 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 -> WeaponType.MP5;
-                case 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 -> WeaponType.MAC10;
-                case 30, 31, 32, 33, 34 -> WeaponType.DEAGLE;
-                case 35, 36, 37, 38, 39, 40, 41 -> WeaponType.COLT45;
-                case 42, 43, 44, 45, 46, 47, 48, 49 -> WeaponType.AK47;
-                case 50, 51, 52, 53, 54, 55, 56, 57, 58, 59 -> WeaponType.M1A1;
-                default -> WeaponType.HK416;
-            };
+    private List<Item> generateWeapons(Random random, int x, int y, int min, int max) {
+        List<Item> weapons = new ArrayList<>();
+        int weaponCount = random.nextInt(max - min + 1) + min;
+        for (int i = 0; i < weaponCount; i++) {
+            WeaponType weaponType = WeaponType.values()[random.nextInt(WeaponType.values().length)];
             Weapon weapon = ItemFactory.createItem(weaponType);
             weapon.teleport(x, y);
-            items.add(weapon);
-        } else {
-            ConsumableType healType = switch (random.nextInt(3)) {
-                case 0 -> ConsumableType.MEDIKIT;
-                case 1 -> ConsumableType.PILL;
-                default -> ConsumableType.BANDAGE;
-            };
-            Consumable consumable = ItemFactory.createItem(healType);
-            consumable.teleport(x, y);
-            items.add(consumable);
+            weapons.add(weapon);
         }
+        return weapons;
+    }
+
+    private Item generateAmmo(int x, int y) {
         AmmoStack ammoStack = ItemFactory.createAmmoStack();
         ammoStack.teleport(x, y);
-        items.add(ammoStack);
-        return items;
+        return ammoStack;
+    }
+
+    private Item generateHealingItem(Random random, int x, int y) {
+        ConsumableType healType = ConsumableType.values()[random.nextInt(ConsumableType.values().length)];
+        Consumable consumable = ItemFactory.createItem(healType);
+        consumable.teleport(x, y);
+        return consumable;
+    }
+
+    private Item generateSpecialItem(Random random, int x, int y) {
+        SpecialType specialType = SpecialType.values()[random.nextInt(SpecialType.values().length)];
+        Item specialItem = ItemFactory.createItem(specialType);
+        specialItem.teleport(x, y);
+        return specialItem;
     }
 
     private boolean isValidPlacement(WorldStaticEntity entity) {
@@ -160,34 +202,14 @@ public class WorldEntitiesGenerator {
 
         if (itemType < 300) {
             return ItemFactory.createAmmoStack();
-
         } else if (itemType < 700) {
-            WeaponType weapon = switch (random.nextInt(60)) {
-                case 0, 1, 2, 3, 4 -> WeaponType.HK416;
-                case 5, 6, 7, 8, 9, 10, 11, 12, 13 -> WeaponType.M1A1;
-                case 14, 15, 16, 17 -> WeaponType.DEAGLE;
-                case 18, 19, 20, 21, 22, 23, 24 -> WeaponType.AK47;
-                case 25, 26, 27, 28, 29 -> WeaponType.MAC10;
-                case 30, 31, 32, 33, 34, 35, 36 -> WeaponType.MP5;
-                case 37, 38, 39, 40, 41 -> WeaponType.COLT45;
-                default -> WeaponType.GLOCK;
-            };
+            WeaponType weapon = WeaponType.values()[random.nextInt(WeaponType.values().length)];
             return ItemFactory.createItem(weapon);
-
-        } else if (itemType < 950) { // 25% chance for a consumable
-            ConsumableType consumable = switch (random.nextInt(35)) {
-                case 0, 1, 2, 3, 4 -> ConsumableType.MEDIKIT;
-                case 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 -> ConsumableType.PILL;
-                default -> ConsumableType.BANDAGE;
-            };
+        } else if (itemType < 950) {
+            ConsumableType consumable = ConsumableType.values()[random.nextInt(ConsumableType.values().length)];
             return ItemFactory.createItem(consumable);
-
-        } else { // 5% chance for a scope
-            SpecialType scope = switch (random.nextInt(60)) {
-                case 0, 1, 2, 3, 4 -> SpecialType.SCOPE_X4;
-                case 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 -> SpecialType.SCOPE_X3;
-                default -> SpecialType.SCOPE_X2;
-            };
+        } else {
+            SpecialType scope = SpecialType.values()[random.nextInt(SpecialType.values().length)];
             return ItemFactory.createItem(scope);
         }
     }
