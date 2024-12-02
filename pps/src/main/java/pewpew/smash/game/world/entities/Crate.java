@@ -18,7 +18,7 @@ public class Crate extends WorldBreakableStaticEntity {
         super(type, x, y);
         loadSprites(type);
         this.lootTable = lootTable;
-        this.health = 100;
+        this.health = type.getMaxHealth();
     }
 
     @Override
@@ -58,10 +58,10 @@ public class Crate extends WorldBreakableStaticEntity {
     private int getCurrentSprite() {
         if (health <= 0) {
             return sprites.length - 1;
-        } else if (health >= 100) {
+        } else if (health >= getType().getMaxHealth()) {
             return 0;
         } else {
-            int index = (int) ((100 - health) / (100.0 / (sprites.length - 1)));
+            int index = (int) ((getType().getMaxHealth() - health) / (getType().getMaxHealth() / (sprites.length - 1)));
             return Math.min(index, sprites.length - 1);
         }
     }

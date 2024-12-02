@@ -15,6 +15,7 @@ public enum WorldEntityType {
                         false,
                         164,
                         164,
+                        0,
                         (entity) -> {
                                 int logWidth = (int) (entity.getWidth() * 0.30);
                                 int logHeight = (int) (entity.getHeight() * 0.30);
@@ -27,6 +28,7 @@ public enum WorldEntityType {
                         false,
                         164,
                         164,
+                        0,
                         (entity) -> {
                                 int logWidth = (int) (entity.getWidth() * 0.25);
                                 int logHeight = (int) (entity.getHeight() * 0.25);
@@ -39,6 +41,7 @@ public enum WorldEntityType {
                         false,
                         92,
                         92,
+                        0,
                         (entity) -> new Ellipse2D.Float(entity.getX(), entity.getY(), entity.getWidth(),
                                         entity.getHeight())),
         STONE_GRASS(
@@ -46,11 +49,13 @@ public enum WorldEntityType {
                         false,
                         92,
                         92,
+                        0,
                         (entity) -> new Ellipse2D.Float(entity.getX(), entity.getY(), entity.getWidth(),
                                         entity.getHeight())),
         CRATE(
                         "obstacle-crate-01-spritesheet",
                         true,
+                        100,
                         100,
                         100,
                         (entity) -> new Rectangle(entity.getX(), entity.getY(), entity.getWidth(), entity.getHeight())),
@@ -59,12 +64,14 @@ public enum WorldEntityType {
                         true,
                         76,
                         76,
+                        100,
                         (entity) -> new Rectangle(entity.getX(), entity.getY(), entity.getWidth(), entity.getHeight())),
         BUSH(
                         "obstacle-bush-01",
                         false,
                         142,
                         142,
+                        0,
                         (entity) -> {
                                 int logWidth = (int) (entity.getWidth() * 0.85);
                                 int logHeight = (int) (entity.getHeight() * 0.85);
@@ -76,14 +83,16 @@ public enum WorldEntityType {
         private final String textureName;
         private final boolean isBreakable;
         private final int width, height;
+        private final int maxHealth;
         private final Function<StaticEntity, Shape> Hitbox;
 
-        WorldEntityType(String textureName, boolean isBreakable, int width, int height,
+        WorldEntityType(String textureName, boolean isBreakable, int width, int height, int maxHealth,
                         Function<StaticEntity, Shape> hitboxFunction) {
                 this.textureName = textureName;
                 this.isBreakable = isBreakable;
                 this.width = width;
                 this.height = height;
+                this.maxHealth = maxHealth;
                 this.Hitbox = hitboxFunction;
         }
 }
