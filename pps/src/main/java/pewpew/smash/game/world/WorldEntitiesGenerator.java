@@ -58,7 +58,7 @@ public class WorldEntitiesGenerator {
             int y = tileY * WorldGenerator.TILE_SIZE;
 
             if (isValidPosition(x, y)) {
-                Item item = generateRandomItem();
+                Item item = generateRandomWorldItem();
                 item.teleport(x, y);
                 ItemManager.getInstance(true).addItem(item);
                 this.items.add(item);
@@ -153,17 +153,36 @@ public class WorldEntitiesGenerator {
     }
 
     private Item generateHealingItem(Random random, int x, int y) {
-        ConsumableType healType = ConsumableType.values()[random.nextInt(ConsumableType.values().length)];
+        ConsumableType healType = ConsumableType.BANDAGE;
         Consumable consumable = ItemFactory.createItem(healType);
         consumable.teleport(x, y);
         return consumable;
     }
 
     private Item generateSpecialItem(Random random, int x, int y) {
-        SpecialType specialType = SpecialType.values()[random.nextInt(SpecialType.values().length)];
+        SpecialType specialType = SpecialType.SCOPE_X2;
         Item specialItem = ItemFactory.createItem(specialType);
         specialItem.teleport(x, y);
         return specialItem;
+    }
+
+    private Item generateRandomWorldItem() {
+        Random random = new Random();
+        int itemType = random.nextInt(1000);
+
+        if (itemType < 600) {
+            return ItemFactory.createAmmoStack();
+        } else if (itemType < 950) {
+            WeaponType weapon = switch (random.nextInt(40)) {
+                case 0, 1, 2 -> WeaponType.GLOCK;
+                case 3, 4 -> WeaponType.MAC10;
+                case 5, 6, 7 -> WeaponType.MP5;
+                default -> WeaponType.COLT45;
+            };
+            return ItemFactory.createItem(weapon);
+        } else {
+            return ItemFactory.createItem(ConsumableType.BANDAGE);
+        }
     }
 
     private boolean isValidPlacement(WorldStaticEntity entity) {
@@ -194,23 +213,5 @@ public class WorldEntitiesGenerator {
         }
 
         return true;
-    }
-
-    private Item generateRandomItem() {
-        Random random = new Random();
-        int itemType = random.nextInt(1000);
-
-        if (itemType < 300) {
-            return ItemFactory.createAmmoStack();
-        } else if (itemType < 700) {
-            WeaponType weapon = WeaponType.values()[random.nextInt(WeaponType.values().length)];
-            return ItemFactory.createItem(weapon);
-        } else if (itemType < 950) {
-            ConsumableType consumable = ConsumableType.values()[random.nextInt(ConsumableType.values().length)];
-            return ItemFactory.createItem(consumable);
-        } else {
-            SpecialType scope = SpecialType.values()[random.nextInt(SpecialType.values().length)];
-            return ItemFactory.createItem(scope);
-        }
     }
 }
