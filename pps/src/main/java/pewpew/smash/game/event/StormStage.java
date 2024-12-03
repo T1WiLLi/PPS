@@ -5,8 +5,8 @@ import pewpew.smash.game.world.WorldGenerator;
 
 @Getter
 public enum StormStage {
-    PRE_INITIAL(30 * 1000, 0.0f, 0, WorldGenerator.getWorldWidth()), // Start at 30 secondes
-    INITIAL(60 * 1000, 0.5f, 1, WorldGenerator.getWorldWidth() / 2), // Start at 1min 30
+    PRE_INITIAL(10 * 1000, 0.0f, 0, WorldGenerator.getWorldWidth()), // Start at 30 secondes
+    INITIAL(30 * 1000, 0.5f, 1, WorldGenerator.getWorldWidth() / 2), // Start at 1min
     STAGE_1(180 * 1000, 1.0f, 1, calculateTargetRadius(0.8f)), // Start at 3min
     STAGE_2(240 * 1000, 1.5f, 2, calculateTargetRadius(0.6f)), // Start at 4min
     STAGE_3(300 * 1000, 2.0f, 3, calculateTargetRadius(0.4f)), // Start at 5min

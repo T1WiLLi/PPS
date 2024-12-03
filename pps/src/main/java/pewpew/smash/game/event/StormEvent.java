@@ -20,6 +20,7 @@ public class StormEvent {
     private float stormSpeed;
     @Getter
     private int hitDamage;
+    @Getter
     private Area stormArea;
     private Area innerStorm;
     @Getter

@@ -45,7 +45,7 @@ public class Sandbox implements GameMode {
             boolean isHosting = Boolean.parseBoolean(args[2]);
 
             networkManager = new NetworkManager();
-            networkManager.initialize(host, port, isHosting, GameModeType.SANDBOX);
+            networkManager.initialize(host, port, isHosting, GameModeType.BATTLE_ROYALE);
             SpectatorManager.getInstance().initialize(networkManager.getEntityManager());
             entityRenderer = new ClientEntityRenderer(networkManager.getEntityManager());
             entityUpdater = new ClientEntityUpdater(networkManager.getEntityManager());

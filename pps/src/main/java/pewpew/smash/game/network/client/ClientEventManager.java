@@ -1,16 +1,22 @@
 package pewpew.smash.game.network.client;
 
 import lombok.Getter;
-import lombok.Setter;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.Camera;
 import pewpew.smash.game.event.StormEvent;
+import pewpew.smash.game.hud.HudManager;
 
 public class ClientEventManager {
 
     @Getter
-    @Setter
     private StormEvent storm;
+
+    public void setStorm(StormEvent storm) {
+        if (storm != null) {
+            this.storm = storm;
+            HudManager.getInstance().setStorm(this.storm);
+        }
+    }
 
     public void update() {
         if (storm != null) {

@@ -1,12 +1,16 @@
 package pewpew.smash.game.hud;
 
 import java.awt.Color;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 
 import lombok.Setter;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.Camera;
 import pewpew.smash.game.entities.Player;
+import pewpew.smash.game.event.StormEvent;
 import pewpew.smash.game.utils.FontFactory;
 
 @Setter
@@ -15,6 +19,10 @@ public class Minimap extends HudElement {
     private Player local;
     private BufferedImage worldImage;
     private Camera camera;
+
+    // Battle Royale only !
+    @Setter
+    private StormEvent storm;
 
     public Minimap(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -59,7 +67,30 @@ public class Minimap extends HudElement {
                 playerSizeOnMinimap,
                 Color.YELLOW);
 
+        if (storm != null) {
+            renderStormOnMinimap(canvas, minimapX, minimapY, startX, startY, visibleWidth, visibleHeight);
+        }
+
         renderDirectionalLabels(canvas, minimapX, minimapY, width, height);
+    }
+
+    private void renderStormOnMinimap(Canvas canvas, int minimapX, int minimapY, int startX, int startY,
+            int visibleWidth, int visibleHeight) {
+        Area stormArea = storm.getStormArea();
+
+        double scaleX = width / (double) visibleWidth;
+        double scaleY = height / (double) visibleHeight;
+
+        AffineTransform transform = new AffineTransform();
+        transform.translate(minimapX - (startX * scaleX), minimapY - (startY * scaleY));
+        transform.scale(scaleX, scaleY);
+
+        Area scaledStormArea = stormArea.createTransformedArea(transform);
+        Rectangle minimapBounds = new Rectangle(minimapX, minimapY, width, height);
+        Area clippedStormArea = new Area(scaledStormArea);
+        clippedStormArea.intersect(new Area(minimapBounds));
+
+        canvas.renderArea(clippedStormArea, new Color(1f, 0, 0, 0.5f));
     }
 
     private void renderDirectionalLabels(Canvas canvas, int minimapX, int minimapY, int width, int height) {

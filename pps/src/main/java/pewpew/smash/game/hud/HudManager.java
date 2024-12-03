@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import lombok.Setter;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.entities.Player;
+import pewpew.smash.game.event.StormEvent;
 import pewpew.smash.game.network.server.ServerTime;
 import pewpew.smash.game.objects.RangedWeapon;
 import pewpew.smash.game.utils.FontFactory;
@@ -152,4 +153,7 @@ public class HudManager {
         FontFactory.resetFont(canvas);
     }
 
+    public void setStorm(StormEvent storm) {
+        this.minimap.setStorm(storm);
+    }
 }
