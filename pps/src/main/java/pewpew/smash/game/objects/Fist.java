@@ -2,7 +2,6 @@ package pewpew.smash.game.objects;
 
 import java.awt.Shape;
 import java.awt.image.BufferedImage;
-import java.awt.Polygon;
 
 import java.awt.Color;
 
@@ -16,15 +15,12 @@ public class Fist extends MeleeWeapon {
     private int centerX, centerY;
     private int radius = 20;
 
-    private Polygon damageZone;
-
     private boolean isLeftFistAttacking = false;
     private boolean isRightFistAttacking = false;
 
     public Fist(int id, String name, String description, BufferedImage preview) {
         super(id, name, description, preview);
         setDimensions(6, 6);
-        this.damageZone = new Polygon();
     }
 
     @Override
@@ -40,7 +36,6 @@ public class Fist extends MeleeWeapon {
 
         updatePosition(getOwner().getX() + getOwner().getWidth() / 2, getOwner().getY() + getOwner().getHeight() / 2,
                 getOwner().getRotation());
-        updateDamageZone();
     }
 
     @Override
@@ -52,9 +47,6 @@ public class Fist extends MeleeWeapon {
     public void render(Canvas canvas) {
         renderFist(canvas, leftFistX, leftFistY);
         renderFist(canvas, rightFistX, rightFistY);
-
-        Color damageZoneColor = new Color(255, 0, 0, 125);
-        canvas.renderPolygon(damageZone, damageZoneColor);
     }
 
     @Override
@@ -113,26 +105,5 @@ public class Fist extends MeleeWeapon {
 
         rightFistX = (int) (centerX - 6 + radius * Math.cos(rightAngle)) + (isRightFistAttacking ? forwardX : 0);
         rightFistY = (int) (centerY - 6 + radius * Math.sin(rightAngle)) + (isRightFistAttacking ? forwardY : 0);
-    }
-
-    private void updateDamageZone() {
-        double angleRad = Math.toRadians(getOwner().getRotation());
-
-        int centerX = getOwner().getX() + getOwner().getWidth() / 2;
-        int centerY = getOwner().getY() + getOwner().getHeight() / 2;
-
-        double baseCenterX = centerX + (this.range * 1.6) * Math.cos(angleRad);
-        double baseCenterY = centerY + (this.range * 1.6) * Math.sin(angleRad);
-
-        int basePoint1X = (int) (baseCenterX + ((radius * 2) / 1.4) * -Math.sin(angleRad));
-        int basePoint1Y = (int) (baseCenterY + ((radius * 2) / 1.4) * Math.cos(angleRad));
-
-        int basePoint2X = (int) (baseCenterX - ((radius * 2) / 1.4) * -Math.sin(angleRad));
-        int basePoint2Y = (int) (baseCenterY - ((radius * 2) / 1.4) * Math.cos(angleRad));
-
-        damageZone.reset();
-        damageZone.addPoint(centerX, centerY);
-        damageZone.addPoint(basePoint1X, basePoint1Y);
-        damageZone.addPoint(basePoint2X, basePoint2Y);
     }
 }
