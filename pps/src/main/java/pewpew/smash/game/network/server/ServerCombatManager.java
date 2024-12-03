@@ -58,7 +58,7 @@ public class ServerCombatManager {
         for (Bullet bullet : ServerBulletTracker.getInstance().getBullets()) {
             for (WorldBreakableStaticEntity entity : entityManager.gettWorldBreakableStaticEntities()) {
                 if (bullet.getHitbox().intersects(entity.getHitbox().getBounds())) {
-                    handleStaticEntityDamage(entity, server);
+                    handleStaticEntityDamage(entity, bullet.getDamage(), server);
                     damageDealtMap.put(entityManager.getPlayerEntity(bullet.getPlayerOwnerID()), true);
                     ServerBulletTracker.getInstance().removeBullet(bullet);
                 }
@@ -78,14 +78,14 @@ public class ServerCombatManager {
     private void checkStaticEntityDamage(Player player, Polygon damageZone, ServerWrapper server) {
         for (WorldBreakableStaticEntity entity : entityManager.gettWorldBreakableStaticEntities()) {
             if (damageZone.intersects(entity.getHitbox().getBounds())) {
-                handleStaticEntityDamage(entity, server);
+                handleStaticEntityDamage(entity, player.getEquippedWeapon().getDamage(), server);
                 damageDealtMap.put(player, true);
             }
         }
     }
 
-    private void handleStaticEntityDamage(WorldBreakableStaticEntity entity, ServerWrapper server) {
-        entity.setHealth(entity.getHealth() - 10);
+    private void handleStaticEntityDamage(WorldBreakableStaticEntity entity, int damage, ServerWrapper server) {
+        entity.setHealth(entity.getHealth() - damage);
 
         if (entity.isDestroyed()) {
             if (entity instanceof Crate crate) {
