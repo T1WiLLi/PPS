@@ -45,7 +45,7 @@ public class Player extends MovableEntity {
         setSpeed(2f);
         this.rotation = 0f;
         this.id = id;
-        this.health = 50;
+        this.health = 100;
 
         this.inventory = new Inventory(this);
         this.fists = (Fist) ItemFactory.createItem(WeaponType.FIST);
