@@ -115,16 +115,36 @@ public class HelpMethods {
         Direction direction;
 
         if (random.nextBoolean()) {
-            x = random.nextBoolean() ? -plane.getWidth() : worldWidth + plane.getWidth();
+            x = random.nextBoolean() ? -plane.getWidth() : worldWidth;
             y = random.nextInt(worldHeight);
-            direction = (x < centerX) ? Direction.RIGHT : Direction.LEFT;
+
+            if (y < centerY - plane.getHeight() / 2) {
+                direction = (x < centerX) ? Direction.DOWN_RIGHT : Direction.DOWN_LEFT;
+            } else if (y > centerY + plane.getHeight() / 2) {
+                direction = (x < centerX) ? Direction.UP_RIGHT : Direction.UP_LEFT;
+            } else {
+                direction = (x < centerX) ? Direction.RIGHT : Direction.LEFT;
+            }
         } else {
-            y = random.nextBoolean() ? -plane.getHeight() : worldHeight + plane.getHeight();
+            y = random.nextBoolean() ? -plane.getHeight() : worldHeight;
             x = random.nextInt(worldWidth);
-            direction = (y < centerY) ? Direction.DOWN : Direction.UP;
+
+            if (x < centerX - plane.getWidth() / 2) {
+                direction = (y < centerY) ? Direction.DOWN_RIGHT : Direction.UP_RIGHT;
+            } else if (x > centerX + plane.getWidth() / 2) {
+                direction = (y < centerY) ? Direction.DOWN_LEFT : Direction.UP_LEFT;
+            } else {
+                direction = (y < centerY) ? Direction.DOWN : Direction.UP;
+            }
         }
 
         float rotation = getRotationFromDirection(direction);
+
+        if (direction == Direction.RIGHT || direction == Direction.LEFT) {
+            y = centerY - plane.getHeight() / 2;
+        } else if (direction == Direction.UP || direction == Direction.DOWN) {
+            x = centerX - plane.getWidth() / 2;
+        }
 
         plane.teleport(x, y);
         plane.setRotation(rotation);
