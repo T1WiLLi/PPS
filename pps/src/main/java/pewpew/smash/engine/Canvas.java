@@ -17,22 +17,25 @@ import lombok.Getter;
 public class Canvas {
     private Graphics2D graphics2D;
     private AffineTransform originalTransform;
+    private AffineTransform currentTransform;
     private Shape originalClip;
 
     public Canvas(Graphics2D graphics2d) {
         this.graphics2D = graphics2d;
         this.originalTransform = graphics2D.getTransform();
+        this.currentTransform = (AffineTransform) originalTransform.clone();
         this.originalClip = graphics2D.getClip();
     }
 
     // Transformation Methods
     public void translate(float x, float y) {
         graphics2D.translate(x, y);
+        currentTransform.translate(x, y);
     }
 
     public void scale(float x, float y) {
-        originalTransform = graphics2D.getTransform();
         graphics2D.scale(x, y);
+        currentTransform.scale(x, y);
     }
 
     public void rotate(double angle, int centerX, int centerY) {
@@ -41,6 +44,11 @@ public class Canvas {
 
     public void resetScale() {
         graphics2D.setTransform(originalTransform);
+        currentTransform = (AffineTransform) originalTransform.clone();
+    }
+
+    public void resetRotation() {
+        graphics2D.setTransform(currentTransform);
     }
 
     public void setColor(Color color) {

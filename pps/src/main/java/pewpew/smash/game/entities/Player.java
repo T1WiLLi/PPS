@@ -76,7 +76,7 @@ public class Player extends MovableEntity {
 
     @Override
     public void updateServer() {
-        move(1);
+        move();
         if (this.inventory.hasPrimaryWeapon() && equippedWeapon instanceof RangedWeapon && canDoAction) {
             this.inventory.getPrimaryWeapon().get().updateServer();
         }

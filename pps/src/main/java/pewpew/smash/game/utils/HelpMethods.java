@@ -2,14 +2,15 @@ package pewpew.smash.game.utils;
 
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import pewpew.smash.engine.controls.Direction;
 import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.entities.Inventory;
+import pewpew.smash.game.entities.Plane;
 import pewpew.smash.game.gamemode.GameModeType;
 import pewpew.smash.game.network.packets.ItemAddPacket;
 import pewpew.smash.game.network.serializer.SerializationUtility;
@@ -20,6 +21,7 @@ import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.objects.special.AmmoStack;
 import pewpew.smash.game.objects.special.Scope;
+import pewpew.smash.game.world.WorldGenerator;
 
 public class HelpMethods {
     public static boolean isIn(Rectangle bounds) {
@@ -29,13 +31,6 @@ public class HelpMethods {
     public static int getRandomBetween(int min, int max) {
         Random random = new Random();
         return random.nextInt((max - min) + 1) + min;
-    }
-
-    public synchronized static void getIDOfItem(List<Item> items, String place) {
-        System.out.println("From: " + place);
-        items.forEach(item -> {
-            System.out.println("id: " + item.getId() + " | for position: [" + item.getX() + "," + item.getY() + "]");
-        });
     }
 
     public static Optional<ConsumableType> getConsumableType(int code) {
@@ -84,7 +79,7 @@ public class HelpMethods {
                                 consumable.getY(),
                                 SerializationUtility.serializeItem(consumable)));
                         return consumable;
-                    }).forEach(item -> System.out.println("Dropped consumable: " + item));
+                    });
         });
 
         if (inventory.getAmmoCount() > 0) {
@@ -104,6 +99,52 @@ public class HelpMethods {
                 scope.getX(),
                 scope.getY(),
                 SerializationUtility.serializeItem(scope)));
+    }
+
+    public static Plane generatePlane() {
+        Plane plane = new Plane();
+        Random random = new Random();
+
+        int worldWidth = WorldGenerator.getWorldWidth();
+        int worldHeight = WorldGenerator.getWorldHeight();
+
+        int centerX = worldWidth / 2;
+        int centerY = worldHeight / 2;
+
+        int x, y;
+        Direction direction;
+
+        if (random.nextBoolean()) {
+            x = random.nextBoolean() ? -plane.getWidth() : worldWidth + plane.getWidth();
+            y = random.nextInt(worldHeight);
+            direction = (x < centerX) ? Direction.RIGHT : Direction.LEFT;
+        } else {
+            y = random.nextBoolean() ? -plane.getHeight() : worldHeight + plane.getHeight();
+            x = random.nextInt(worldWidth);
+            direction = (y < centerY) ? Direction.DOWN : Direction.UP;
+        }
+
+        float rotation = getRotationFromDirection(direction);
+
+        plane.teleport(x, y);
+        plane.setRotation(rotation);
+        plane.setDirection(direction);
+
+        return plane;
+    }
+
+    private static float getRotationFromDirection(Direction direction) {
+        return switch (direction) {
+            case UP -> 0f;
+            case DOWN -> 180f;
+            case LEFT -> 270f;
+            case RIGHT -> 90f;
+            case UP_RIGHT -> 45f;
+            case UP_LEFT -> 315f;
+            case DOWN_RIGHT -> 135f;
+            case DOWN_LEFT -> 225f;
+            default -> 0f;
+        };
     }
 
     private static void spreadItem(Item item) {
