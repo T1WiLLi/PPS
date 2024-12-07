@@ -17,8 +17,8 @@ import java.util.TimerTask;
 
 public class AirdropManager {
 
-    private static final int MIN_TIME_BETWEEN_EVENTS = 30_000; // 30 seconds in ms
-    private static final int MAX_TIME_BEFORE_EVENT = 1; // 2 minutes in ms
+    private static final int MIN_TIME_BETWEEN_EVENTS = 30_000;
+    private static final int MAX_TIME_BEFORE_EVENT = 120_000;
     private static final double DELAY_FACTOR = 0.005;
 
     private long lastAirdropTime = 0;
@@ -30,6 +30,7 @@ public class AirdropManager {
         long currentTime = ServerTime.getInstance().getElapsedTimeMillis();
 
         if (!isActive && canTriggerEvent(currentTime)) {
+            System.out.println("Event trigger!");
             triggerEvent(server, currentTime);
         }
 
@@ -39,13 +40,20 @@ public class AirdropManager {
     }
 
     private boolean canTriggerEvent(long currentTime) {
-        // return (currentTime >= MAX_TIME_BEFORE_EVENT) && // Ensure server time is
-        // greater than 2 minutes
-        // (currentTime - lastAirdropTime) >= MIN_TIME_BETWEEN_EVENTS && // Ensure
-        // minimum gap between events
-        // Math.random() < 0.01; // Random chancereturn currentTime >= 10_000 &&
-        // lastAirdropTime == 0;
-        return currentTime >= 5_000 && lastAirdropTime == 0;
+        if ((currentTime - lastAirdropTime) < MIN_TIME_BETWEEN_EVENTS) {
+            return false;
+        }
+
+        if (currentTime < MAX_TIME_BEFORE_EVENT) {
+            return false;
+        }
+
+        if ((currentTime - lastAirdropTime) >= MIN_TIME_BETWEEN_EVENTS) {
+            lastAirdropTime = currentTime;
+            return Math.random() < 0.25;
+        }
+
+        return false;
     }
 
     private void triggerEvent(ServerWrapper server, long currentTime) {
@@ -78,6 +86,15 @@ public class AirdropManager {
         int worldWidth = WorldGenerator.getWorldWidth();
         int worldHeight = WorldGenerator.getWorldHeight();
 
+        int planeX = plane.getX();
+        int planeY = plane.getY();
+        double xProgress = (double) planeX / worldWidth;
+        double yProgress = (double) planeY / worldHeight;
+
+        if (xProgress < 0.2 || xProgress > 0.8 || yProgress < 0.2 || yProgress > 0.8) {
+            return false;
+        }
+
         long delay = (long) ((worldWidth + worldHeight) * DELAY_FACTOR);
         if ((currentTime - dropStartTime) < delay) {
             return false;
@@ -85,17 +102,17 @@ public class AirdropManager {
 
         int mapMarginX = worldWidth / 10;
         int mapMarginY = worldHeight / 10;
+        boolean withinBounds = planeX > mapMarginX && planeX < (worldWidth - mapMarginX)
+                && planeY > mapMarginY && planeY < (worldHeight - mapMarginY);
 
-        boolean withinBounds = plane.getX() > mapMarginX && plane.getX() < (worldWidth - mapMarginX)
-                && plane.getY() > mapMarginY && plane.getY() < (worldHeight - mapMarginY);
-
-        int planeTileX = plane.getX() / WorldGenerator.TILE_SIZE;
-        int planeTileY = plane.getY() / WorldGenerator.TILE_SIZE;
+        int planeTileX = planeX / WorldGenerator.TILE_SIZE;
+        int planeTileY = planeY / WorldGenerator.TILE_SIZE;
         boolean aboveGrass = (planeTileX >= 0 && planeTileX < world.length) &&
                 (planeTileY >= 0 && planeTileY < world[0].length) &&
                 world[planeTileX][planeTileY] == WorldGenerator.GRASS;
 
-        boolean noCollision = !isCollidingWithStaticEntities(plane.getX(), plane.getY(), entityManager);
+        boolean noCollision = !isCollidingWithStaticEntities(planeX, planeY, entityManager);
+
         return withinBounds && aboveGrass && noCollision;
     }
 
@@ -118,8 +135,6 @@ public class AirdropManager {
         }, 2000);
     }
 
-    // TODO: FIND AND FIX WHY THE DROP WHEN THE PLANE IS COMING FROM DOWN_LEFT IS
-    // SPAWNING RIGHT AWAY !
     private int[] getAirdropPosition(Plane plane) {
         int centerX = plane.getX() + plane.getWidth() / 2;
         int centerY = plane.getY() + plane.getHeight() / 2;

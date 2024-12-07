@@ -35,14 +35,14 @@ public class ServerCollisionManager {
     private static final int WORLD_MAX_X = WorldGenerator.getWorldWidth();
     private static final int WORLD_MAX_Y = WorldGenerator.getWorldHeight();
 
-    private ServerWrapper server;
-    private EntityManager entityManager;
+    private final ServerWrapper server;
+    private final EntityManager entityManager;
 
     private final Map<Integer, Long> waterTimers = new HashMap<>();
     private final Map<Integer, Long> lastDamageTime = new HashMap<>();
     private final Set<Integer> playersInWater = new HashSet<>();
 
-    private byte[][] worldData;
+    private final byte[][] worldData;
 
     public ServerCollisionManager(ServerWrapper server, EntityManager entityManager, byte[][] worldData) {
         this.server = server;
@@ -175,44 +175,94 @@ public class ServerCollisionManager {
     }
 
     private void handleCollision(StaticEntity entity, StaticEntity other) {
-        if (entity instanceof MovableEntity && other instanceof MovableEntity) {
-            MovableEntity movableEntity1 = (MovableEntity) entity;
-            MovableEntity movableEntity2 = (MovableEntity) other;
+        if (entity instanceof Player && other instanceof StaticEntity) {
+            Player player = (Player) entity;
 
-            int pushFactor = 2;
-            int dx = movableEntity1.getX() - movableEntity2.getX();
-            int dy = movableEntity1.getY() - movableEntity2.getY();
-
-            if (dx == 0 && dy == 0) {
-                return;
-            }
-
-            int distance = (int) Math.sqrt(dx * dx + dy * dy);
-            if (distance != 0) {
-                dx = (dx * pushFactor) / distance;
-                dy = (dy * pushFactor) / distance;
-
-                movableEntity1.teleport(movableEntity1.getX() + dx, movableEntity1.getY() + dy);
-                movableEntity2.teleport(movableEntity2.getX() - dx, movableEntity2.getY() - dy);
-            }
-        } else if ((entity instanceof MovableEntity && other instanceof StaticEntity) ||
-                (entity instanceof StaticEntity && other instanceof MovableEntity)) {
-            MovableEntity movableEntity = (entity instanceof MovableEntity) ? (MovableEntity) entity
-                    : (MovableEntity) other;
-
-            double prevX = movableEntity.getPrevX();
-            double prevY = movableEntity.getPrevY();
-            double currX = movableEntity.getX();
-            double currY = movableEntity.getY();
-
-            double deltaX = currX - prevX;
-            double deltaY = currY - prevY;
-
-            if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                movableEntity.teleport((int) prevX, (int) currY);
+            if (isPlayerStuck(player, other)) {
+                int[] freePosition = findNearestFreePosition(player);
+                if (freePosition != null) {
+                    player.teleport(freePosition[0], freePosition[1]);
+                }
             } else {
-                movableEntity.teleport((int) currX, (int) prevY);
+                resolveCollision(player, other);
             }
+        } else if (entity instanceof MovableEntity && other instanceof MovableEntity) {
+            resolveMovableCollision((MovableEntity) entity, (MovableEntity) other);
+        }
+    }
+
+    private boolean isPlayerStuck(Player player, StaticEntity other) {
+        return player.isColliding(other);
+    }
+
+    private int[] findNearestFreePosition(Player player) {
+        int startX = player.getX();
+        int startY = player.getY();
+        int searchRadius = 10;
+        int step = WorldGenerator.TILE_SIZE;
+
+        for (int radius = step; radius <= searchRadius * step; radius += step) {
+            for (int dx = -radius; dx <= radius; dx += step) {
+                for (int dy = -radius; dy <= radius; dy += step) {
+                    int checkX = startX + dx;
+                    int checkY = startY + dy;
+
+                    if (isWithinBounds(checkX, checkY) && isFreePosition(checkX, checkY, player)) {
+                        return new int[] { checkX, checkY };
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean isFreePosition(int x, int y, Player player) {
+        for (StaticEntity entity : entityManager.getStaticEntities()) {
+            if (entity != player && entity.getHitbox() != null
+                    && entity.getHitbox().intersects(x, y, player.getWidth(), player.getHeight())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isWithinBounds(int x, int y) {
+        return x >= WORLD_MIN_X && x + WorldGenerator.TILE_SIZE <= WORLD_MAX_X &&
+                y >= WORLD_MIN_Y && y + WorldGenerator.TILE_SIZE <= WORLD_MAX_Y;
+    }
+
+    private void resolveCollision(Player player, StaticEntity other) {
+        double prevX = player.getPrevX();
+        double prevY = player.getPrevY();
+        double currX = player.getX();
+        double currY = player.getY();
+
+        double deltaX = currX - prevX;
+        double deltaY = currY - prevY;
+
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            player.teleport((int) prevX, (int) currY);
+        } else {
+            player.teleport((int) currX, (int) prevY);
+        }
+    }
+
+    private void resolveMovableCollision(MovableEntity entity1, MovableEntity entity2) {
+        int pushFactor = 2;
+        int dx = entity1.getX() - entity2.getX();
+        int dy = entity1.getY() - entity2.getY();
+
+        if (dx == 0 && dy == 0) {
+            return;
+        }
+
+        int distance = (int) Math.sqrt(dx * dx + dy * dy);
+        if (distance != 0) {
+            dx = (dx * pushFactor) / distance;
+            dy = (dy * pushFactor) / distance;
+
+            entity1.teleport(entity1.getX() + dx, entity1.getY() + dy);
+            entity2.teleport(entity2.getX() - dx, entity2.getY() - dy);
         }
     }
 
