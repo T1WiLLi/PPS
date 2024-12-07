@@ -40,8 +40,6 @@ public class WorldEntitiesGenerator {
 
                 if (entity != null && isValidPlacement(entity)) {
                     this.worldEntities.add(entity);
-                } else {
-                    System.out.println("PLACEMENT IS NOT VALID!");
                 }
             }
         }
@@ -73,7 +71,7 @@ public class WorldEntitiesGenerator {
 
         for (int i = 0; i < entityTypes.length; i++) {
             switch (entityTypes[i]) {
-                case AIR_DROP_CRATE -> weights[i] = 0; // Exclude air drop crates
+                case AIR_DROP_CRATE -> weights[i] = 0;
                 case TREE, TREE_DEAD -> weights[i] = 30;
                 case STONE, STONE_GRASS -> weights[i] = 20;
                 case CRATE -> weights[i] = 15;
@@ -137,8 +135,9 @@ public class WorldEntitiesGenerator {
 
     private Item generateWeapon(Random random, int x, int y, boolean highTier) {
         WeaponType[] weaponPool = highTier
-                ? new WeaponType[] { WeaponType.AK47, WeaponType.HK416, WeaponType.DEAGLE, WeaponType.M1A1 }
-                : new WeaponType[] { WeaponType.GLOCK, WeaponType.MAC10, WeaponType.MP5, WeaponType.COLT45 };
+                ? new WeaponType[] { WeaponType.AK47, WeaponType.HK416, WeaponType.DEAGLE, WeaponType.M1A1,
+                        WeaponType.M4A1 }
+                : new WeaponType[] { WeaponType.MAC10, WeaponType.MP5, WeaponType.AK47, WeaponType.SCORPION };
         WeaponType weaponType = weaponPool[random.nextInt(weaponPool.length)];
         Weapon weapon = ItemFactory.createItem(weaponType);
         weapon.teleport(x, y);
