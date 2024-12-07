@@ -23,7 +23,7 @@ public enum WeaponType {
     M1A1(25, 3400, 0.5, Optional.of(5), Optional.of(3.0), Optional.of(20)),
 
     // Mid-tier Assault Rifles
-    SCORPION(15, 2600, 0.12, Optional.of(3), Optional.of(2.4), Optional.of(25)),
+    SCORP(15, 2600, 0.12, Optional.of(3), Optional.of(2.4), Optional.of(25)),
 
     // Fists by default.
     FIST(5, 25, 0.020, Optional.empty(), Optional.empty(), Optional.empty());

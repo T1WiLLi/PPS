@@ -71,7 +71,7 @@ public class ItemFactory {
 
         Weapon weapon = switch (type) {
             case FIST -> createMeleeWeapon(new Fist(itemId, type.name(), "Good'ol fist", preview), type);
-            case AK47, HK416, M1A1, MAC10, MP5, COLT45, DEAGLE, GLOCK ->
+            case AK47, SCORPION, M4A1, HK416, M1A1, MAC10, MP5, COLT45, DEAGLE, GLOCK ->
                 new RangedWeapon(itemId, type.name(), "Description", preview, properties, type);
             default -> throw new IllegalArgumentException("Unknown weapon type");
         };

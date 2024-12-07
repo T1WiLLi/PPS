@@ -137,7 +137,7 @@ public class WorldEntitiesGenerator {
         WeaponType[] weaponPool = highTier
                 ? new WeaponType[] { WeaponType.AK47, WeaponType.HK416, WeaponType.DEAGLE, WeaponType.M1A1,
                         WeaponType.M4A1 }
-                : new WeaponType[] { WeaponType.MAC10, WeaponType.MP5, WeaponType.AK47, WeaponType.SCORPION };
+                : new WeaponType[] { WeaponType.MAC10, WeaponType.MP5, WeaponType.AK47, WeaponType.SCORP };
         WeaponType weaponType = weaponPool[random.nextInt(weaponPool.length)];
         Weapon weapon = ItemFactory.createItem(weaponType);
         weapon.teleport(x, y);
