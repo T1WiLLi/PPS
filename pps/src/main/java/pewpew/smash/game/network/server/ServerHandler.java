@@ -45,7 +45,7 @@ public class ServerHandler extends Handler implements Runnable {
         this.collisionManager = new ServerCollisionManager(server, entityManager, worldManager.getWorldData());
         this.serverTime = ServerTime.getInstance();
         this.entityManager.addWorldStaticEntity(this.worldManager.getStaticEntities());
-        this.eventManager = new ServerEventManager(type);
+        this.eventManager = new ServerEventManager(type, worldManager.getWorldData());
         ServerBulletTracker.getInstance().setServerReference(this.server);
         registersClasses(this.server.getKryo());
         ServerPacketRegistry serverRegistry = new ServerPacketRegistry(entityManager, server, itemUpdater);
@@ -66,7 +66,7 @@ public class ServerHandler extends Handler implements Runnable {
             if (serverTime.shouldUpdate()) {
                 update();
                 sendStateUpdate();
-                eventManager.update(this.server);
+                eventManager.update(this.server, this.entityManager);
             }
         }
     }

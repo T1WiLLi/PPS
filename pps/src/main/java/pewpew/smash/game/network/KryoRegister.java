@@ -22,6 +22,7 @@ import pewpew.smash.game.network.packets.BasePacket;
 import pewpew.smash.game.network.packets.BroadcastMessagePacket;
 import pewpew.smash.game.network.packets.BulletCreatePacket;
 import pewpew.smash.game.network.packets.BulletRemovePacket;
+import pewpew.smash.game.network.packets.CrateDropPacket;
 import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.InventoryPacket;
 import pewpew.smash.game.network.packets.ItemAddPacket;
@@ -29,6 +30,7 @@ import pewpew.smash.game.network.packets.ItemRemovePacket;
 import pewpew.smash.game.network.packets.MouseActionPacket;
 import pewpew.smash.game.network.packets.MouseInputPacket;
 import pewpew.smash.game.network.packets.PickupItemRequestPacket;
+import pewpew.smash.game.network.packets.PlaneStatePacket;
 import pewpew.smash.game.network.packets.PlayerDeathPacket;
 import pewpew.smash.game.network.packets.PlayerInWaterWarningPacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
@@ -90,6 +92,8 @@ public class KryoRegister {
         kryo.register(StormStatePacket.class);
         kryo.register(StormEventCreationPacket.class);
         kryo.register(SyncTimePacket.class);
+        kryo.register(CrateDropPacket.class);
+        kryo.register(PlaneStatePacket.class);
     }
 
     private void registerObjects(Kryo kryo) {

@@ -21,16 +21,13 @@ public final class ServerWorldManager {
     public ServerWorldManager(ServerWrapper server, int amountOfEntityToBeGenerated, int numItems) {
         this.seed = WorldGenerator.generateSeed();
         this.worldGenerator = new WorldGenerator(this.seed);
-        System.out.println("World generated");
         this.worldData = this.worldGenerator.getWorldData();
         this.worldEntitiesGenerator = new WorldEntitiesGenerator();
         this.worldServerIntegration = new WorldServerIntegration(server);
 
         entities = this.worldEntitiesGenerator.generateWorldEntities(seed, worldData,
                 amountOfEntityToBeGenerated);
-        System.out.println("World entities generated");
         this.worldEntitiesGenerator.generateItems(worldData, numItems);
-        System.out.println("Items generated");
     }
 
     public byte[][] getWorldData() {

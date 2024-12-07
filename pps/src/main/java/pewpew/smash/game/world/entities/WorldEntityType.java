@@ -67,6 +67,14 @@ public enum WorldEntityType {
                         76,
                         100,
                         (entity) -> new Rectangle(entity.getX(), entity.getY(), entity.getWidth(), entity.getHeight())),
+        AIR_DROP_CRATE(
+                        "obstacle-airdrop-spritesheet-01",
+                        true,
+                        92,
+                        92,
+                        150,
+                        (entity) -> new Ellipse2D.Float(entity.getX(), entity.getY(), entity.getWidth(),
+                                        entity.getHeight())),
         AMMO_CRATE(
                         "obstacle-crate-23-spritesheet",
                         true,

@@ -73,6 +73,7 @@ public class WorldEntitiesGenerator {
 
         for (int i = 0; i < entityTypes.length; i++) {
             switch (entityTypes[i]) {
+                case AIR_DROP_CRATE -> weights[i] = 0; // Exclude air drop crates
                 case TREE, TREE_DEAD -> weights[i] = 30;
                 case STONE, STONE_GRASS -> weights[i] = 20;
                 case CRATE -> weights[i] = 15;

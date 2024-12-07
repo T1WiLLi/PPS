@@ -210,6 +210,28 @@ public class EntityManager {
         }
     }
 
+    public int getNextID(Class<?> type) {
+        return switch (type.getSimpleName()) {
+            case "Player" -> playerEntitiesMap.values().stream()
+                    .max(Comparator.comparingInt(Player::getId))
+                    .map(player -> player.getId() + 1)
+                    .orElse(0);
+            case "MovableEntity" -> movableEntitiesMap.values().stream()
+                    .max(Comparator.comparingInt(MovableEntity::getId))
+                    .map(entity -> entity.getId() + 1)
+                    .orElse(0);
+            case "StaticEntity" -> staticEntitiesMap.values().stream()
+                    .max(Comparator.comparingInt(StaticEntity::getId))
+                    .map(entity -> entity.getId() + 1)
+                    .orElse(0);
+            case "Bullet" -> bulletEntitiesMap.values().stream()
+                    .max(Comparator.comparingInt(Bullet::getId))
+                    .map(bullet -> bullet.getId() + 1)
+                    .orElse(0);
+            default -> throw new IllegalArgumentException("Unsupported entity type: " + type.getSimpleName());
+        };
+    }
+
     public String sizeToString() {
         return "Player[" + playerEntitiesMap.size() + "] & MovableEntity[" + movableEntitiesMap.size()
                 + "] & StaticEntity[" + staticEntitiesMap.size() + "] & Bullet[" + bulletEntitiesMap.size() + "]";
