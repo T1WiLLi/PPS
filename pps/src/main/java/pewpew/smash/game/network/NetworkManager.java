@@ -14,20 +14,28 @@ public class NetworkManager {
     private ClientHandler client;
     private ServerHandler server;
     private final AtomicBoolean isHost;
-    private static final String LOCALHOST = "127.0.0.1";
 
-    public NetworkManager() {
+    private static NetworkManager instance;
+
+    public static NetworkManager getInstance() {
+        if (instance == null) {
+            instance = new NetworkManager();
+        }
+        return instance;
+    }
+
+    private NetworkManager() {
         this.isHost = new AtomicBoolean(false);
     }
 
-    public void initialize(String host, int port, boolean isHosting, GameModeType type) throws IOException {
-        this.isHost.set(isHosting);
+    public void initialize(String host, int port, boolean hosting, GameModeType type, boolean lobbyMode)
+            throws IOException {
+        this.isHost.set(hosting);
 
-        if (isHosting) {
+        if (hosting) {
             server = new ServerHandler(port, type);
             server.start();
-
-            client = new ClientHandler(LOCALHOST, port, type);
+            client = new ClientHandler("127.0.0.1", port, type);
         } else {
             client = new ClientHandler(host, port, type);
         }

@@ -11,6 +11,7 @@ public class StateFactory {
     static {
         stateSuppliers.put(GameStateType.MENU, Menu::new);
         stateSuppliers.put(GameStateType.PLAYING, Playing::new);
+        stateSuppliers.put(GameStateType.LOBBY, Lobby::new);
     }
 
     public static void preLoadStates() {

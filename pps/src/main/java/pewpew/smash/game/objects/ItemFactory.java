@@ -59,7 +59,7 @@ public class ItemFactory {
                 new RangedWeaponProperties(20, 5, 10, new Color(119, 136, 153), false));
         rangedWeaponPropertiesMap.put(WeaponType.M4A1,
                 new RangedWeaponProperties(85, 12, 18, new Color(34, 139, 34), true));
-        rangedWeaponPropertiesMap.put(WeaponType.SCORPION,
+        rangedWeaponPropertiesMap.put(WeaponType.SCORP,
                 new RangedWeaponProperties(65, 9, 14, new Color(139, 69, 19), true));
     }
 
@@ -71,7 +71,7 @@ public class ItemFactory {
 
         Weapon weapon = switch (type) {
             case FIST -> createMeleeWeapon(new Fist(itemId, type.name(), "Good'ol fist", preview), type);
-            case AK47, SCORPION, M4A1, HK416, M1A1, MAC10, MP5, COLT45, DEAGLE, GLOCK ->
+            case AK47, SCORP, M4A1, HK416, M1A1, MAC10, MP5, COLT45, DEAGLE, GLOCK ->
                 new RangedWeapon(itemId, type.name(), "Description", preview, properties, type);
             default -> throw new IllegalArgumentException("Unknown weapon type");
         };

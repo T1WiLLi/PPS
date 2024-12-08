@@ -67,11 +67,19 @@ public class SpectatorManager {
     public void update() {
         if (isSpectating) {
             Player target = getSpectatingTarget();
-            if (target != null) {
-                Camera.getInstance().centerOn(target);
-            } else {
-                stopSpectating();
+            if (target == null) {
+                if (!trySwitchToAnotherPlayer()) {
+                    stopSpectating();
+                    return;
+                }
+                target = getSpectatingTarget();
+                if (target == null) {
+                    stopSpectating();
+                    return;
+                }
             }
+
+            Camera.getInstance().centerOn(target);
 
             handleSpectatorControls();
         }
@@ -102,6 +110,21 @@ public class SpectatorManager {
                 lastSwitchTime = currentTime;
             }
         }
+    }
+
+    private boolean trySwitchToAnotherPlayer() {
+        List<Player> players = new ArrayList<>(entityManager.getPlayerEntities());
+        if (players.isEmpty()) {
+            return false;
+        }
+
+        int currentIndex = getPlayerIndex(players, spectatingPlayerId);
+        if (currentIndex == -1) {
+            return startSpectating(players.get(0).getId());
+        }
+
+        switchToNextPlayer();
+        return getSpectatingTarget() != null;
     }
 
     private void switchToNextPlayer() {

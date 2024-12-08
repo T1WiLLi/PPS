@@ -16,17 +16,17 @@ public class ServerPacketRegistry {
     private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors = new HashMap<>();
 
     public ServerPacketRegistry(EntityManager entityManager, ServerWrapper server,
-            ServerItemUpdater serverItemUpdater) {
+            ServerItemUpdater serverItemUpdater, ServerLobbyManager lobbyManager) {
         Reflections reflections = new Reflections("pewpew.smash.game.network.processor.serverProcessor");
         Set<Class<? extends ServerProcessor>> processorClasses = reflections.getSubTypesOf(ServerProcessor.class);
 
         for (Class<? extends ServerProcessor> processorClass : processorClasses) {
-            registerProcessor(processorClass, entityManager, server, serverItemUpdater);
+            registerProcessor(processorClass, entityManager, server, serverItemUpdater, lobbyManager);
         }
     }
 
     private void registerProcessor(Class<? extends ServerProcessor> processorClass, EntityManager entityManager,
-            ServerWrapper server, ServerItemUpdater serverItemUpdater) {
+            ServerWrapper server, ServerItemUpdater serverItemUpdater, ServerLobbyManager lobbyManager) {
         try {
             Constructor<?>[] constructors = processorClass.getConstructors();
 
@@ -43,6 +43,11 @@ public class ServerPacketRegistry {
                         parameterTypes[1] == ServerWrapper.class &&
                         parameterTypes[2] == ServerItemUpdater.class) {
                     processor = (PacketProcessor<?>) constructor.newInstance(entityManager, server, serverItemUpdater);
+                } else if (parameterTypes.length == 3 &&
+                        parameterTypes[0] == EntityManager.class &&
+                        parameterTypes[1] == ServerWrapper.class &&
+                        parameterTypes[2] == ServerLobbyManager.class) {
+                    processor = (PacketProcessor<?>) constructor.newInstance(entityManager, server, lobbyManager);
                 }
 
                 if (processor != null) {

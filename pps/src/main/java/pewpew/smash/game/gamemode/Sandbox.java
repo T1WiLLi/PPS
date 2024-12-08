@@ -2,8 +2,14 @@ package pewpew.smash.game.gamemode;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 import pewpew.smash.engine.Canvas;
+import pewpew.smash.game.Camera;
+import pewpew.smash.game.SpectatorManager;
+import pewpew.smash.game.entities.Player;
+import pewpew.smash.game.hud.HudManager;
+import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.network.NetworkManager;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.client.ClientEntityRenderer;
@@ -13,13 +19,6 @@ import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.objects.SpecialType;
 import pewpew.smash.game.objects.special.Scope;
 import pewpew.smash.game.world.WorldGenerator;
-import pewpew.smash.game.Camera;
-import pewpew.smash.game.SpectatorManager;
-import pewpew.smash.game.entities.Player;
-import pewpew.smash.game.hud.HudManager;
-import pewpew.smash.game.input.GamePad;
-
-import java.awt.image.BufferedImage;
 
 public class Sandbox implements GameMode {
     private NetworkManager networkManager;
@@ -39,22 +38,12 @@ public class Sandbox implements GameMode {
             throw new IllegalArgumentException("Missing required arguments: host, port, isHosting");
         }
 
-        try {
-            String host = args[0];
-            int port = Integer.parseInt(args[1]);
-            boolean isHosting = Boolean.parseBoolean(args[2]);
-
-            networkManager = new NetworkManager();
-            networkManager.initialize(host, port, isHosting, GameModeType.BATTLE_ROYALE);
-            SpectatorManager.getInstance().initialize(networkManager.getEntityManager());
-            entityRenderer = new ClientEntityRenderer(networkManager.getEntityManager());
-            entityUpdater = new ClientEntityUpdater(networkManager.getEntityManager());
-            itemRenderer = new ClientItemRenderer();
-            System.out.println("Sandbox initialized");
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to initialize network components", e);
-        }
+        this.networkManager = NetworkManager.getInstance();
+        SpectatorManager.getInstance().initialize(networkManager.getEntityManager());
+        entityRenderer = new ClientEntityRenderer(networkManager.getEntityManager());
+        entityUpdater = new ClientEntityUpdater(networkManager.getEntityManager());
+        itemRenderer = new ClientItemRenderer();
+        System.out.println("Sandbox initialized");
     }
 
     @Override
@@ -89,6 +78,9 @@ public class Sandbox implements GameMode {
 
     private void handleZoomControls() {
         Player local = networkManager.getEntityManager().getPlayerEntity(User.getInstance().getLocalID().get());
+        if (local == null)
+            return;
+
         if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_F1)) {
             local.setScope((Scope) ItemFactory.createItem(SpecialType.SCOPE_X1));
         } else if (GamePad.getInstance().isKeyPressed(KeyEvent.VK_F2)) {
@@ -103,7 +95,9 @@ public class Sandbox implements GameMode {
     @Override
     public void render(Canvas canvas) {
         canvas.scale(Camera.getZoom(), Camera.getZoom());
-        canvas.renderImage(this.worldImage, (int) -this.camera.getX(), (int) -this.camera.getY());
+        if (this.worldImage != null) {
+            canvas.renderImage(this.worldImage, (int) -this.camera.getX(), (int) -this.camera.getY());
+        }
         itemRenderer.render(canvas, camera, networkManager.getEntityManager()
                 .getPlayerEntity(User.getInstance().getLocalID().get()));
         entityRenderer.render(canvas, camera);

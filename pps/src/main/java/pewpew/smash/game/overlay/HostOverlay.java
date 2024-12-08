@@ -6,11 +6,10 @@ import java.util.TimerTask;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.constants.Constants;
-import pewpew.smash.game.gamemode.GameModeManager;
 import pewpew.smash.game.gamemode.GameModeType;
+import pewpew.smash.game.network.NetworkManager;
+import pewpew.smash.game.network.client.ClientLobbyManager;
 import pewpew.smash.game.network.upnp.NetworkUtils;
-import pewpew.smash.game.states.GameStateType;
-import pewpew.smash.game.states.StateManager;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.ui.Checkbox;
 import pewpew.smash.game.ui.Cycler;
@@ -353,29 +352,32 @@ public class HostOverlay extends Overlay {
         }
 
         String port = portField.getText().trim().isEmpty() ? "25565" : portField.getText().trim();
-        if (!NetworkUtils.validatePort(Integer.parseInt(port))) {
-            errorMessage = "Invalid Port. Please enter a number between 1 and 65535.";
+        int portNumber;
+        try {
+            portNumber = Integer.parseInt(port);
+            if (!NetworkUtils.validatePort(portNumber)) {
+                errorMessage = "Invalid Port. Please enter a number between 1 and 65535.";
+                return;
+            }
+        } catch (NumberFormatException e) {
+            errorMessage = "Port must be a number.";
             return;
         }
 
-        String[] params;
-        switch (gameMode) {
-            case SANDBOX -> {
-                String host = sandboxMultiplayerOn.isChecked() ? userIP : "127.0.0.1";
-                params = new String[] { host, port, "true" };
-            }
-            case BATTLE_ROYALE -> params = new String[] { "mockBRHost", "mockBRPort", "mockBRParams" };
-            case ARENA -> params = new String[] { "mockArenaHost", "mockArenaPort", "mockArenaParams" };
-            default -> {
-                errorMessage = "Unsupported game mode.";
-                return;
-            }
-        }
+        String host = sandboxMultiplayerOn.isChecked() ? userIP : "127.0.0.1";
 
-        errorMessage = "";
-        StateManager.getInstance().setState(GameStateType.PLAYING);
-        GameModeManager.getInstance().setGameMode(gameMode);
-        GameModeManager.getInstance().getCurrentGameMode().build(params);
-        close();
+        try {
+            boolean isHosting = true;
+            NetworkManager networkManager = NetworkManager.getInstance();
+            networkManager.initialize(host, portNumber, isHosting, gameMode, true);
+
+            ClientLobbyManager.getInstance().enterLobby();
+
+            errorMessage = "";
+            close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            errorMessage = "Failed to host the game: " + e.getMessage();
+        }
     }
 }

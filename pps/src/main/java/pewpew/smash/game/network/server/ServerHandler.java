@@ -34,6 +34,9 @@ public class ServerHandler extends Handler implements Runnable {
 
     private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors;
 
+    private ServerLobbyManager lobbyManager;
+    private boolean gameStarted = false;
+
     public ServerHandler(int port, GameModeType type) {
         ServerTime.reset();
         this.server = new ServerWrapper(port, port);
@@ -47,8 +50,12 @@ public class ServerHandler extends Handler implements Runnable {
         this.entityManager.addWorldStaticEntity(this.worldManager.getStaticEntities());
         this.eventManager = new ServerEventManager(type, worldManager.getWorldData());
         ServerBulletTracker.getInstance().setServerReference(this.server);
+
+        this.lobbyManager = new ServerLobbyManager(server);
+
         registersClasses(this.server.getKryo());
-        ServerPacketRegistry serverRegistry = new ServerPacketRegistry(entityManager, server, itemUpdater);
+        ServerPacketRegistry serverRegistry = new ServerPacketRegistry(entityManager, server, itemUpdater,
+                lobbyManager);
         packetProcessors = serverRegistry.getPacketProcessors();
     }
 
@@ -62,11 +69,20 @@ public class ServerHandler extends Handler implements Runnable {
     @Override
     public void run() {
         this.eventManager.initEvents(this.server);
+
         while (!Thread.currentThread().isInterrupted()) {
-            if (serverTime.shouldUpdate()) {
-                update();
-                sendStateUpdate();
-                eventManager.update(this.server, this.entityManager);
+            if (lobbyManager.isLobbyActive()) {
+                lobbyManager.updateLobby();
+            } else {
+                if (!gameStarted) {
+                    postLobbyGameInit();
+                }
+
+                if (serverTime.shouldUpdate()) {
+                    update();
+                    sendStateUpdate();
+                    eventManager.update(this.server, this.entityManager);
+                }
             }
         }
     }
@@ -87,32 +103,22 @@ public class ServerHandler extends Handler implements Runnable {
 
     @Override
     protected void onConnect(Connection connection) {
-        Player player = new Player(connection.getID());
-        player.teleport(1000, 1000);
-        player.setRotation(0);
-
-        this.entityManager.getPlayerEntities().forEach(existingPlayer -> {
-            PlayerJoinedPacket existingPlayerPacket = new PlayerJoinedPacket(
-                    existingPlayer.getId(),
-                    existingPlayer.getUsername());
-            WeaponStatePacket weaponStatePacket = WeaponStateSerializer
-                    .serializeWeaponState(existingPlayer.getEquippedWeapon());
-            this.server.sendToTCP(connection.getID(), existingPlayerPacket);
-            this.server.sendToTCP(connection.getID(), weaponStatePacket);
-        });
-
-        WeaponStatePacket playerWeaponStatePacket = WeaponStateSerializer
-                .serializeWeaponState(player.getEquippedWeapon());
-        this.server.sendToTCP(connection.getID(), playerWeaponStatePacket);
-        this.entityManager.addPlayerEntity(player.getId(), player);
-        this.worldManager.sendWorldData(connection.getID());
-        this.server.sendToTCP(connection.getID(), new SyncTimePacket(ServerTime.getInstance().getElapsedTimeMillis()));
+        if (lobbyManager.isLobbyActive()) {
+            lobbyManager.addPlayer(connection.getID(), "");
+        } else {
+            // Game already started, ignore new connections or handle as spectators
+            // For now, we just do nothing
+        }
     }
 
     @Override
     protected void onDisconnect(Connection connection) {
-        this.entityManager.removePlayerEntity(connection.getID());
-        this.server.sendToAllTCP(new PlayerLeftPacket(connection.getID()));
+        if (lobbyManager.isLobbyActive()) {
+            lobbyManager.removePlayer(connection.getID());
+        } else {
+            this.entityManager.removePlayerEntity(connection.getID());
+            this.server.sendToAllTCP(new PlayerLeftPacket(connection.getID()));
+        }
     }
 
     @Override
@@ -163,4 +169,37 @@ public class ServerHandler extends Handler implements Runnable {
     private void sendPlayerMouseInput() {
         this.entityUpdater.sendPlayerMouseInput(this.server);
     }
+
+    private void postLobbyGameInit() {
+        ServerTime.reset();
+        Map<Integer, String> finalLobbyPlayers = lobbyManager.getLobbyPlayers();
+
+        for (Map.Entry<Integer, String> entry : finalLobbyPlayers.entrySet()) {
+            int playerId = entry.getKey();
+            String username = entry.getValue();
+
+            Player player = new Player(playerId, username);
+            player.teleport(1000, 1000);
+            player.setRotation(0);
+            this.entityManager.addPlayerEntity(playerId, player);
+        }
+
+        for (Player player : this.entityManager.getPlayerEntities()) {
+            PlayerJoinedPacket playerJoinedPacket = new PlayerJoinedPacket(player.getId(), player.getUsername());
+            WeaponStatePacket weaponStatePacket = WeaponStateSerializer
+                    .serializeWeaponState(player.getEquippedWeapon());
+            this.server.sendToAllTCP(playerJoinedPacket);
+            this.server.sendToAllTCP(weaponStatePacket);
+        }
+
+        for (Player player : this.entityManager.getPlayerEntities()) {
+            int playerId = player.getId();
+            this.worldManager.sendWorldData(playerId);
+            this.server.sendToTCP(playerId, new SyncTimePacket(ServerTime.getInstance().getElapsedTimeMillis()));
+        }
+
+        lobbyManager.clearLobby();
+        gameStarted = true;
+    }
+
 }

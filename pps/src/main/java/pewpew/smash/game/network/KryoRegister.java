@@ -1,5 +1,6 @@
 package pewpew.smash.game.network;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import pewpew.smash.game.network.packets.DirectionPacket;
 import pewpew.smash.game.network.packets.InventoryPacket;
 import pewpew.smash.game.network.packets.ItemAddPacket;
 import pewpew.smash.game.network.packets.ItemRemovePacket;
+import pewpew.smash.game.network.packets.LobbyStatePacket;
 import pewpew.smash.game.network.packets.MouseActionPacket;
 import pewpew.smash.game.network.packets.MouseInputPacket;
 import pewpew.smash.game.network.packets.PickupItemRequestPacket;
@@ -41,6 +43,7 @@ import pewpew.smash.game.network.packets.PlayerUsernamePacket;
 import pewpew.smash.game.network.packets.PositionPacket;
 import pewpew.smash.game.network.packets.PreventActionForPlayerPacket;
 import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
+import pewpew.smash.game.network.packets.StartGamePacket;
 import pewpew.smash.game.network.packets.StormEventCreationPacket;
 import pewpew.smash.game.network.packets.StormStatePacket;
 import pewpew.smash.game.network.packets.SyncTimePacket;
@@ -94,6 +97,9 @@ public class KryoRegister {
         kryo.register(SyncTimePacket.class);
         kryo.register(CrateDropPacket.class);
         kryo.register(PlaneStatePacket.class);
+        kryo.register(LobbyStatePacket.class);
+        kryo.register(StartGamePacket.class);
+
     }
 
     private void registerObjects(Kryo kryo) {
@@ -119,5 +125,6 @@ public class KryoRegister {
         kryo.register(Integer.class);
         kryo.register(Map.class);
         kryo.register(HashMap.class);
+        kryo.register(ArrayList.class);
     }
 }

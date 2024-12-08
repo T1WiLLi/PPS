@@ -175,7 +175,7 @@ public class ServerCollisionManager {
     }
 
     private void handleCollision(StaticEntity entity, StaticEntity other) {
-        if (entity instanceof Player && other instanceof StaticEntity) {
+        if (entity instanceof Player && !(other instanceof MovableEntity)) {
             Player player = (Player) entity;
 
             if (isPlayerStuck(player, other)) {
@@ -186,6 +186,7 @@ public class ServerCollisionManager {
             } else {
                 resolveCollision(player, other);
             }
+
         } else if (entity instanceof MovableEntity && other instanceof MovableEntity) {
             resolveMovableCollision((MovableEntity) entity, (MovableEntity) other);
         }

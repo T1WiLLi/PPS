@@ -126,6 +126,13 @@ public class Canvas {
         }
     }
 
+    public void clear() {
+        graphics2D.clearRect(0, 0, (int) graphics2D.getDeviceConfiguration().getBounds().getWidth(),
+                (int) graphics2D.getDeviceConfiguration().getBounds().getHeight());
+        renderRectangle(0, 0, (int) graphics2D.getDeviceConfiguration().getBounds().getWidth(),
+                (int) graphics2D.getDeviceConfiguration().getBounds().getHeight(), Color.BLACK);
+    }
+
     // Text Rendering Methods
     public void renderString(String text, int x, int y, Color color) {
         setGraphicsProperties(color, 1);

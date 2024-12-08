@@ -5,11 +5,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import pewpew.smash.engine.Canvas;
-import pewpew.smash.game.gamemode.GameModeManager;
 import pewpew.smash.game.gamemode.GameModeType;
+import pewpew.smash.game.network.NetworkManager;
+import pewpew.smash.game.network.client.ClientLobbyManager;
 import pewpew.smash.game.network.upnp.NetworkUtils;
-import pewpew.smash.game.states.GameStateType;
-import pewpew.smash.game.states.StateManager;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.ui.TextField;
 import pewpew.smash.game.utils.FontFactory;
@@ -120,8 +119,10 @@ public class JoinOverlay extends Overlay {
             return;
         }
 
+        int portNumber;
         try {
-            if (!NetworkUtils.validatePort(Integer.parseInt(port))) {
+            portNumber = Integer.parseInt(port);
+            if (!NetworkUtils.validatePort(portNumber)) {
                 errorMessage = "Invalid Port. Port must be between 1 and 65535.";
                 resetErrorMessageAfterDelay();
                 return;
@@ -129,15 +130,24 @@ public class JoinOverlay extends Overlay {
         } catch (NumberFormatException e) {
             errorMessage = "Port must be a number.";
             resetErrorMessageAfterDelay();
+            return;
         }
 
         errorMessage = "";
 
-        StateManager.getInstance().setState(GameStateType.PLAYING);
-        GameModeManager.getInstance().setGameMode(GameModeType.SANDBOX);
-        GameModeManager.getInstance().getCurrentGameMode().build(new String[] { ip, port, "false" });
+        try {
+            boolean isHosting = false;
+            NetworkManager networkManager = NetworkManager.getInstance();
+            networkManager.initialize(ip, portNumber, isHosting, GameModeType.SANDBOX, false);
 
-        close();
+            ClientLobbyManager.getInstance().enterLobby();
+
+            close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            errorMessage = "Failed to join the game: " + e.getMessage();
+            resetErrorMessageAfterDelay();
+        }
     }
 
     private void loadBackground() {
