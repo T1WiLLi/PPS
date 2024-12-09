@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.Setter;
 import pewpew.smash.game.Alert.AlertManager;
 import pewpew.smash.game.entities.Player;
-import pewpew.smash.game.gamemode.GameModeType;
 import pewpew.smash.game.hud.HudManager;
 import pewpew.smash.game.network.Handler;
 import pewpew.smash.game.network.User;
@@ -45,7 +44,7 @@ public class ClientHandler extends Handler {
     @Setter
     private String currentBroadcastedMessage = "";
 
-    public ClientHandler(String host, int port, GameModeType type) {
+    public ClientHandler(String host, int port) {
         this.client = new ClientWrapper(host, port, port);
         this.entityManager = new EntityManager();
         this.clientEventManager = new ClientEventManager();

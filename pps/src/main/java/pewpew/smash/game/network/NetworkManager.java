@@ -28,16 +28,16 @@ public class NetworkManager {
         this.isHost = new AtomicBoolean(false);
     }
 
-    public void initialize(String host, int port, boolean hosting, GameModeType type, boolean lobbyMode)
+    public void initialize(String host, int port, boolean hosting, GameModeType type)
             throws IOException {
         this.isHost.set(hosting);
 
         if (hosting) {
             server = new ServerHandler(port, type);
             server.start();
-            client = new ClientHandler("127.0.0.1", port, type);
+            client = new ClientHandler("127.0.0.1", port);
         } else {
-            client = new ClientHandler(host, port, type);
+            client = new ClientHandler(host, port);
         }
         client.start();
     }

@@ -369,7 +369,7 @@ public class HostOverlay extends Overlay {
         try {
             boolean isHosting = true;
             NetworkManager networkManager = NetworkManager.getInstance();
-            networkManager.initialize(host, portNumber, isHosting, gameMode, true);
+            networkManager.initialize(host, portNumber, isHosting, gameMode);
 
             ClientLobbyManager.getInstance().enterLobby();
 

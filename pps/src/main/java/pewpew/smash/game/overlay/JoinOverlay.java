@@ -138,7 +138,7 @@ public class JoinOverlay extends Overlay {
         try {
             boolean isHosting = false;
             NetworkManager networkManager = NetworkManager.getInstance();
-            networkManager.initialize(ip, portNumber, isHosting, GameModeType.SANDBOX, false);
+            networkManager.initialize(ip, portNumber, isHosting, GameModeType.SANDBOX);
 
             ClientLobbyManager.getInstance().enterLobby();
 
