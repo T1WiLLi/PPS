@@ -4,5 +4,6 @@ public enum GameStateType {
     MENU,
     LOBBY,
     PLAYING,
+    POST_GAME,
     QUIT;
 }

@@ -12,6 +12,7 @@ public class StateFactory {
         stateSuppliers.put(GameStateType.MENU, Menu::new);
         stateSuppliers.put(GameStateType.PLAYING, Playing::new);
         stateSuppliers.put(GameStateType.LOBBY, Lobby::new);
+        stateSuppliers.put(GameStateType.POST_GAME, PostGame::new);
     }
 
     public static void preLoadStates() {

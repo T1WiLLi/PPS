@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+// TODO: Fix collision with static entities, instead when tp, check the center of the movable entity, not directly x and y since it's top-left based
 public class ServerCollisionManager {
 
     private static final int DAMAGE_INTERVAL = 1000;

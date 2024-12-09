@@ -1,6 +1,7 @@
 package pewpew.smash.game.network.server;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,6 +36,7 @@ public class ServerHandler extends Handler implements Runnable {
     private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors;
 
     private ServerLobbyManager lobbyManager;
+    private ServerPostGameManager postGameManager;
     private boolean gameStarted = false;
 
     public ServerHandler(int port, GameModeType type) {
@@ -52,6 +54,7 @@ public class ServerHandler extends Handler implements Runnable {
         ServerBulletTracker.getInstance().setServerReference(this.server);
 
         this.lobbyManager = new ServerLobbyManager(server);
+        this.postGameManager = new ServerPostGameManager(server);
 
         registersClasses(this.server.getKryo());
         ServerPacketRegistry serverRegistry = new ServerPacketRegistry(entityManager, server, itemUpdater,
@@ -154,6 +157,14 @@ public class ServerHandler extends Handler implements Runnable {
         this.entityUpdater.update(this.server);
         this.collisionManager.checkCollisions();
         this.collisionManager.checkWaterCollision();
+
+        if (gameStarted && this.entityManager.getPlayerEntities().size() == 1) {
+            Player winner = this.entityManager.getPlayerEntities().stream().findFirst().orElse(null);
+            if (winner != null) {
+                this.postGameManager.triggerPostGame(winner, new ArrayList<>(entityManager.getPlayerEntities()));
+                gameStarted = false;
+            }
+        }
     }
 
     // Do other state update, such as hp, collision, bullet, ammo, inventory , etc.

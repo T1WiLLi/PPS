@@ -41,6 +41,7 @@ import pewpew.smash.game.network.packets.PlayerOutOfWaterPacket;
 import pewpew.smash.game.network.packets.PlayerStatePacket;
 import pewpew.smash.game.network.packets.PlayerUsernamePacket;
 import pewpew.smash.game.network.packets.PositionPacket;
+import pewpew.smash.game.network.packets.PostGamePacket;
 import pewpew.smash.game.network.packets.PreventActionForPlayerPacket;
 import pewpew.smash.game.network.packets.ReloadWeaponRequestPacket;
 import pewpew.smash.game.network.packets.StartGamePacket;
@@ -99,7 +100,7 @@ public class KryoRegister {
         kryo.register(PlaneStatePacket.class);
         kryo.register(LobbyStatePacket.class);
         kryo.register(StartGamePacket.class);
-
+        kryo.register(PostGamePacket.class);
     }
 
     private void registerObjects(Kryo kryo) {

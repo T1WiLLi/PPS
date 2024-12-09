@@ -15,9 +15,9 @@ public class ServerLobbyManager {
     private Map<Integer, String> lobbyPlayers = new ConcurrentHashMap<>();
     private boolean lobbyActive = true;
     private int guestCount = 1;
-    private int minPlayers = 3; // threshold to start countdown
+    private int minPlayers = 1; // threshold to start countdown
     private long countdownStartTime = -1;
-    private int countdownDuration = 30; // 30 seconds
+    private int countdownDuration = 5; // 30 seconds
 
     public ServerLobbyManager(ServerWrapper server) {
         this.server = server;
