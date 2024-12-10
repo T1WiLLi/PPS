@@ -9,8 +9,10 @@ import lombok.Setter;
 import lombok.ToString;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.MouseInput;
+import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.entities.Bullet;
 import pewpew.smash.game.entities.Player;
+import pewpew.smash.game.network.server.ServerAudioManager;
 import pewpew.smash.game.network.server.ServerBulletTracker;
 
 @ToString(callSuper = true)
@@ -122,5 +124,6 @@ public class RangedWeapon extends Weapon {
         currentAmmo--;
         Bullet bullet = new Bullet(owner);
         ServerBulletTracker.getInstance().addBullet(bullet, this);
+        ServerAudioManager.getInstance().play(AudioClip.BULLET_SHOT, owner, 2000);
     }
 }

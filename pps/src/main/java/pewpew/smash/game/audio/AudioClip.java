@@ -6,7 +6,14 @@ public enum AudioClip {
     CHECKED("checked"),
     MAIN_THEME("MainTheme"),
     SWAPPED("swapped"),
-    WALKING_GRASS("sfx/WalkingGrass");
+    WALKING_GRASS("sfx/WalkingGrass"),
+    PLAYER_DEATH("sfx/playerDead"),
+    BULLET_SHOT("sfx/bullet"),
+    PLAYER_DAMAGE("sfx/playerDamage"),
+    BULLET_EXPLODE("sfx/bulletExplode"),
+    CASE_DESTROYED("sfx/caseDestroyed"),
+    WEAPON_SWAPPED("sfx/weaponSwapped"),
+    WOOSH("sfx/woosh");
 
     private final String fileName;
 

@@ -8,7 +8,7 @@ import com.esotericsoftware.kryo.Kryo;
 
 import pewpew.smash.engine.controls.Direction;
 import pewpew.smash.engine.controls.MouseInput;
-
+import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.event.StormStage;
 import pewpew.smash.game.objects.WeaponType;
 import pewpew.smash.game.world.entities.WorldEntityType;
@@ -18,7 +18,7 @@ import pewpew.smash.game.network.model.SerializedItem;
 import pewpew.smash.game.network.model.SerializedWorldStaticEntity;
 import pewpew.smash.game.network.model.StormState;
 import pewpew.smash.game.network.model.WorldEntityState;
-
+import pewpew.smash.game.network.packets.AudioPacket;
 import pewpew.smash.game.network.packets.BasePacket;
 import pewpew.smash.game.network.packets.BroadcastMessagePacket;
 import pewpew.smash.game.network.packets.BulletCreatePacket;
@@ -101,6 +101,7 @@ public class KryoRegister {
         kryo.register(LobbyStatePacket.class);
         kryo.register(StartGamePacket.class);
         kryo.register(PostGamePacket.class);
+        kryo.register(AudioPacket.class);
     }
 
     private void registerObjects(Kryo kryo) {
@@ -115,6 +116,7 @@ public class KryoRegister {
         kryo.register(WorldEntityType.class);
         kryo.register(StormStage.class);
         kryo.register(StormState.class);
+        kryo.register(AudioClip.class);
     }
 
     private void registerStructures(Kryo kryo) {

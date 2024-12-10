@@ -106,6 +106,35 @@ public class AudioPlayer {
         }
     }
 
+    public int playWithSpatialProperties(AudioClip clip, double volume, double pan, boolean loop) {
+        AudioData audioData = preloadedAudioData.get(clip);
+        if (audioData == null) {
+            System.err.println("Audio data not found: " + clip.getFileName());
+            return -1;
+        }
+
+        try {
+            Clip audioClip = AudioSystem.getClip();
+            audioClip.open(audioData.getFormat(), audioData.getData(), 0, audioData.getData().length);
+
+            FloatControl volumeControl = (FloatControl) audioClip.getControl(FloatControl.Type.MASTER_GAIN);
+            FloatControl panControl = (FloatControl) audioClip.getControl(FloatControl.Type.PAN);
+
+            volumeControl.setValue((float) (20.0 * Math.log10(volume)));
+            panControl.setValue((float) pan);
+
+            int id = generateId();
+            AudioTrack track = new AudioTrack(id, audioClip, (float) volume, loop, SoundType.SFX);
+
+            activeTracks.put(id, track);
+            track.play();
+            return id;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
     public void stop(int trackId) {
         AudioTrack track = activeTracks.get(trackId);
         if (track != null) {

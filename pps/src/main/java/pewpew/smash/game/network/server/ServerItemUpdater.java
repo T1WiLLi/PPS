@@ -3,6 +3,7 @@ package pewpew.smash.game.network.server;
 import java.util.HashMap;
 import java.util.Map;
 
+import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.manager.ItemManager;
 import pewpew.smash.game.network.packets.InventoryPacket;
@@ -82,6 +83,7 @@ public class ServerItemUpdater {
             });
             player.changeWeapon((RangedWeapon) item);
             server.sendToAllTCP(WeaponStateSerializer.serializeWeaponState((Weapon) item));
+            ServerAudioManager.getInstance().play(AudioClip.WEAPON_SWAPPED, player, 400);
         }
 
         InventoryPacket inventoryPacket = new InventoryPacket(player.getId(),

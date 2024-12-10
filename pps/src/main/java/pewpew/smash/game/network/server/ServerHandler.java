@@ -64,6 +64,7 @@ public class ServerHandler extends Handler implements Runnable {
         ServerPacketRegistry serverRegistry = new ServerPacketRegistry(entityManager, server, itemUpdater,
                 lobbyManager);
         packetProcessors = serverRegistry.getPacketProcessors();
+        ServerAudioManager.getInstance().setDependencies(server, entityManager);
     }
 
     @Override

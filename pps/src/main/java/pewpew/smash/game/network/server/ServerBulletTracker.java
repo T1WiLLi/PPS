@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.entities.Bullet;
 import pewpew.smash.game.network.packets.BulletCreatePacket;
 import pewpew.smash.game.network.packets.BulletRemovePacket;
@@ -43,6 +44,9 @@ public class ServerBulletTracker {
     public void removeBullet(Bullet bullet) {
         bullets.remove(bullet.getId());
         server.sendToAllTCP(new BulletRemovePacket(bullet.getId()));
+        ServerAudioManager.getInstance().play(AudioClip.BULLET_EXPLODE,
+                new int[] { (int) bullet.getX(), (int) bullet.getY() },
+                800);
     }
 
     public void update(ServerWrapper server) {
@@ -55,6 +59,9 @@ public class ServerBulletTracker {
             if (bullet.getDistanceTraveled() > bullet.getMaxRange()) {
                 server.sendToAllTCP(new BulletRemovePacket(entry.getKey()));
                 iterator.remove();
+                ServerAudioManager.getInstance().play(AudioClip.BULLET_EXPLODE,
+                        new int[] { (int) bullet.getX(), (int) bullet.getY() },
+                        800);
             }
         }
     }

@@ -3,44 +3,97 @@ package pewpew.smash.game.network.server;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import lombok.Getter;
 import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.manager.EntityManager;
+import pewpew.smash.game.network.packets.AudioPacket;
 
 public class ServerAudioManager {
-    private static final int MAX_AUDIO_RADIUS = 1500; // Pixels around the player, fade-in from the original point.
+
+    @Getter
+    private static ServerAudioManager instance = new ServerAudioManager();
+
     private static final int FADE_THRESHOLD = 800;
 
-    private final ServerWrapper server;
-    private final EntityManager entityManager;
+    private ServerWrapper server;
+    private EntityManager entityManager;
 
     private final ExecutorService audioPool;
 
-    public ServerAudioManager(ServerWrapper server, EntityManager entityManager) {
-        this.server = server;
-        this.entityManager = entityManager;
+    public ServerAudioManager() {
         this.audioPool = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().factory());
     }
 
-    public void update() {
-
+    public void setDependencies(ServerWrapper server, EntityManager entityManager) {
+        this.server = server;
+        this.entityManager = entityManager;
     }
 
-    private boolean isInRadius(Player source, Player target) {
+    public void play(AudioClip clip, Player source, int maxRadius) {
+        if (server == null || entityManager == null) {
+            throw new IllegalStateException("ServerAudioManager dependencies are not set.");
+        }
+
+        audioPool.execute(() -> {
+            for (Player targetPlayer : entityManager.getPlayerEntities()) {
+                if (isInRadius(source, targetPlayer, maxRadius)) {
+                    double distance = calculateDistance(source.getX(), source.getY(), targetPlayer.getX(),
+                            targetPlayer.getY());
+                    double volume = calculateFadeVolume(distance, maxRadius);
+                    double pan = calculatePan(source.getX(), targetPlayer, maxRadius);
+
+                    System.out.println("Sending audio packet to player " + targetPlayer.getUsername());
+                    AudioPacket packet = new AudioPacket(clip, volume, pan);
+                    server.sendToTCP(targetPlayer.getId(), packet);
+                }
+            }
+        });
+    }
+
+    public void play(AudioClip clip, int[] pos, int maxRadius) {
+        if (server == null || entityManager == null) {
+            throw new IllegalStateException("ServerAudioManager dependencies are not set.");
+        }
+
+        audioPool.execute(() -> {
+            for (Player targetPlayer : entityManager.getPlayerEntities()) {
+                if (isInRadius(pos, targetPlayer, maxRadius)) {
+                    double distance = calculateDistance(pos[0], pos[1], targetPlayer.getX(),
+                            targetPlayer.getY());
+                    double volume = calculateFadeVolume(distance, maxRadius);
+                    double pan = calculatePan(pos[0], targetPlayer, maxRadius);
+
+                    AudioPacket packet = new AudioPacket(clip, volume, pan);
+                    server.sendToTCP(targetPlayer.getId(), packet);
+                }
+            }
+        });
+    }
+
+    private boolean isInRadius(Player source, Player target, int maxRadius) {
         double distance = calculateDistance(source.getX(), source.getY(), target.getX(), target.getY());
-        return distance <= MAX_AUDIO_RADIUS;
+        return distance <= maxRadius;
     }
 
-    private int getFadeDistance(Player source, Player target) {
-        double distance = calculateDistance(source.getX(), source.getY(), target.getX(), target.getY());
-        // Transform the distance to be a volume amount, closer to 1500, less sound,
-        // 1500 being no sound. and 0 being max sound. but with a threshold of 800,
-        // meaning we only start fading at 800, and not 0.
-        return 0;
+    private boolean isInRadius(int[] pos, Player target, int maxRadius) {
+        double distance = calculateDistance(pos[0], pos[1], target.getX(), target.getY());
+        return distance <= maxRadius;
     }
 
-    private void sendAudioToBePlayed(AudioClip clip, int id) {
+    private double calculateFadeVolume(double distance, int maxRadius) {
+        if (distance > FADE_THRESHOLD) {
+            double relativeDistance = distance - FADE_THRESHOLD;
+            double maxFadeRange = maxRadius - FADE_THRESHOLD;
+            return Math.max(0, 1 - (relativeDistance / maxFadeRange));
+        }
+        return 1.0;
+    }
 
+    private double calculatePan(int sourceX, Player target, int maxRadius) {
+        double dx = target.getX() - sourceX;
+        double pan = -dx / maxRadius; // -1 (left) & 1 (right)
+        return Math.max(-1.0, Math.min(1.0, pan));
     }
 
     private double calculateDistance(int x1, int y1, int x2, int y2) {
