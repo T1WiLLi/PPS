@@ -33,17 +33,12 @@ public class Sandbox implements GameMode {
     }
 
     @Override
-    public void build(String[] args) {
-        if (args.length < 3) {
-            throw new IllegalArgumentException("Missing required arguments: host, port, isHosting");
-        }
-
+    public void build() {
         this.networkManager = NetworkManager.getInstance();
         SpectatorManager.getInstance().initialize(networkManager.getEntityManager());
         entityRenderer = new ClientEntityRenderer(networkManager.getEntityManager());
         entityUpdater = new ClientEntityUpdater(networkManager.getEntityManager());
         itemRenderer = new ClientItemRenderer();
-        System.out.println("Sandbox initialized");
     }
 
     @Override

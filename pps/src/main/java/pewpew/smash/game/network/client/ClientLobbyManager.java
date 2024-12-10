@@ -35,10 +35,10 @@ public class ClientLobbyManager {
         this.countdown = countdownRemaining;
     }
 
-    public void onStartGame() {
+    public void onStartGame(GameModeType type) {
         inLobby = false;
-        GameModeManager.getInstance().setGameMode(GameModeType.SANDBOX);
-        GameModeManager.getInstance().getCurrentGameMode().build(new String[] { "127.0.0.1", "25565", "false" });
+        GameModeManager.getInstance().setGameMode(type);
+        GameModeManager.getInstance().getCurrentGameMode().build();
         StateManager.getInstance().setState(GameStateType.PLAYING);
     }
 }

@@ -9,5 +9,5 @@ public interface GameMode {
 
     public void reset();
 
-    public void build(String[] args);
+    public void build();
 }

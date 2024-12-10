@@ -11,6 +11,7 @@ public class GameModeFactory {
     // Add other gamemode as we progress :)
     static {
         gameModeSuppliers.put(GameModeType.SANDBOX, Sandbox::new);
+        gameModeSuppliers.put(GameModeType.BATTLE_ROYALE, BattleRoyale::new);
     }
 
     public static void preLoadGameModes() {

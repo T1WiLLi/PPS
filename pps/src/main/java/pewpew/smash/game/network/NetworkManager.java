@@ -9,6 +9,7 @@ import pewpew.smash.game.network.client.ClientEventManager;
 import pewpew.smash.game.network.client.ClientHandler;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.server.ServerHandler;
+import pewpew.smash.game.network.upnp.UPnPPortManager;
 
 public class NetworkManager {
     private ClientHandler client;
@@ -36,6 +37,13 @@ public class NetworkManager {
             server = new ServerHandler(port, type);
             server.start();
             client = new ClientHandler("127.0.0.1", port);
+
+            if (!host.equals("127.0.0.1")) {
+                new Thread(() -> {
+                    UPnPPortManager.getInstance().openPort(port, port); // Open the port.
+                    System.out.println("Port opened!");
+                }).start();
+            }
         } else {
             client = new ClientHandler(host, port);
         }
@@ -92,6 +100,9 @@ public class NetworkManager {
 
             if (server != null) {
                 server.stop();
+                new Thread(() -> {
+                    UPnPPortManager.getInstance().closeAllPorts();
+                }).start();
             }
         } finally {
             server = null;

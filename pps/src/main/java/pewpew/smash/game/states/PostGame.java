@@ -80,6 +80,11 @@ public class PostGame implements State {
                 x,
                 y,
                 ResourcesLoader.getImage(ResourcesLoader.UI_PATH, "buttons/quitButton"),
-                () -> System.exit(0));
+                () -> {
+                    if (NetworkManager.getInstance() != null) {
+                        NetworkManager.getInstance().stop();
+                    }
+                    StateManager.getInstance().setState(GameStateType.MENU);
+                });
     }
 }

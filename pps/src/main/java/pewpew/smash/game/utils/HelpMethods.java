@@ -44,7 +44,7 @@ public class HelpMethods {
 
     public static GameModeType getGameModeTypeFromString(String str) {
         return Stream.of(GameModeType.values())
-                .filter(g -> g.name().equalsIgnoreCase(str))
+                .filter(g -> g.name().equalsIgnoreCase(str.trim().replace(" ", "_")))
                 .findFirst()
                 .orElse(GameModeType.SANDBOX); // default
     }

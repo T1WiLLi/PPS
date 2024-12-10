@@ -16,6 +16,7 @@ import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.BasePacket;
 import pewpew.smash.game.network.packets.PlayerJoinedPacket;
 import pewpew.smash.game.network.packets.PlayerLeftPacket;
+import pewpew.smash.game.network.packets.StartGamePacket;
 import pewpew.smash.game.network.packets.SyncTimePacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.processor.PacketProcessor;
@@ -37,23 +38,26 @@ public class ServerHandler extends Handler implements Runnable {
 
     private ServerLobbyManager lobbyManager;
     private ServerPostGameManager postGameManager;
+    private GameModeType gamemode;
     private boolean gameStarted = false;
 
     public ServerHandler(int port, GameModeType type) {
         ServerTime.reset();
+        this.gamemode = type;
         this.server = new ServerWrapper(port, port);
         this.executor = Executors.newSingleThreadExecutor();
         this.entityManager = new EntityManager();
         this.entityUpdater = new ServerEntityUpdater(entityManager);
         this.itemUpdater = new ServerItemUpdater();
-        this.worldManager = new ServerWorldManager(server, 25, 40);
+        this.worldManager = new ServerWorldManager(server, entityManager, 25, 40);
         this.collisionManager = new ServerCollisionManager(server, entityManager, worldManager.getWorldData());
         this.serverTime = ServerTime.getInstance();
-        this.entityManager.addWorldStaticEntity(this.worldManager.getStaticEntities());
         this.eventManager = new ServerEventManager(type, worldManager.getWorldData());
         ServerBulletTracker.getInstance().setServerReference(this.server);
 
-        this.lobbyManager = new ServerLobbyManager(server);
+        this.lobbyManager = new ServerLobbyManager(server, type.name());
+        this.lobbyManager.setCountdownDuration((gamemode.equals(GameModeType.SANDBOX) ? 5 : 30));
+        this.lobbyManager.setMinPlayers(gamemode.equals(GameModeType.SANDBOX) ? 1 : 4);
         this.postGameManager = new ServerPostGameManager(server);
 
         registersClasses(this.server.getKryo());
@@ -85,6 +89,9 @@ public class ServerHandler extends Handler implements Runnable {
                     update();
                     sendStateUpdate();
                     eventManager.update(this.server, this.entityManager);
+                    if (!gamemode.equals(GameModeType.SANDBOX)) {
+                        checkWinCondition();
+                    }
                 }
             }
         }
@@ -108,9 +115,31 @@ public class ServerHandler extends Handler implements Runnable {
     protected void onConnect(Connection connection) {
         if (lobbyManager.isLobbyActive()) {
             lobbyManager.addPlayer(connection.getID(), "");
+        } else if (gamemode.equals(GameModeType.SANDBOX)) {
+            server.sendToAllTCP(new StartGamePacket(this.gamemode.name()));
+            Player player = new Player(connection.getID());
+            player.teleport(1000, 1000);
+            player.setRotation(0);
+
+            this.entityManager.getPlayerEntities().forEach(existingPlayer -> {
+                PlayerJoinedPacket existingPlayerPacket = new PlayerJoinedPacket(
+                        existingPlayer.getId(),
+                        existingPlayer.getUsername());
+                WeaponStatePacket weaponStatePacket = WeaponStateSerializer
+                        .serializeWeaponState(existingPlayer.getEquippedWeapon());
+                this.server.sendToTCP(connection.getID(), existingPlayerPacket);
+                this.server.sendToTCP(connection.getID(), weaponStatePacket);
+            });
+
+            WeaponStatePacket playerWeaponStatePacket = WeaponStateSerializer
+                    .serializeWeaponState(player.getEquippedWeapon());
+            this.server.sendToTCP(connection.getID(), playerWeaponStatePacket);
+            this.entityManager.addPlayerEntity(player.getId(), player);
+            this.worldManager.sendWorldData(connection.getID());
+            this.server.sendToTCP(connection.getID(),
+                    new SyncTimePacket(ServerTime.getInstance().getElapsedTimeMillis()));
         } else {
-            // Game already started, ignore new connections or handle as spectators
-            // For now, we just do nothing
+            // Game started, not in sandbox, for now, ignore connection :)
         }
     }
 
@@ -153,11 +182,7 @@ public class ServerHandler extends Handler implements Runnable {
         }
     }
 
-    private void update() {
-        this.entityUpdater.update(this.server);
-        this.collisionManager.checkCollisions();
-        this.collisionManager.checkWaterCollision();
-
+    private void checkWinCondition() {
         if (gameStarted && this.entityManager.getPlayerEntities().size() == 1) {
             Player winner = this.entityManager.getPlayerEntities().stream().findFirst().orElse(null);
             if (winner != null) {
@@ -165,6 +190,12 @@ public class ServerHandler extends Handler implements Runnable {
                 gameStarted = false;
             }
         }
+    }
+
+    private void update() {
+        this.entityUpdater.update(this.server);
+        this.collisionManager.checkCollisions();
+        this.collisionManager.checkWaterCollision();
     }
 
     // Do other state update, such as hp, collision, bullet, ammo, inventory , etc.

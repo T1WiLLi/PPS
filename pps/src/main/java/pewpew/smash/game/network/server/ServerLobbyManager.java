@@ -5,22 +5,27 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import lombok.Setter;
 import pewpew.smash.game.network.packets.LobbyStatePacket;
 import pewpew.smash.game.network.packets.StartGamePacket;
 
 public class ServerLobbyManager {
 
     private final ServerWrapper server;
+    private final String gamemode;
 
     private Map<Integer, String> lobbyPlayers = new ConcurrentHashMap<>();
     private boolean lobbyActive = true;
     private int guestCount = 1;
+    @Setter
     private int minPlayers = 1; // threshold to start countdown
     private long countdownStartTime = -1;
-    private int countdownDuration = 5; // 30 seconds
+    @Setter
+    private int countdownDuration = 5;
 
-    public ServerLobbyManager(ServerWrapper server) {
+    public ServerLobbyManager(ServerWrapper server, String gamemode) {
         this.server = server;
+        this.gamemode = gamemode;
     }
 
     public boolean isLobbyActive() {
@@ -92,7 +97,7 @@ public class ServerLobbyManager {
 
     private void startGame() {
         lobbyActive = false;
-        server.sendToAllTCP(new StartGamePacket());
+        server.sendToAllTCP(new StartGamePacket(this.gamemode));
     }
 
     public Map<Integer, String> getLobbyPlayers() {

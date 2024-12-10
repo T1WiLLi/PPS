@@ -1,3 +1,4 @@
-Le nom in-game est pas le bon
-Les fists damage font pas dégats
-l'état de l'arme n'est pas correctement partagé entre les clients
+Logic for lobby vs sandbox : 
+
+When connecting, if not in sandbox, we send a packet like 'LobbyUpPacket', client will then set the clientLobbyManager.getInstance().enterLobby() 
+if in sandbox mode, we will send a packet like 'SandboxUpPacket', client will then directly go into Playing state and sandbox gameModeManager. 

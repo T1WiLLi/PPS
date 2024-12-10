@@ -25,7 +25,7 @@ public class UPnPPortManager implements AutoCloseable {
     private static UPnPPortManager instance;
     private final boolean isAvailable;
 
-    public static synchronized UPnPPortManager getInstance() throws Exception {
+    public static synchronized UPnPPortManager getInstance() {
         if (instance == null) {
             instance = new UPnPPortManager();
         }

@@ -8,6 +8,7 @@ import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.StartGamePacket;
 import pewpew.smash.game.network.processor.ClientProcessor;
 import pewpew.smash.game.network.processor.PacketProcessor;
+import pewpew.smash.game.utils.HelpMethods;
 
 public class ClientStartGamePacketProcessor extends ClientProcessor implements PacketProcessor<StartGamePacket> {
 
@@ -18,6 +19,6 @@ public class ClientStartGamePacketProcessor extends ClientProcessor implements P
 
     @Override
     public void handle(Connection connection, StartGamePacket packet) {
-        ClientLobbyManager.getInstance().onStartGame();
+        ClientLobbyManager.getInstance().onStartGame(HelpMethods.getGameModeTypeFromString(packet.getMode()));
     }
 }

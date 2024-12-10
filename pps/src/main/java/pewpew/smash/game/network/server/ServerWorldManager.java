@@ -1,32 +1,37 @@
 package pewpew.smash.game.network.server;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.manager.ItemManager;
+import pewpew.smash.game.network.model.WorldEntityState;
 import pewpew.smash.game.world.WorldEntitiesGenerator;
 import pewpew.smash.game.world.WorldGenerator;
 import pewpew.smash.game.world.WorldServerIntegration;
-import pewpew.smash.game.world.entities.WorldStaticEntity;
 
 public final class ServerWorldManager {
     private final WorldGenerator worldGenerator;
     private final WorldEntitiesGenerator worldEntitiesGenerator;
     private final WorldServerIntegration worldServerIntegration;
+    private final EntityManager entityManager;
+    private final Map<Integer, WorldEntityState> entityStates;
     private final byte[][] worldData;
     private final long seed;
 
-    private final List<WorldStaticEntity> entities;
-
-    public ServerWorldManager(ServerWrapper server, int amountOfEntityToBeGenerated, int numItems) {
+    public ServerWorldManager(ServerWrapper server, EntityManager entityManager, int amountOfEntityToBeGenerated,
+            int numItems) {
+        this.entityManager = entityManager;
         this.seed = WorldGenerator.generateSeed();
+        this.entityStates = new ConcurrentHashMap<>();
         this.worldGenerator = new WorldGenerator(this.seed);
         this.worldData = this.worldGenerator.getWorldData();
         this.worldEntitiesGenerator = new WorldEntitiesGenerator();
-        this.worldServerIntegration = new WorldServerIntegration(server);
+        this.worldServerIntegration = new WorldServerIntegration(server, entityStates);
 
-        entities = this.worldEntitiesGenerator.generateWorldEntities(seed, worldData,
-                amountOfEntityToBeGenerated);
+        entityManager.addWorldStaticEntity(this.worldEntitiesGenerator.generateWorldEntities(seed, worldData,
+                amountOfEntityToBeGenerated));
         this.worldEntitiesGenerator.generateItems(worldData, numItems);
     }
 
@@ -35,12 +40,7 @@ public final class ServerWorldManager {
     }
 
     public void sendWorldData(int id) {
-        this.worldServerIntegration.sendSeed(seed);
-        this.worldServerIntegration.sendWorldEntities(entities, id);
-        this.worldServerIntegration.sendItem(ItemManager.getInstance(true).getItems(), id);
-    }
-
-    public List<WorldStaticEntity> getStaticEntities() {
-        return entities;
+        worldServerIntegration.sendWorldData(id, seed, entityManager.getWorldStaticEntities(),
+                ItemManager.getInstance(true).getItems());
     }
 }
