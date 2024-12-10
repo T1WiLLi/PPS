@@ -58,7 +58,7 @@ public class ItemFactory {
         rangedWeaponPropertiesMap.put(WeaponType.GLOCK,
                 new RangedWeaponProperties(20, 5, 10, new Color(119, 136, 153), false));
         rangedWeaponPropertiesMap.put(WeaponType.M4A1,
-                new RangedWeaponProperties(85, 12, 18, new Color(34, 139, 34), true));
+                new RangedWeaponProperties(85, 12, 18, new Color(146, 170, 75), true));
         rangedWeaponPropertiesMap.put(WeaponType.SCORP,
                 new RangedWeaponProperties(65, 9, 14, new Color(139, 69, 19), true));
     }
