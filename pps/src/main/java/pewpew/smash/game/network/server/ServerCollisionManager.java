@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-// TODO: Fix collision with static entities, instead when tp, check the center of the movable entity, not directly x and y since it's top-left based
 public class ServerCollisionManager {
 
     private static final int DAMAGE_INTERVAL = 1000;
@@ -198,8 +197,8 @@ public class ServerCollisionManager {
     }
 
     private int[] findNearestFreePosition(Player player) {
-        int startX = player.getX();
-        int startY = player.getY();
+        int startX = player.getX() + player.getWidth() / 2;
+        int startY = player.getY() + player.getHeight() / 2;
         int searchRadius = 10;
         int step = WorldGenerator.TILE_SIZE;
 
