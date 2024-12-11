@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @Getter
 public class PreventActionForPlayerPacket extends BasePacket {
     private int playerID;
+    private boolean isHealing;
 }

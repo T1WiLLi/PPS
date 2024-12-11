@@ -13,6 +13,9 @@ public enum AudioClip {
     BULLET_EXPLODE("sfx/bulletExplode"),
     CASE_DESTROYED("sfx/caseDestroyed"),
     WEAPON_SWAPPED("sfx/weaponSwapped"),
+    BIG_WPEAON_SHOT("sfx/bigGun"),
+    HEALING("sfx/healing"),
+    RELOAD("sfx/reload"),
     WOOSH("sfx/woosh");
 
     private final String fileName;

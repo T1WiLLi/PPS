@@ -14,6 +14,7 @@ import pewpew.smash.game.entities.Bullet;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.server.ServerAudioManager;
 import pewpew.smash.game.network.server.ServerBulletTracker;
+import pewpew.smash.game.utils.HelpMethods;
 
 @ToString(callSuper = true)
 @Getter
@@ -124,6 +125,7 @@ public class RangedWeapon extends Weapon {
         currentAmmo--;
         Bullet bullet = new Bullet(owner);
         ServerBulletTracker.getInstance().addBullet(bullet, this);
-        ServerAudioManager.getInstance().play(AudioClip.BULLET_SHOT, owner, 2000);
+        ServerAudioManager.getInstance()
+                .play((HelpMethods.isBigGun(this) ? AudioClip.BIG_WPEAON_SHOT : AudioClip.BULLET_SHOT), owner, 2000);
     }
 }

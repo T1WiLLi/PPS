@@ -19,6 +19,8 @@ import pewpew.smash.game.objects.Consumable;
 import pewpew.smash.game.objects.ConsumableType;
 import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.objects.ItemFactory;
+import pewpew.smash.game.objects.RangedWeapon;
+import pewpew.smash.game.objects.WeaponType;
 import pewpew.smash.game.objects.special.AmmoStack;
 import pewpew.smash.game.objects.special.Scope;
 import pewpew.smash.game.world.WorldGenerator;
@@ -99,6 +101,15 @@ public class HelpMethods {
                 scope.getX(),
                 scope.getY(),
                 SerializationUtility.serializeItem(scope)));
+    }
+
+    public static boolean isBigGun(RangedWeapon weapon) {
+        if (weapon.getType() == WeaponType.AK47 || weapon.getType() == WeaponType.M4A1
+                || weapon.getType() == WeaponType.HK416 || weapon.getType() == WeaponType.M4A1
+                || weapon.getType() == WeaponType.DEAGLE) {
+            return true;
+        }
+        return false;
     }
 
     public static Plane generatePlane() {
