@@ -17,6 +17,7 @@ import pewpew.smash.game.network.packets.UseConsumableRequestPacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.packets.WeaponSwitchRequestPacket;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
+import pewpew.smash.game.objects.ConsumableType;
 import pewpew.smash.game.objects.RangedWeapon;
 import pewpew.smash.game.utils.HelpMethods;
 
@@ -66,7 +67,7 @@ public class ClientUpdater {
                     && player.getEquippedWeapon() instanceof RangedWeapon weapon) {
                 boolean canReload = weapon.getCurrentAmmo() < weapon.getAmmoCapacity() && !player.hasAmmo();
                 if (canReload) {
-                    client.sendToTCP(new PreventActionForPlayerPacket(player.getId(), false));
+                    client.sendToTCP(new PreventActionForPlayerPacket(player.getId(), false, ' '));
                     HudManager.getInstance().startLoader((long) weapon.getReloadSpeed(), () -> {
                         client.sendToTCP(new ReloadWeaponRequestPacket());
                     }, player);
@@ -83,7 +84,8 @@ public class ClientUpdater {
                         boolean canUseConsumable = player.getHealth() < 100
                                 && player.getInventory().hasConsumable(consumableType);
                         if (canUseConsumable) {
-                            client.sendToTCP(new PreventActionForPlayerPacket(player.getId(), true));
+                            client.sendToTCP(new PreventActionForPlayerPacket(player.getId(), true,
+                                    (consumableType == ConsumableType.MEDIKIT) ? 'm' : 'c'));
                             HudManager.getInstance().startLoader(
                                     (long) consumableType.getUseTime(),
                                     () -> client.sendToTCP(new UseConsumableRequestPacket(keyCode)),

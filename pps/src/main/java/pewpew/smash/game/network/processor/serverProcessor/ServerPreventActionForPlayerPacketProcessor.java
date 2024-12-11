@@ -43,7 +43,11 @@ public class ServerPreventActionForPlayerPacketProcessor extends ServerProcessor
                 playerActionTimestamps.put(player.getId(), currentTimestamp);
 
                 if (newAction == PlayerAction.HEALING) {
-                    ServerAudioManager.getInstance().play(AudioClip.HEALING, player, 1200);
+                    if (packet.getC() == 'm') {
+                        ServerAudioManager.getInstance().play(AudioClip.MEDIKIT, player, 1200);
+                    } else {
+                        ServerAudioManager.getInstance().play(AudioClip.HEALING, player, 1200);
+                    }
                 } else if (newAction == PlayerAction.RELOADING) {
                     ServerAudioManager.getInstance().play(AudioClip.RELOAD, player, 1200);
                 }

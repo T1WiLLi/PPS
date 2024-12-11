@@ -15,6 +15,7 @@ public enum AudioClip {
     WEAPON_SWAPPED("sfx/weaponSwapped"),
     BIG_WPEAON_SHOT("sfx/bigGun"),
     HEALING("sfx/healing"),
+    MEDIKIT("sfx/medikit"),
     RELOAD("sfx/reload"),
     WOOSH("sfx/woosh");
 
