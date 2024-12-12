@@ -2,6 +2,7 @@ package pewpew.smash.game.post_processing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import pewpew.smash.engine.Canvas;
 
@@ -23,6 +24,12 @@ public class PostProcessingManager {
 
     public void addEffect(PostEffect effect) {
         effects.add(effect);
+    }
+
+    public List<PostEffect> getEffects(EffectType type) {
+        return effects.stream()
+                .filter(effect -> effect.getType() == type)
+                .collect(Collectors.toList());
     }
 
     public void triggerEffect(EffectType type) {
