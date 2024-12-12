@@ -20,6 +20,8 @@ import pewpew.smash.game.objects.RangedWeapon;
 import pewpew.smash.game.objects.Weapon;
 import pewpew.smash.game.objects.WeaponType;
 import pewpew.smash.game.objects.special.Scope;
+import pewpew.smash.game.post_processing.EffectType;
+import pewpew.smash.game.post_processing.PostProcessingManager;
 import pewpew.smash.game.utils.FontFactory;
 
 @ToString(callSuper = true)
@@ -103,6 +105,11 @@ public class Player extends MovableEntity {
     }
 
     public void applyState(PlayerState newState) {
+        if (User.getInstance().getLocalID().get() == this.id) {
+            if (newState.getHealth() != this.health) {
+                PostProcessingManager.getInstance().triggerEffect(EffectType.ON_DAMAGE);
+            }
+        }
         this.health = Math.clamp(newState.getHealth(), 0, 100);
     }
 

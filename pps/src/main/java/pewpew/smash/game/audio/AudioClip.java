@@ -11,12 +11,15 @@ public enum AudioClip {
     BULLET_SHOT("sfx/bullet"),
     PLAYER_DAMAGE("sfx/playerDamage"),
     BULLET_EXPLODE("sfx/bulletExplode"),
+    BULLET_EXPLODE_02("sfx/bulletExplode_02"),
     CASE_DESTROYED("sfx/caseDestroyed"),
     WEAPON_SWAPPED("sfx/weaponSwapped"),
     BIG_WPEAON_SHOT("sfx/bigGun"),
     HEALING("sfx/healing"),
     MEDIKIT("sfx/medikit"),
     RELOAD("sfx/reload"),
+    AMMO_PICKUP("sfx/ammoPickup"),
+    CONSUMABLE_PICKUP("sfx/consumablePickup"),
     WOOSH("sfx/woosh");
 
     private final String fileName;

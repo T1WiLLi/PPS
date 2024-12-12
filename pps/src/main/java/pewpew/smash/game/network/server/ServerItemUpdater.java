@@ -62,6 +62,7 @@ public class ServerItemUpdater {
         if (item instanceof AmmoStack) {
             AmmoStack ammoStack = (AmmoStack) item;
             player.getInventory().addAmmo(ammoStack.getAmmo());
+            ServerAudioManager.getInstance().play(AudioClip.AMMO_PICKUP, player, 400);
         } else if (item instanceof Scope) {
             Scope currentscope = player.getScope();
             currentscope.drop();
@@ -74,6 +75,7 @@ public class ServerItemUpdater {
         } else if (item instanceof Consumable) {
             Consumable consumable = (Consumable) item;
             player.getInventory().addConsumable(consumable.getType());
+            ServerAudioManager.getInstance().play(AudioClip.CONSUMABLE_PICKUP, player, 400);
         } else if (item instanceof RangedWeapon) {
             player.getInventory().getPrimaryWeapon().ifPresent(currentWeapon -> {
                 currentWeapon.drop();

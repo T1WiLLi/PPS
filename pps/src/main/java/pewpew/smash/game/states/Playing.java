@@ -13,6 +13,7 @@ import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.overlay.OverlayFactory;
 import pewpew.smash.game.overlay.OverlayManager;
 import pewpew.smash.game.overlay.OverlayType;
+import pewpew.smash.game.post_processing.PostProcessingManager;
 import pewpew.smash.game.utils.FontFactory;
 
 public class Playing implements State {
@@ -40,6 +41,7 @@ public class Playing implements State {
     @Override
     public void render(Canvas canvas) {
         this.gameModeManager.render(canvas);
+        PostProcessingManager.getInstance().render(canvas);
         HudManager.getInstance().render(canvas);
         this.overlayManager.render(canvas);
 

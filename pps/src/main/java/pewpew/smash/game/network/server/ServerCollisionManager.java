@@ -2,6 +2,7 @@ package pewpew.smash.game.network.server;
 
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.engine.entities.StaticEntity;
+import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.entities.Bullet;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.manager.EntityManager;
@@ -14,6 +15,8 @@ import pewpew.smash.game.network.packets.PlayerStatePacket;
 import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.world.WorldGenerator;
 import pewpew.smash.game.world.entities.Bush;
+import pewpew.smash.game.world.entities.WorldEntityType;
+import pewpew.smash.game.world.entities.WorldStaticEntity;
 
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
@@ -281,8 +284,16 @@ public class ServerCollisionManager {
                     continue;
                 }
 
+                AudioClip sound = null;
                 if (bullet.isCollidingWith(staticEntity)) {
-                    ServerBulletTracker.getInstance().removeBullet(bullet);
+                    if (staticEntity instanceof WorldStaticEntity entity) {
+                        if (entity.getType() == WorldEntityType.TREE || entity.getType() == WorldEntityType.TREE_DEAD) {
+                            sound = AudioClip.BULLET_EXPLODE_02;
+                        } else {
+                            sound = AudioClip.BULLET_EXPLODE;
+                        }
+                    }
+                    ServerBulletTracker.getInstance().removeBullet(bullet, sound);
                     bulletRemoved = true;
                     break;
                 }

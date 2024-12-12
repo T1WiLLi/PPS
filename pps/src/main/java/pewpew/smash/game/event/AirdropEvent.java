@@ -12,6 +12,7 @@ import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.objects.SpecialType;
 import pewpew.smash.game.objects.WeaponType;
 import pewpew.smash.game.utils.HelpMethods;
+import pewpew.smash.game.world.WorldGenerator;
 import pewpew.smash.game.world.entities.Crate;
 import pewpew.smash.game.world.entities.WorldEntityType;
 
@@ -23,17 +24,76 @@ public class AirdropEvent {
     @Getter
     private boolean crateDropped;
 
+    @Getter
+    private int dropX;
+    @Getter
+    private int dropY;
+
     public AirdropEvent() {
         this.plane = HelpMethods.generatePlane();
+        determineDropLocation();
     }
 
     public Crate createCrate(int x, int y) {
-        this.crate = new Crate(WorldEntityType.AIR_DROP_CRATE, x, y, createLoot());
+        this.crate = new Crate(WorldEntityType.AIR_DROP_CRATE, x, y, createLoot(x, y));
         this.crateDropped = true;
         return crate;
     }
 
-    private List<Item> createLoot() {
+    private void determineDropLocation() {
+        Random random = new Random();
+
+        int worldWidth = WorldGenerator.getWorldWidth();
+        int worldHeight = WorldGenerator.getWorldHeight();
+
+        int startX = plane.getX();
+        int startY = plane.getY();
+        int planeWidth = plane.getWidth();
+        int planeHeight = plane.getHeight();
+
+        int centerStartX = startX + planeWidth / 2;
+        int centerStartY = startY + planeHeight / 2;
+
+        double mapPos = 0.3 + (0.4 * random.nextDouble());
+
+        int endX = startX;
+        int endY = startY;
+
+        switch (plane.getDirection()) {
+            case UP -> endY = 0;
+            case DOWN -> endY = worldHeight;
+            case LEFT -> endX = 0;
+            case RIGHT -> endX = worldWidth;
+            case UP_LEFT -> {
+                endX = 0;
+                endY = 0;
+            }
+            case UP_RIGHT -> {
+                endX = worldWidth;
+                endY = 0;
+            }
+            case DOWN_LEFT -> {
+                endX = 0;
+                endY = worldHeight;
+            }
+            case DOWN_RIGHT -> {
+                endX = worldWidth;
+                endY = worldHeight;
+            }
+            case NONE -> throw new UnsupportedOperationException("Unimplemented case: " + plane.getDirection());
+        }
+
+        int centerEndX = endX + planeWidth / 2;
+        int centerEndY = endY + planeHeight / 2;
+
+        this.dropX = (int) (centerStartX + (centerEndX - centerStartX) * mapPos);
+        this.dropY = (int) (centerStartY + (centerEndY - centerStartY) * mapPos);
+
+        System.out.println("DropX : " + dropX + ", DropY: " + dropY);
+        System.out.println("Plane X : " + plane.getX() + ", PlaneY: " + plane.getY());
+    }
+
+    private List<Item> createLoot(int x, int y) {
         List<Item> loot = new ArrayList<>();
         Random random = new Random();
 
@@ -43,6 +103,7 @@ public class AirdropEvent {
             case 2 -> ItemFactory.createItem(WeaponType.AK47);
             default -> ItemFactory.createItem(WeaponType.AK47);
         };
+        weapon.teleport(x, y);
         loot.add(weapon);
 
         loot.add(ItemFactory.createItem(ConsumableType.MEDIKIT));
@@ -52,11 +113,15 @@ public class AirdropEvent {
             case 1 -> ItemFactory.createItem(ConsumableType.PILL);
             default -> ItemFactory.createItem(ConsumableType.BANDAGE);
         };
+        healingItem.teleport(x, y);
         loot.add(healingItem);
 
-        loot.add(ItemFactory.createAmmoStack());
+        Item ammoStack = ItemFactory.createAmmoStack();
+        ammoStack.teleport(x, y);
+        loot.add(ammoStack);
 
         Item scope = getRandomScope(random);
+        scope.teleport(x, y);
         loot.add(scope);
 
         return loot;
@@ -72,5 +137,4 @@ public class AirdropEvent {
             return ItemFactory.createItem(SpecialType.SCOPE_X2);
         }
     }
-
 }

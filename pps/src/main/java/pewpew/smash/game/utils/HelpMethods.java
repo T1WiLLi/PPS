@@ -104,7 +104,7 @@ public class HelpMethods {
     }
 
     public static boolean isBigGun(RangedWeapon weapon) {
-        if (weapon.getType() == WeaponType.AK47 || weapon.getType() == WeaponType.M4A1
+        if (weapon.getType() == WeaponType.AK47 || weapon.getType() == WeaponType.M1A1
                 || weapon.getType() == WeaponType.HK416 || weapon.getType() == WeaponType.M4A1
                 || weapon.getType() == WeaponType.DEAGLE) {
             return true;
@@ -126,6 +126,7 @@ public class HelpMethods {
         Direction direction = null;
 
         int path = random.nextInt(8);
+        path = 0;
 
         switch (path) {
             case 0:

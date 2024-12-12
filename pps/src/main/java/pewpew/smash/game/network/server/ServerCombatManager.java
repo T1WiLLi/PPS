@@ -61,7 +61,7 @@ public class ServerCombatManager {
                 if (bullet.getHitbox().intersects(entity.getHitbox().getBounds())) {
                     handleStaticEntityDamage(entity, bullet.getDamage(), server);
                     damageDealtMap.put(entityManager.getPlayerEntity(bullet.getPlayerOwnerID()), true);
-                    ServerBulletTracker.getInstance().removeBullet(bullet);
+                    ServerBulletTracker.getInstance().removeBullet(bullet, AudioClip.BULLET_EXPLODE_02);
                 }
             }
 
@@ -70,7 +70,7 @@ public class ServerCombatManager {
                         && bullet.getHitbox().intersects(targetPlayer.getX(), targetPlayer.getY(),
                                 targetPlayer.getWidth(), targetPlayer.getHeight())) {
                     handleBulletDamage(bullet, targetPlayer, server);
-                    ServerBulletTracker.getInstance().removeBullet(bullet);
+                    ServerBulletTracker.getInstance().removeBullet(bullet, AudioClip.BULLET_EXPLODE);
                 }
             }
         }
@@ -90,7 +90,9 @@ public class ServerCombatManager {
 
         if (entity.isDestroyed()) {
             if (entity instanceof Crate crate) {
+                System.out.println("Destroyed! crate type: " + crate.getType());
                 crate.getLootTable().forEach(i -> {
+                    System.out.println(i.getName());
                     i.drop();
                     HelpMethods.sendDroppedItem(i, server);
                 });

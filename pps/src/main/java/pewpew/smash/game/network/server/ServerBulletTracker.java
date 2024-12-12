@@ -41,10 +41,10 @@ public class ServerBulletTracker {
         server.sendToAllTCP(WeaponStateSerializer.serializeWeaponState(weaponFrom));
     }
 
-    public void removeBullet(Bullet bullet) {
+    public void removeBullet(Bullet bullet, AudioClip sound) {
         bullets.remove(bullet.getId());
         server.sendToAllTCP(new BulletRemovePacket(bullet.getId()));
-        ServerAudioManager.getInstance().play(AudioClip.BULLET_EXPLODE,
+        ServerAudioManager.getInstance().play(sound,
                 new int[] { (int) bullet.getX(), (int) bullet.getY() },
                 800);
     }

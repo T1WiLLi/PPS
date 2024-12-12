@@ -6,6 +6,7 @@ import pewpew.smash.engine.Game;
 import pewpew.smash.game.audio.AudioPlayer;
 import pewpew.smash.game.input.KeyHandler;
 import pewpew.smash.game.input.MouseHandler;
+import pewpew.smash.game.post_processing.PostProcessingManager;
 import pewpew.smash.game.settings.SettingsManager;
 import pewpew.smash.game.states.GameStateType;
 import pewpew.smash.game.states.StateManager;
@@ -26,6 +27,7 @@ public class PewPewSmash extends Game {
         new KeyHandler(this.stateManager);
 
         SettingsManager.getInstance().updateGameSettings();
+        PostProcessingManager.getInstance();
     }
 
     @Override

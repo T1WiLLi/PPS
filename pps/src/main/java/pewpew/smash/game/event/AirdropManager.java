@@ -17,62 +17,63 @@ import java.util.TimerTask;
 
 public class AirdropManager {
 
-    private static final int MIN_TIME_BETWEEN_EVENTS = 30_000;
-    private static final int MAX_TIME_BEFORE_EVENT = 120_000;
-    private static final double DELAY_FACTOR = 0.005;
+    private static final long FIRST_EVENT_DELAY = 180_000L; // 3 minutes
+    private static final long MIN_TIME_BETWEEN_EVENTS = 30_000L; // 30 seconds
+    private static final double EVENT_TRIGGER_CHANCE = 1;
 
+    private boolean firstEventTriggered = false;
     private long lastAirdropTime = 0;
     private boolean isActive;
     private AirdropEvent currentAirdrop;
-    private long dropStartTime = 0;
 
     public void update(ServerWrapper server, EntityManager entityManager, byte[][] world) {
         long currentTime = ServerTime.getInstance().getElapsedTimeMillis();
 
         if (!isActive && canTriggerEvent(currentTime)) {
-            System.out.println("Event trigger!");
             triggerEvent(server, currentTime);
         }
 
         if (isActive && currentAirdrop != null) {
-            updateEvent(server, entityManager, world, currentTime);
+            updateEvent(server, entityManager, world);
         }
     }
 
     private boolean canTriggerEvent(long currentTime) {
-        if ((currentTime - lastAirdropTime) < MIN_TIME_BETWEEN_EVENTS) {
+        if (!firstEventTriggered) {
+            if (currentTime < FIRST_EVENT_DELAY) {
+                return false;
+            }
+            if (Math.random() < EVENT_TRIGGER_CHANCE) {
+                return true;
+            }
             return false;
+        } else {
+            if ((currentTime - lastAirdropTime) < MIN_TIME_BETWEEN_EVENTS) {
+                return false;
+            }
+            return Math.random() < EVENT_TRIGGER_CHANCE;
         }
-
-        if (currentTime < MAX_TIME_BEFORE_EVENT) {
-            return false;
-        }
-
-        if ((currentTime - lastAirdropTime) >= MIN_TIME_BETWEEN_EVENTS) {
-            lastAirdropTime = currentTime;
-            return Math.random() < 0.25;
-        }
-
-        return false;
     }
 
     private void triggerEvent(ServerWrapper server, long currentTime) {
         lastAirdropTime = currentTime;
         currentAirdrop = new AirdropEvent();
         isActive = true;
+        if (!firstEventTriggered) {
+            firstEventTriggered = true;
+        }
 
         Plane plane = currentAirdrop.getPlane();
         PlaneStatePacket planePacket = new PlaneStatePacket(plane.getX(), plane.getY(), plane.getDirection(),
                 plane.getRotation());
         server.sendToAllTCP(planePacket);
-        dropStartTime = currentTime;
     }
 
-    private void updateEvent(ServerWrapper server, EntityManager entityManager, byte[][] world, long currentTime) {
+    private void updateEvent(ServerWrapper server, EntityManager entityManager, byte[][] world) {
         Plane plane = currentAirdrop.getPlane();
         plane.updateServer();
 
-        if (!currentAirdrop.isCrateDropped() && shouldDropCrate(plane, entityManager, world, currentTime)) {
+        if (!currentAirdrop.isCrateDropped() && shouldDropCrate(plane, entityManager, world)) {
             dropCrate(server, entityManager, world);
         }
 
@@ -82,44 +83,40 @@ public class AirdropManager {
         }
     }
 
-    private boolean shouldDropCrate(Plane plane, EntityManager entityManager, byte[][] world, long currentTime) {
-        int worldWidth = WorldGenerator.getWorldWidth();
-        int worldHeight = WorldGenerator.getWorldHeight();
+    private boolean shouldDropCrate(Plane plane, EntityManager entityManager, byte[][] world) {
+        if (currentAirdrop == null)
+            return false;
 
-        int planeX = plane.getX();
-        int planeY = plane.getY();
-        double xProgress = (double) planeX / worldWidth;
-        double yProgress = (double) planeY / worldHeight;
+        int planeCenterX = plane.getX() + plane.getWidth() / 2;
+        int planeCenterY = plane.getY() + plane.getHeight() / 2;
 
-        if (xProgress < 0.2 || xProgress > 0.8 || yProgress < 0.2 || yProgress > 0.8) {
+        int targetX = currentAirdrop.getDropX();
+        int targetY = currentAirdrop.getDropY();
+
+        int threshold = 50;
+        if (Math.abs(planeCenterX - targetX) > threshold || Math.abs(planeCenterY - targetY) > threshold) {
             return false;
         }
 
-        long delay = (long) ((worldWidth + worldHeight) * DELAY_FACTOR);
-        if ((currentTime - dropStartTime) < delay) {
+        int planeTileX = planeCenterX / WorldGenerator.TILE_SIZE;
+        int planeTileY = planeCenterY / WorldGenerator.TILE_SIZE;
+        if (planeTileX < 0 || planeTileX >= world.length || planeTileY < 0 || planeTileY >= world[0].length) {
             return false;
         }
 
-        int mapMarginX = worldWidth / 10;
-        int mapMarginY = worldHeight / 10;
-        boolean withinBounds = planeX > mapMarginX && planeX < (worldWidth - mapMarginX)
-                && planeY > mapMarginY && planeY < (worldHeight - mapMarginY);
+        boolean aboveGrass = world[planeTileX][planeTileY] == WorldGenerator.GRASS;
+        if (!aboveGrass)
+            return false;
 
-        int planeTileX = planeX / WorldGenerator.TILE_SIZE;
-        int planeTileY = planeY / WorldGenerator.TILE_SIZE;
-        boolean aboveGrass = (planeTileX >= 0 && planeTileX < world.length) &&
-                (planeTileY >= 0 && planeTileY < world[0].length) &&
-                world[planeTileX][planeTileY] == WorldGenerator.GRASS;
-
-        boolean noCollision = !isCollidingWithStaticEntities(planeX, planeY, entityManager);
-
-        return withinBounds && aboveGrass && noCollision;
+        if (isCollidingWithStaticEntities(planeCenterX, planeCenterY, entityManager)) {
+            return false;
+        }
+        return true;
     }
 
     private void dropCrate(ServerWrapper server, EntityManager entityManager, byte[][] world) {
-        int[] cratePosition = getAirdropPosition(currentAirdrop.getPlane());
-        int dropX = cratePosition[0];
-        int dropY = cratePosition[1];
+        int dropX = currentAirdrop.getDropX();
+        int dropY = currentAirdrop.getDropY();
 
         Crate crate = currentAirdrop.createCrate(dropX, dropY);
         crate.setId(entityManager.getNextID(StaticEntity.class));
@@ -133,28 +130,6 @@ public class AirdropManager {
                 entityManager.addStaticEntity(crate.getId(), crate);
             }
         }, 2000);
-    }
-
-    private int[] getAirdropPosition(Plane plane) {
-        int centerX = plane.getX() + plane.getWidth() / 2;
-        int centerY = plane.getY() + plane.getHeight() / 2;
-
-        switch (plane.getDirection()) {
-            case UP_LEFT -> {
-                centerX -= plane.getWidth();
-                centerY -= plane.getHeight() - 200;
-            }
-            default -> {
-                // do nothing
-            }
-        }
-
-        System.out.printf(
-                "Adjusted Airdrop Position: CenterX=%d, CenterY=%d (Plane: X=%d, Y=%d, Direction=%s, Width=%d, Height=%d)\n",
-                centerX, centerY, plane.getX(), plane.getY(), plane.getDirection(), plane.getWidth(),
-                plane.getHeight());
-
-        return new int[] { centerX, centerY };
     }
 
     private boolean isCollidingWithStaticEntities(int x, int y, EntityManager entityManager) {
