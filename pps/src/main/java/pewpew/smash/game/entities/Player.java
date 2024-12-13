@@ -106,7 +106,7 @@ public class Player extends MovableEntity {
 
     public void applyState(PlayerState newState) {
         if (User.getInstance().getLocalID().get() == this.id) {
-            if (newState.getHealth() != this.health) {
+            if (newState.getHealth() < this.health) {
                 PostProcessingManager.getInstance().triggerEffect(EffectType.ON_DAMAGE);
             }
         }

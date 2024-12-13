@@ -360,7 +360,6 @@ public class RayCastingGame extends JPanel {
                     (int) (y1 + dy1 * shadowLength)
             };
 
-            // Calculate center point of the shadow quad
             int quadCenterX = (shadowXPoints[0] + shadowXPoints[1] + shadowXPoints[2] + shadowXPoints[3]) / 4;
             int quadCenterY = (shadowYPoints[0] + shadowYPoints[1] + shadowYPoints[2] + shadowYPoints[3]) / 4;
 
