@@ -2,6 +2,7 @@ package pewpew.smash.game.network.processor.serverProcessor;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.esotericsoftware.kryonet.Connection;
 
@@ -44,12 +45,12 @@ public class ServerPreventActionForPlayerPacketProcessor extends ServerProcessor
 
                 if (newAction == PlayerAction.HEALING) {
                     if (packet.getC() == 'm') {
-                        ServerAudioManager.getInstance().play(AudioClip.MEDIKIT, player, 1200);
+                        ServerAudioManager.getInstance().play(AudioClip.MEDIKIT, player, 1200, Optional.empty());
                     } else {
-                        ServerAudioManager.getInstance().play(AudioClip.HEALING, player, 1200);
+                        ServerAudioManager.getInstance().play(AudioClip.HEALING, player, 1200, Optional.empty());
                     }
                 } else if (newAction == PlayerAction.RELOADING) {
-                    ServerAudioManager.getInstance().play(AudioClip.RELOAD, player, 1200);
+                    ServerAudioManager.getInstance().play(AudioClip.RELOAD, player, 1200, Optional.empty());
                 }
             }
             player.preventAction();

@@ -4,6 +4,7 @@ import java.awt.Polygon;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.entities.Bullet;
@@ -152,7 +153,7 @@ public class ServerCombatManager {
 
         PlayerState newState = new PlayerState(target.getId(), target.getHealth());
         PlayerStatePacket packet = new PlayerStatePacket(newState);
-        ServerAudioManager.getInstance().play(AudioClip.PLAYER_DAMAGE, target, 1000);
+        ServerAudioManager.getInstance().play(AudioClip.PLAYER_DAMAGE, target, 1000, Optional.empty());
         server.sendToUDP(target.getId(), packet);
 
         if (target.getHealth() <= 0) {
@@ -166,7 +167,7 @@ public class ServerCombatManager {
 
         PlayerState newState = new PlayerState(target.getId(), target.getHealth());
         PlayerStatePacket packet = new PlayerStatePacket(newState);
-        ServerAudioManager.getInstance().play(AudioClip.PLAYER_DAMAGE, target, 1000);
+        ServerAudioManager.getInstance().play(AudioClip.PLAYER_DAMAGE, target, 1000, Optional.empty());
         server.sendToUDP(target.getId(), packet);
 
         if (target.getHealth() <= 0) {
@@ -186,6 +187,6 @@ public class ServerCombatManager {
 
         PlayerDeathPacket deathPacket = new PlayerDeathPacket(target.getId(), attacker.getId());
         server.sendToAllTCP(deathPacket);
-        ServerAudioManager.getInstance().play(AudioClip.PLAYER_DEATH, target, 1500);
+        ServerAudioManager.getInstance().play(AudioClip.PLAYER_DEATH, target, 1500, Optional.empty());
     }
 }

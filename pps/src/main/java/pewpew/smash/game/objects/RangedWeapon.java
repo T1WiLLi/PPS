@@ -3,6 +3,7 @@ package pewpew.smash.game.objects;
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.Optional;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -126,6 +127,7 @@ public class RangedWeapon extends Weapon {
         Bullet bullet = new Bullet(owner);
         ServerBulletTracker.getInstance().addBullet(bullet, this);
         ServerAudioManager.getInstance()
-                .play((HelpMethods.isBigGun(this) ? AudioClip.BIG_WPEAON_SHOT : AudioClip.BULLET_SHOT), owner, 2000);
+                .play((HelpMethods.isBigGun(this) ? AudioClip.BIG_WPEAON_SHOT : AudioClip.BULLET_SHOT), owner, 2000,
+                        Optional.empty());
     }
 }

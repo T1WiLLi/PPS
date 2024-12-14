@@ -1,5 +1,6 @@
 package pewpew.smash.game.network.server;
 
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,7 +31,7 @@ public class ServerAudioManager {
         this.entityManager = entityManager;
     }
 
-    public void play(AudioClip clip, Player source, int maxRadius) {
+    public void play(AudioClip clip, Player source, int maxRadius, Optional<Double> volumeDamper) {
         if (server == null || entityManager == null) {
             throw new IllegalStateException("ServerAudioManager dependencies are not set.");
         }
@@ -40,7 +41,8 @@ public class ServerAudioManager {
                 if (isInRadius(source, targetPlayer, maxRadius)) {
                     double distance = calculateDistance(source.getX(), source.getY(), targetPlayer.getX(),
                             targetPlayer.getY());
-                    double volume = calculateFadeVolume(distance, maxRadius);
+                    double volume = calculateFadeVolume(distance, maxRadius)
+                            - (volumeDamper.isPresent() ? volumeDamper.get() : 0);
                     double pan = calculatePan(source.getX(), targetPlayer, maxRadius);
 
                     System.out.println("Sending audio packet to player " + targetPlayer.getUsername());

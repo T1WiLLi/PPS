@@ -2,6 +2,7 @@ package pewpew.smash.game.network.server;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.entities.Player;
@@ -62,7 +63,7 @@ public class ServerItemUpdater {
         if (item instanceof AmmoStack) {
             AmmoStack ammoStack = (AmmoStack) item;
             player.getInventory().addAmmo(ammoStack.getAmmo());
-            ServerAudioManager.getInstance().play(AudioClip.AMMO_PICKUP, player, 400);
+            ServerAudioManager.getInstance().play(AudioClip.AMMO_PICKUP, player, 400, Optional.empty());
         } else if (item instanceof Scope) {
             Scope currentscope = player.getScope();
             currentscope.drop();
@@ -75,7 +76,7 @@ public class ServerItemUpdater {
         } else if (item instanceof Consumable) {
             Consumable consumable = (Consumable) item;
             player.getInventory().addConsumable(consumable.getType());
-            ServerAudioManager.getInstance().play(AudioClip.CONSUMABLE_PICKUP, player, 400);
+            ServerAudioManager.getInstance().play(AudioClip.CONSUMABLE_PICKUP, player, 400, Optional.empty());
         } else if (item instanceof RangedWeapon) {
             player.getInventory().getPrimaryWeapon().ifPresent(currentWeapon -> {
                 currentWeapon.drop();
@@ -85,7 +86,7 @@ public class ServerItemUpdater {
             });
             player.changeWeapon((RangedWeapon) item);
             server.sendToAllTCP(WeaponStateSerializer.serializeWeaponState((Weapon) item));
-            ServerAudioManager.getInstance().play(AudioClip.WEAPON_SWAPPED, player, 400);
+            ServerAudioManager.getInstance().play(AudioClip.WEAPON_SWAPPED, player, 400, Optional.empty());
         }
 
         InventoryPacket inventoryPacket = new InventoryPacket(player.getId(),
