@@ -112,6 +112,9 @@ public class ServerCollisionManager {
                 PlayerStatePacket statePacket = new PlayerStatePacket(
                         new PlayerState(player.getId(), player.getHealth()));
                 server.sendToUDP(playerId, statePacket);
+                ServerAudioManager.getInstance().play(AudioClip.PLAYER_DAMAGE,
+                        new int[] { (int) player.getX(), (int) player.getY() },
+                        1200);
 
                 if (player.getHealth() <= 0) {
                     entityManager.removePlayerEntity(player.getId());
