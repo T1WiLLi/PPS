@@ -44,8 +44,6 @@ public class ServerAudioManager {
                     double volume = calculateFadeVolume(distance, maxRadius)
                             - (volumeDamper.isPresent() ? volumeDamper.get() : 0);
                     double pan = calculatePan(source.getX(), targetPlayer, maxRadius);
-
-                    System.out.println("Sending audio packet to player " + targetPlayer.getUsername());
                     AudioPacket packet = new AudioPacket(clip, volume, pan);
                     server.sendToTCP(targetPlayer.getId(), packet);
                 }

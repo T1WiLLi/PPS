@@ -25,7 +25,7 @@ public class ClientPlayerJoinedPacketProcessor extends ClientProcessor implement
         if (getEntityManager().getPlayerEntity(packet.getId()) == null) {
             Player player = new Player(packet.getId(), packet.getUsername());
             getEntityManager().addPlayerEntity(player.getId(), player);
-            clientHandler.setCurrentBroadcastedMessage(player.getUsername() + " has joined the game.");
+            clientHandler.setCurrentBroadcastMessage(player.getUsername() + " has joined the game.");
             clientHandler.processQueuedPositionPackets(player.getId());
         }
     }

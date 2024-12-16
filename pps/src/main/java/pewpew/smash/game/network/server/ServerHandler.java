@@ -248,15 +248,18 @@ public class ServerHandler extends Handler implements Runnable {
 
     private int[] getRandomPlayerPos() {
         if (gamemode.equals(GameModeType.SANDBOX)) {
-            return new int[] { (WorldGenerator.getWorldWidth() / 2 * WorldGenerator.TILE_SIZE),
-                    (WorldGenerator.getWorldHeight() / 2 * WorldGenerator.TILE_SIZE) };
+            return new int[] {
+                    (WorldGenerator.getWorldWidth() / 2),
+                    (WorldGenerator.getWorldHeight() / 2)
+            };
         }
 
-        int worldWidth = WorldGenerator.getWorldWidth() * WorldGenerator.TILE_SIZE;
-        int worldHeight = WorldGenerator.getWorldHeight() * WorldGenerator.TILE_SIZE;
+        int worldWidth = worldManager.getWorldData().length;
+        int worldHeight = worldManager.getWorldData()[0].length;
         Random random = new Random();
 
-        while (true) {
+        int maxAttempts = 1000; // Prevent infinite loop
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
             int x = random.nextInt(worldWidth);
             int y = random.nextInt(worldHeight);
 
@@ -279,9 +282,17 @@ public class ServerHandler extends Handler implements Runnable {
                 }
 
                 if (!isNearWater) {
-                    return new int[] { x, y };
+                    return new int[] {
+                            x * WorldGenerator.TILE_SIZE,
+                            y * WorldGenerator.TILE_SIZE
+                    };
                 }
             }
         }
+
+        return new int[] {
+                (WorldGenerator.getWorldWidth() / 2),
+                (WorldGenerator.getWorldHeight() / 2)
+        };
     }
 }

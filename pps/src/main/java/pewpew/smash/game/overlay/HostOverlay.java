@@ -364,7 +364,12 @@ public class HostOverlay extends Overlay {
             return;
         }
 
-        String host = sandboxMultiplayerOn.isChecked() ? userIP : "127.0.0.1";
+        String host;
+        if (gameMode == GameModeType.SANDBOX) {
+            host = sandboxMultiplayerOn.isChecked() ? userIP : "127.0.0.1";
+        } else {
+            host = userIP;
+        }
 
         try {
             boolean isHosting = true;

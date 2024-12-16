@@ -22,6 +22,6 @@ public class ClientBroadcastMessagePacketProcessor extends ClientProcessor
 
     @Override
     public void handle(Connection connection, BroadcastMessagePacket packet) {
-        clientHandler.setCurrentBroadcastedMessage(packet.getMessage());
+        clientHandler.setCurrentBroadcastMessage(packet.getMessage());
     }
 }
