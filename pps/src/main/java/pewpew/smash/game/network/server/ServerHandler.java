@@ -187,7 +187,7 @@ public class ServerHandler extends Handler implements Runnable {
         if (gameStarted && this.entityManager.getPlayerEntities().size() == 1) {
             Player winner = this.entityManager.getPlayerEntities().stream().findFirst().orElse(null);
             if (winner != null) {
-                this.postGameManager.triggerPostGame(winner, new ArrayList<>(entityManager.getPlayerEntities()));
+                this.postGameManager.triggerPostGame(winner, new ArrayList<>(entityManager.getAllPlayers()));
                 gameStarted = false;
             }
         }

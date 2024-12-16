@@ -23,6 +23,7 @@ public class ServerPostGameManager {
                     .collect(Collectors.toList());
 
             PostGamePacket packet = new PostGamePacket(winner.getUsername(), playerNames);
+            ServerAudioManager.getInstance().stop();
             server.sendToAllTCP(packet);
         }
     }

@@ -71,6 +71,10 @@ public class ServerAudioManager {
         });
     }
 
+    public void stop() {
+        audioPool.shutdownNow();
+    }
+
     private boolean isInRadius(Player source, Player target, int maxRadius) {
         double distance = calculateDistance(source.getX(), source.getY(), target.getX(), target.getY());
         return distance <= maxRadius;

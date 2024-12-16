@@ -28,8 +28,14 @@ public class ServerLobbyManager {
     public ServerLobbyManager(ServerWrapper server, String gamemode) {
         this.server = server;
         this.gamemode = gamemode;
-        this.minPlayers = HelpMethods.getGameModeTypeFromString(gamemode).equals(GameModeType.SANDBOX) ? 1 : 4;
-        this.countdownDuration = HelpMethods.getGameModeTypeFromString(gamemode).equals(GameModeType.SANDBOX) ? 5 : 30;
+        this.minPlayers = HelpMethods.getGameModeTypeFromString(gamemode).equals(GameModeType.SANDBOX) ? 1 : 2;
+        this.countdownDuration = HelpMethods.getGameModeTypeFromString(gamemode).equals(GameModeType.SANDBOX) ? 1 : 1; // Change
+                                                                                                                       // back
+                                                                                                                       // to
+                                                                                                                       // 5
+                                                                                                                       // &
+                                                                                                                       // 30
+                                                                                                                       // sec
     }
 
     public boolean isLobbyActive() {
