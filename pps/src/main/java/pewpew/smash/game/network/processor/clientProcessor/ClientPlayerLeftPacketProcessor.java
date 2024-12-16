@@ -24,7 +24,7 @@ public class ClientPlayerLeftPacketProcessor extends ClientProcessor implements 
     public void handle(Connection connection, PlayerLeftPacket packet) {
         Player player = getEntityManager().getPlayerEntity(packet.getId());
         if (player != null) {
-            clientHandler.setCurrentBroadcastedMessage(player.getUsername() + " has left the game.");
+            clientHandler.setCurrentBroadcastMessage(player.getUsername() + " has left the game.");
             getEntityManager().removePlayerEntity(packet.getId());
         }
     }

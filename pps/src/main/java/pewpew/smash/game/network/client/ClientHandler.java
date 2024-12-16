@@ -132,10 +132,9 @@ public class ClientHandler extends Handler {
         this.clientEventManager.update();
     }
 
-    public void setBroadcastMessage(String message) {
+    public void setCurrentBroadcastMessage(String message) {
         this.currentBroadcastedMessage = message;
 
-        // Schedule message clearing after 3 seconds
         scheduler.schedule(() -> {
             this.currentBroadcastedMessage = "";
         }, 3, TimeUnit.SECONDS);
