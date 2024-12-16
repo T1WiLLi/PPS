@@ -3,6 +3,7 @@ package pewpew.smash.game.network.server;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +22,7 @@ import pewpew.smash.game.network.packets.SyncTimePacket;
 import pewpew.smash.game.network.packets.WeaponStatePacket;
 import pewpew.smash.game.network.processor.PacketProcessor;
 import pewpew.smash.game.network.serializer.WeaponStateSerializer;
+import pewpew.smash.game.world.WorldGenerator;
 
 public class ServerHandler extends Handler implements Runnable {
 
@@ -56,8 +58,6 @@ public class ServerHandler extends Handler implements Runnable {
         ServerBulletTracker.getInstance().setServerReference(this.server);
 
         this.lobbyManager = new ServerLobbyManager(server, type.name());
-        this.lobbyManager.setCountdownDuration((gamemode.equals(GameModeType.SANDBOX) ? 5 : 30));
-        this.lobbyManager.setMinPlayers(gamemode.equals(GameModeType.SANDBOX) ? 1 : 4);
         this.postGameManager = new ServerPostGameManager(server);
 
         registersClasses(this.server.getKryo());
@@ -222,7 +222,8 @@ public class ServerHandler extends Handler implements Runnable {
             String username = entry.getValue();
 
             Player player = new Player(playerId, username);
-            player.teleport(1000, 1000);
+            int[] pos = getRandomPlayerPos();
+            player.teleport(pos[0], pos[1]);
             player.setRotation(0);
             this.entityManager.addPlayerEntity(playerId, player);
         }
@@ -245,4 +246,42 @@ public class ServerHandler extends Handler implements Runnable {
         gameStarted = true;
     }
 
+    private int[] getRandomPlayerPos() {
+        if (gamemode.equals(GameModeType.SANDBOX)) {
+            return new int[] { (WorldGenerator.getWorldWidth() / 2 * WorldGenerator.TILE_SIZE),
+                    (WorldGenerator.getWorldHeight() / 2 * WorldGenerator.TILE_SIZE) };
+        }
+
+        int worldWidth = WorldGenerator.getWorldWidth() * WorldGenerator.TILE_SIZE;
+        int worldHeight = WorldGenerator.getWorldHeight() * WorldGenerator.TILE_SIZE;
+        Random random = new Random();
+
+        while (true) {
+            int x = random.nextInt(worldWidth);
+            int y = random.nextInt(worldHeight);
+
+            if (worldManager.getWorldData()[x][y] == WorldGenerator.GRASS) {
+                boolean isNearWater = false;
+                for (int dx = -2; dx <= 2; dx++) {
+                    for (int dy = -2; dy <= 2; dy++) {
+                        int nx = x + dx;
+                        int ny = y + dy;
+
+                        if (nx >= 0 && nx < worldWidth && ny >= 0 && ny < worldHeight) {
+                            if (worldManager.getWorldData()[nx][ny] == WorldGenerator.WATER) {
+                                isNearWater = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (isNearWater)
+                        break;
+                }
+
+                if (!isNearWater) {
+                    return new int[] { x, y };
+                }
+            }
+        }
+    }
 }

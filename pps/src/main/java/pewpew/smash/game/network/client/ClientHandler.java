@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.esotericsoftware.kryonet.Connection;
 import lombok.Getter;
@@ -41,8 +44,9 @@ public class ClientHandler extends Handler {
     @Getter
     private boolean isIntentionalDisconnect;
 
-    @Setter
     private String currentBroadcastedMessage = "";
+
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     public ClientHandler(String host, int port) {
         this.client = new ClientWrapper(host, port, port);
@@ -126,6 +130,15 @@ public class ClientHandler extends Handler {
     public void update() {
         this.clientUpdater.update(this.client);
         this.clientEventManager.update();
+    }
+
+    public void setBroadcastMessage(String message) {
+        this.currentBroadcastedMessage = message;
+
+        // Schedule message clearing after 3 seconds
+        scheduler.schedule(() -> {
+            this.currentBroadcastedMessage = "";
+        }, 3, TimeUnit.SECONDS);
     }
 
     public String getCurrentBroadcastedMessage() {

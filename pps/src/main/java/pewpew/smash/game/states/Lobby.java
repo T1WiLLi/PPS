@@ -72,9 +72,15 @@ public class Lobby implements State {
         FontFactory.IMPACT_SMALL.applyFont(canvas);
         int y = 200;
         for (String p : ClientLobbyManager.getInstance().getPlayers()) {
-            canvas.renderString(p, 100, y,
-                    (User.getInstance().getLocalID().get() == Integer.parseInt(p.split("-")[1]) ? Color.GREEN
-                            : Color.WHITE));
+            if (User.getInstance().getUsername().startsWith("Guest")) {
+                canvas.renderString(p, 100, y,
+                        (User.getInstance().getLocalID().get() == Integer.parseInt(p.split("-")[1]) ? Color.GREEN
+                                : Color.WHITE));
+            } else {
+                canvas.renderString(p, 100, y,
+                        (p.equals(User.getInstance().getUsername()) ? Color.GREEN
+                                : Color.WHITE));
+            }
             y += 25;
         }
         FontFactory.resetFont(canvas);

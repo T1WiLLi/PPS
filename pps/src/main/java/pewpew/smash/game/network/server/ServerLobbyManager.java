@@ -6,8 +6,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.Setter;
+import pewpew.smash.game.gamemode.GameModeType;
 import pewpew.smash.game.network.packets.LobbyStatePacket;
 import pewpew.smash.game.network.packets.StartGamePacket;
+import pewpew.smash.game.utils.HelpMethods;
 
 public class ServerLobbyManager {
 
@@ -26,6 +28,8 @@ public class ServerLobbyManager {
     public ServerLobbyManager(ServerWrapper server, String gamemode) {
         this.server = server;
         this.gamemode = gamemode;
+        this.minPlayers = HelpMethods.getGameModeTypeFromString(gamemode).equals(GameModeType.SANDBOX) ? 1 : 4;
+        this.countdownDuration = HelpMethods.getGameModeTypeFromString(gamemode).equals(GameModeType.SANDBOX) ? 5 : 30;
     }
 
     public boolean isLobbyActive() {
