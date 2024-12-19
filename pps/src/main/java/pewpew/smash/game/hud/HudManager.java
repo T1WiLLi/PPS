@@ -1,7 +1,6 @@
 package pewpew.smash.game.hud;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 
 import lombok.Setter;
 import pewpew.smash.engine.Canvas;
@@ -47,10 +46,6 @@ public class HudManager {
         this.consumableDisplayer.setInventory(player.getInventory());
         this.healthBar.setMaxValue(100);
         this.minimap.setLocal(player);
-    }
-
-    public void setWorldImage(BufferedImage image) {
-        this.minimap.setWorldImage(image);
     }
 
     public void update() {

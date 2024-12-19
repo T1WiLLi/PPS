@@ -2,6 +2,7 @@ package pewpew.smash.game.world;
 
 import java.util.Random;
 
+// DISCLAIMER !!! This class is not mine, it was taken from Stackoverflow, I unfortunately lost the link to the original post.
 public class PerlinNoise {
     private final int[] permutation;
     private static final int PERMUTATION_SIZE = 256;

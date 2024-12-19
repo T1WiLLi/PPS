@@ -6,7 +6,6 @@ public class ServerTime {
     private volatile long gameStartTime;
     private volatile long lastUpdateTime;
     private volatile long accumulatedTime;
-    private volatile double deltaTime;
 
     private static final int UPS_TARGET = 240;
     private final long UPDATE_INTERVAL;
@@ -19,7 +18,6 @@ public class ServerTime {
         this.gameStartTime = System.nanoTime();
         this.lastUpdateTime = System.nanoTime();
         this.accumulatedTime = 0;
-        this.deltaTime = 0.0;
         this.UPDATE_INTERVAL = 1000000000 / UPS_TARGET;
         this.lastUpsTime = System.nanoTime();
         this.upsCount = 0;
@@ -39,16 +37,13 @@ public class ServerTime {
         lastUpdateTime = currentTime;
 
         accumulatedTime += elapsedTime;
+
         if (accumulatedTime >= UPDATE_INTERVAL) {
             accumulatedTime -= UPDATE_INTERVAL;
             updateUPS();
             return true;
         }
         return false;
-    }
-
-    public double getDeltaTime() {
-        return deltaTime;
     }
 
     public long getCurrentTime() {

@@ -7,6 +7,7 @@ public enum AudioClip {
     MAIN_THEME("MainTheme"),
     SWAPPED("swapped"),
     WALKING_GRASS("sfx/WalkingGrass"),
+    WALKING_WATER("sfx/Walkingwater"),
     PLAYER_DEATH("sfx/playerDead"),
     BULLET_SHOT("sfx/bullet"),
     PLAYER_DAMAGE("sfx/playerDamage"),

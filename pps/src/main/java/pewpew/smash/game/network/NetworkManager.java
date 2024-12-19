@@ -64,20 +64,6 @@ public class NetworkManager {
         return client.getClientEventManager();
     }
 
-    public boolean isWorldDataReceived() {
-        if (client == null) {
-            throw new IllegalStateException("NetworkManager not initialized");
-        }
-        return client.isWorldDataReceived();
-    }
-
-    public long getWorldData() {
-        if (client == null) {
-            throw new IllegalStateException("NetworkManager not initialized");
-        }
-        return client.getSeed();
-    }
-
     // Start a 5 sec timer, after that call client.resetCurrentBroadcastedMessage();
     public String getBroadcastMessage() {
         if (client == null) {

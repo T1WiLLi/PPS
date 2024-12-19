@@ -18,7 +18,7 @@ import pewpew.smash.game.network.client.ClientItemRenderer;
 import pewpew.smash.game.objects.ItemFactory;
 import pewpew.smash.game.objects.SpecialType;
 import pewpew.smash.game.objects.special.Scope;
-import pewpew.smash.game.world.WorldGenerator;
+import pewpew.smash.game.world.WorldClientIntegration;
 
 public class Sandbox implements GameMode {
     private NetworkManager networkManager;
@@ -43,10 +43,8 @@ public class Sandbox implements GameMode {
 
     @Override
     public void update() {
-        if (networkManager.isWorldDataReceived() && this.worldImage == null) {
-            this.worldImage = WorldGenerator
-                    .getWorldImage(new WorldGenerator(networkManager.getWorldData()).getWorldData());
-            HudManager.getInstance().setWorldImage(this.worldImage);
+        if (WorldClientIntegration.getInstance().isWorldLoaded() && this.worldImage == null) {
+            this.worldImage = WorldClientIntegration.getInstance().getWorldImage();
         }
 
         try {

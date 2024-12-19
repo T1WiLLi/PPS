@@ -33,13 +33,6 @@ public class ClientHandler extends Handler {
     private final Map<Integer, List<PositionPacket>> positionPacketQueue;
     private final Map<Class<? extends BasePacket>, PacketProcessor<? extends BasePacket>> packetProcessors;
 
-    @Getter
-    @Setter
-    private long seed;
-    @Getter
-    @Setter
-    private boolean isWorldDataReceived;
-
     @Setter
     @Getter
     private boolean isIntentionalDisconnect;

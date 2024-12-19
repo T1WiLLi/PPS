@@ -25,17 +25,15 @@ public class ServerLobbyManager {
     @Setter
     private int countdownDuration = 5;
 
+    // Loop non-blocking
+    private long lastBroadcastTime = 0;
+    private static final int BROADCAST_INTERVAL_MS = 1000;
+
     public ServerLobbyManager(ServerWrapper server, String gamemode) {
         this.server = server;
         this.gamemode = gamemode;
         this.minPlayers = HelpMethods.getGameModeTypeFromString(gamemode).equals(GameModeType.SANDBOX) ? 1 : 2;
-        this.countdownDuration = HelpMethods.getGameModeTypeFromString(gamemode).equals(GameModeType.SANDBOX) ? 1 : 1; // Change
-                                                                                                                       // back
-                                                                                                                       // to
-                                                                                                                       // 5
-                                                                                                                       // &
-                                                                                                                       // 30
-                                                                                                                       // sec
+        this.countdownDuration = HelpMethods.getGameModeTypeFromString(gamemode).equals(GameModeType.SANDBOX) ? 5 : 30;
     }
 
     public boolean isLobbyActive() {
@@ -59,23 +57,23 @@ public class ServerLobbyManager {
         if (!lobbyActive)
             return;
 
+        long currentTime = System.currentTimeMillis();
+
         if (checkThresholdReached()) {
             int remain = getCountdownRemaining();
+
             if (remain <= 0) {
                 startGame();
             } else {
-                broadcastLobbyState();
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+                if (currentTime - lastBroadcastTime >= BROADCAST_INTERVAL_MS) {
+                    broadcastLobbyState();
+                    lastBroadcastTime = currentTime;
                 }
             }
         } else {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+            if (currentTime - lastBroadcastTime >= BROADCAST_INTERVAL_MS) {
+                broadcastLobbyState();
+                lastBroadcastTime = currentTime;
             }
         }
     }

@@ -49,9 +49,9 @@ public class ServerHandler extends Handler implements Runnable {
         this.server = new ServerWrapper(port, port);
         this.executor = Executors.newSingleThreadExecutor();
         this.entityManager = new EntityManager();
-        this.entityUpdater = new ServerEntityUpdater(entityManager);
         this.itemUpdater = new ServerItemUpdater();
         this.worldManager = new ServerWorldManager(server, entityManager, 25, 40);
+        this.entityUpdater = new ServerEntityUpdater(entityManager, worldManager.getWorldData());
         this.collisionManager = new ServerCollisionManager(server, entityManager, worldManager.getWorldData());
         this.serverTime = ServerTime.getInstance();
         this.eventManager = new ServerEventManager(type, worldManager.getWorldData());
@@ -93,6 +93,12 @@ public class ServerHandler extends Handler implements Runnable {
                     if (!gamemode.equals(GameModeType.SANDBOX)) {
                         checkWinCondition();
                     }
+                } else {
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                 }
             }
         }
@@ -116,6 +122,7 @@ public class ServerHandler extends Handler implements Runnable {
     protected void onConnect(Connection connection) {
         if (lobbyManager.isLobbyActive()) {
             lobbyManager.addPlayer(connection.getID(), "");
+            this.worldManager.sendWorldData(connection.getID());
         } else if (gamemode.equals(GameModeType.SANDBOX)) {
             server.sendToAllTCP(new StartGamePacket(this.gamemode.name()));
             Player player = new Player(connection.getID());
@@ -136,7 +143,6 @@ public class ServerHandler extends Handler implements Runnable {
                     .serializeWeaponState(player.getEquippedWeapon());
             this.server.sendToTCP(connection.getID(), playerWeaponStatePacket);
             this.entityManager.addPlayerEntity(player.getId(), player);
-            this.worldManager.sendWorldData(connection.getID());
             this.server.sendToTCP(connection.getID(),
                     new SyncTimePacket(ServerTime.getInstance().getElapsedTimeMillis()));
         } else {
@@ -215,6 +221,7 @@ public class ServerHandler extends Handler implements Runnable {
 
     private void postLobbyGameInit() {
         ServerTime.reset();
+        ServerTime.getInstance();
         Map<Integer, String> finalLobbyPlayers = lobbyManager.getLobbyPlayers();
 
         for (Map.Entry<Integer, String> entry : finalLobbyPlayers.entrySet()) {

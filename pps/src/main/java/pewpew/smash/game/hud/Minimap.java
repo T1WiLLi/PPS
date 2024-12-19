@@ -12,6 +12,7 @@ import pewpew.smash.game.Camera;
 import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.event.StormEvent;
 import pewpew.smash.game.utils.FontFactory;
+import pewpew.smash.game.world.WorldClientIntegration;
 
 @Setter
 public class Minimap extends HudElement {
@@ -32,6 +33,9 @@ public class Minimap extends HudElement {
     @Override
     protected void render(Canvas canvas) {
         if (worldImage == null || local == null) {
+            if (WorldClientIntegration.getInstance().isWorldLoaded()) {
+                worldImage = WorldClientIntegration.getInstance().getWorldImage();
+            }
             return;
         }
         int visibleWidth = (int) (camera.getViewportWidth() * 2.5);

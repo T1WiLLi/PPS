@@ -13,7 +13,7 @@ import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.client.ClientEntityRenderer;
 import pewpew.smash.game.network.client.ClientEntityUpdater;
 import pewpew.smash.game.network.client.ClientItemRenderer;
-import pewpew.smash.game.world.WorldGenerator;
+import pewpew.smash.game.world.WorldClientIntegration;
 
 public class BattleRoyale implements GameMode {
 
@@ -39,10 +39,8 @@ public class BattleRoyale implements GameMode {
 
     @Override
     public void update() {
-        if (networkManager.isWorldDataReceived() && this.worldImage == null) {
-            this.worldImage = WorldGenerator
-                    .getWorldImage(new WorldGenerator(networkManager.getWorldData()).getWorldData());
-            HudManager.getInstance().setWorldImage(this.worldImage);
+        if (WorldClientIntegration.getInstance().isWorldLoaded() && this.worldImage == null) {
+            this.worldImage = WorldClientIntegration.getInstance().getWorldImage();
         }
 
         try {
