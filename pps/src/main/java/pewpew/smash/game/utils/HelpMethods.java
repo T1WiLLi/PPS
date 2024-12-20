@@ -2,6 +2,9 @@ package pewpew.smash.game.utils;
 
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -9,9 +12,14 @@ import java.util.stream.Stream;
 
 import pewpew.smash.engine.controls.Direction;
 import pewpew.smash.engine.controls.MouseController;
+import pewpew.smash.engine.controls.MouseInput;
+import pewpew.smash.game.Animation.PlayerAnimation;
+import pewpew.smash.game.Animation.PlayerAnimationState;
 import pewpew.smash.game.entities.Inventory;
 import pewpew.smash.game.entities.Plane;
+import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.gamemode.GameModeType;
+import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.network.packets.ItemAddPacket;
 import pewpew.smash.game.network.serializer.SerializationUtility;
 import pewpew.smash.game.network.server.ServerWrapper;
@@ -19,6 +27,7 @@ import pewpew.smash.game.objects.Consumable;
 import pewpew.smash.game.objects.ConsumableType;
 import pewpew.smash.game.objects.Item;
 import pewpew.smash.game.objects.ItemFactory;
+import pewpew.smash.game.objects.MeleeWeapon;
 import pewpew.smash.game.objects.RangedWeapon;
 import pewpew.smash.game.objects.WeaponType;
 import pewpew.smash.game.objects.special.AmmoStack;
@@ -26,6 +35,9 @@ import pewpew.smash.game.objects.special.Scope;
 import pewpew.smash.game.world.WorldGenerator;
 
 public class HelpMethods {
+
+    private static final Map<Player, Long> reloadTimers = new HashMap<>();
+
     public static boolean isIn(Rectangle bounds) {
         return bounds.getBounds().contains(MouseController.getMouseX(), MouseController.getMouseY());
     }
@@ -178,6 +190,75 @@ public class HelpMethods {
         plane.setDirection(direction);
 
         return plane;
+    }
+
+    public static byte getDirectionToByte(Direction direction) {
+        return (byte) Arrays.asList(Direction.values()).indexOf(direction);
+    }
+
+    public static Direction getDirectionFromByte(byte d) {
+        return Direction.values()[(int) d];
+    }
+
+    public static PlayerAnimation getCurrentAnimation(Player player) {
+        if (player.getEquippedWeapon() instanceof RangedWeapon rangedWeapon) {
+            double reloadTime = rangedWeapon.getType().getReloadSpeed().orElse(1.5);
+            long currentTime = System.currentTimeMillis();
+
+            if (GamePad.getInstance().isReloadKeyPressed() && rangedWeapon.canReload()
+                    && !player.getInventory().isAmmoEmpty()) {
+                reloadTimers.put(player, currentTime);
+                return PlayerAnimation.RELOAD;
+            }
+
+            if (reloadTimers.containsKey(player)) {
+                long startTime = reloadTimers.get(player);
+                if (currentTime - startTime < reloadTime * 1000) {
+                    return PlayerAnimation.RELOAD;
+                } else {
+                    reloadTimers.remove(player);
+                }
+            }
+        }
+
+        if (isShooting(player)) {
+            if (player.getEquippedWeapon() instanceof MeleeWeapon) {
+                return PlayerAnimation.MELEEATTACK;
+            } else {
+                return PlayerAnimation.SHOOT;
+            }
+        }
+
+        if (player.getDirection() != Direction.NONE) {
+            return PlayerAnimation.MOVE;
+        }
+        return PlayerAnimation.IDLE;
+    }
+
+    public static PlayerAnimationState getCurrentState(Player player) {
+        if (player.getEquippedWeapon() instanceof MeleeWeapon) {
+            return PlayerAnimationState.KNIFE;
+        } else {
+            if (((RangedWeapon) player.getEquippedWeapon()).getProperties().isTwoHanded()) {
+                if (((RangedWeapon) player.getEquippedWeapon()).getType() == WeaponType.M4A1) {
+                    return PlayerAnimationState.SHOTGUN;
+                } else {
+                    return PlayerAnimationState.RIFLE;
+                }
+            } else {
+                return PlayerAnimationState.HANDGUN;
+            }
+        }
+    }
+
+    private static boolean isShooting(Player player) {
+        if (player.getEquippedWeapon() instanceof MeleeWeapon meleeWeapon) {
+            return meleeWeapon.isAttacking();
+        } else if (player.getEquippedWeapon() instanceof RangedWeapon rangedWeapon) {
+            return player.getMouseInput() == MouseInput.LEFT_CLICK
+                    && rangedWeapon.canShoot();
+        }
+        return false;
     }
 
     private static float getRotationFromDirection(Direction direction) {

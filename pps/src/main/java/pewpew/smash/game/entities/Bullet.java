@@ -68,14 +68,21 @@ public class Bullet {
         this.damage = equippedWeapon.getDamage();
         this.maxRange = equippedWeapon.getRange();
 
-        float weaponCenterX = owner.getX() + owner.getWidth() / 2;
-        float weaponCenterY = owner.getY() + owner.getHeight() / 2;
+        float playerCenterX = owner.getX() + owner.getWidth() / 2;
+        float playerCenterY = owner.getY() + owner.getHeight() / 2;
+
         double angleRad = Math.toRadians(this.rotation);
-        this.x = weaponCenterX + (int) (equippedWeapon.getWeaponLength() * Math.cos(angleRad));
-        this.y = weaponCenterY + (int) (equippedWeapon.getWeaponLength() * Math.sin(angleRad));
+
+        int forwardOffset = 20;
+        int sideOffset = 20;
+
+        int offsetX = (int) (Math.cos(angleRad) * forwardOffset - Math.sin(angleRad) * sideOffset);
+        int offsetY = (int) (Math.sin(angleRad) * forwardOffset + Math.cos(angleRad) * sideOffset);
+
+        this.x = playerCenterX + offsetX;
+        this.y = playerCenterY + offsetY;
 
         this.speed = equippedWeapon.getBulletSpeed();
-
         this.velocityX = (float) (Math.cos(angleRad) * this.speed);
         this.velocityY = (float) (Math.sin(angleRad) * this.speed);
     }

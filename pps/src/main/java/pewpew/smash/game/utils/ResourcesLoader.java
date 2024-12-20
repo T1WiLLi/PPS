@@ -31,6 +31,7 @@ public class ResourcesLoader {
     public static final String PREVIEW_PATH = SPRITE_PATH + "/previews";
     public static final String HUD_PATH = SPRITE_PATH + "/hud";
     public static final String ENTITY_SPRITE = SPRITE_PATH + "/entities";
+    public static final String PLAYER_SPRITE = ENTITY_SPRITE + "/player";
 
     // Audio
     public static final String AUDIO_PATH = BASE_PATH + "audio";

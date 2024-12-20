@@ -18,6 +18,7 @@ public class Canvas {
     private Graphics2D graphics2D;
     private AffineTransform originalTransform;
     private AffineTransform currentTransform;
+    private AffineTransform savedTransform;
     private Shape originalClip;
 
     public Canvas(Graphics2D graphics2d) {
@@ -25,6 +26,7 @@ public class Canvas {
         this.originalTransform = graphics2D.getTransform();
         this.currentTransform = (AffineTransform) originalTransform.clone();
         this.originalClip = graphics2D.getClip();
+        this.savedTransform = null;
     }
 
     // Transformation Methods
@@ -39,6 +41,7 @@ public class Canvas {
     }
 
     public void rotate(double angle, int centerX, int centerY) {
+        savedTransform = graphics2D.getTransform();
         graphics2D.rotate(Math.toRadians(angle), centerX, centerY);
     }
 
@@ -48,7 +51,10 @@ public class Canvas {
     }
 
     public void resetRotation() {
-        graphics2D.setTransform(currentTransform);
+        if (savedTransform != null) {
+            graphics2D.setTransform(savedTransform);
+            savedTransform = null;
+        }
     }
 
     public void setColor(Color color) {
