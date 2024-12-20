@@ -8,6 +8,7 @@ public enum AudioClip {
     SWAPPED("swapped"),
     WALKING_GRASS("sfx/WalkingGrass"),
     WALKING_WATER("sfx/Walkingwater"),
+    WALKING_SAND("sfx/walkSand"),
     PLAYER_DEATH("sfx/playerDead"),
     BULLET_SHOT("sfx/bullet"),
     PLAYER_DAMAGE("sfx/playerDamage"),

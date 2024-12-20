@@ -68,6 +68,10 @@ public class ServerEntityUpdater {
                             && currentTime - lastSoundTime > MOVEMENT_SOUND_COOLDOWN) {
                         ServerAudioManager.getInstance().play(AudioClip.WALKING_GRASS, player, 1000, Optional.of(0.5));
                         playerSoundCooldown.put(player.getId(), currentTime);
+                    } else if ((currentTile == WorldGenerator.DRY_SAND || currentTile == WorldGenerator.WET_SAND)
+                            && currentTime - lastSoundTime > MOVEMENT_SOUND_COOLDOWN) {
+                        ServerAudioManager.getInstance().play(AudioClip.WALKING_SAND, player, 1000, Optional.of(0.5));
+                        playerSoundCooldown.put(player.getId(), currentTime);
                     }
                 }
             }
