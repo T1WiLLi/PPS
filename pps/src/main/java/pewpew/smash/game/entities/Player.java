@@ -66,7 +66,6 @@ public class Player extends MovableEntity {
         Camera.getInstance().setZoom(this.inventory.getScope().getZoomValue());
 
         this.animationManager = new PlayerAnimationManager(10);
-        this.animationManager.loadAnimations();
     }
 
     public Player(int id, String username) {

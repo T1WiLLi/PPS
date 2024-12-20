@@ -7,7 +7,7 @@ import java.util.Map;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class PlayerAnimationManager {
-    private Map<String, BufferedImage[]> animations = new HashMap<>();
+    private static final Map<String, BufferedImage[]> animations = new HashMap<>();
     private BufferedImage[] currentAnimation;
     private int currentIndex;
     private int frameTimer;
@@ -22,7 +22,7 @@ public class PlayerAnimationManager {
         this.animationSpeed = defaultSpeed;
     }
 
-    public void loadAnimations() {
+    public static void preloadAllAnimations() {
         for (PlayerAnimationState state : PlayerAnimationState.values()) {
             String statePath = ResourcesLoader.PLAYER_SPRITE + "/" + state.name().toLowerCase();
 
@@ -59,7 +59,8 @@ public class PlayerAnimationManager {
         return currentAnimation[currentIndex];
     }
 
-    private void loadAnimationFrames(String animationPath, PlayerAnimationState state, PlayerAnimation animation) {
+    private static void loadAnimationFrames(String animationPath, PlayerAnimationState state,
+            PlayerAnimation animation) {
         String animationKey = state.name().toLowerCase() + "_" + animation.name().toLowerCase();
         animations.putIfAbsent(animationKey, new BufferedImage[0]);
 
