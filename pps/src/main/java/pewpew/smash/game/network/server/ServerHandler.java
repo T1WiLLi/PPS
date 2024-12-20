@@ -145,6 +145,7 @@ public class ServerHandler extends Handler implements Runnable {
             this.entityManager.addPlayerEntity(player.getId(), player);
             this.server.sendToTCP(connection.getID(),
                     new SyncTimePacket(ServerTime.getInstance().getElapsedTimeMillis()));
+            this.worldManager.sendWorldData(connection.getID());
         } else {
             // Game started, not in sandbox, for now, ignore connection :)
         }
