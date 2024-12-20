@@ -26,7 +26,7 @@ public enum WeaponType {
     SCORP(15, 2600, 0.12, Optional.of(3), Optional.of(2.4), Optional.of(25)),
 
     // Fists by default.
-    FIST(5, 25, 0.020, Optional.empty(), Optional.empty(), Optional.empty());
+    FIST(5, 40, 0.020, Optional.empty(), Optional.empty(), Optional.empty());
 
     private final int damage;
     private final int range;

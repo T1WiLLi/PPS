@@ -62,6 +62,15 @@ public class RangedWeapon extends Weapon {
         currentAmmo += ammotAvailable;
     }
 
+    public boolean canReload() {
+        return currentAmmo < ammoCapacity;
+    }
+
+    public boolean canShoot() {
+        long currentTime = System.currentTimeMillis();
+        return currentAmmo > 0 && (currentTime - lastShotTime >= (getAttackSpeed() * 1000));
+    }
+
     public void shoot() {
         if (canShoot() && getOwner() != null) {
             spawnBullet((Player) getOwner());
@@ -114,11 +123,6 @@ public class RangedWeapon extends Weapon {
     private void renderHand(Canvas canvas, int x, int y) {
         canvas.renderCircle(x - handRadius / 2, y - handRadius / 2, handRadius, Color.BLACK);
         canvas.renderCircle(x - handRadius / 2 + 1, y - handRadius / 2 + 1, handRadius - 2, new Color(229, 194, 152));
-    }
-
-    private boolean canShoot() {
-        long currentTime = System.currentTimeMillis();
-        return currentAmmo > 0 && (currentTime - lastShotTime >= (getAttackSpeed() * 1000));
     }
 
     private void spawnBullet(Player owner) {

@@ -9,6 +9,7 @@ import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.MouseActionPacket;
 import pewpew.smash.game.network.packets.PositionPacket;
+import pewpew.smash.game.utils.HelpMethods;
 import pewpew.smash.game.world.WorldGenerator;
 
 public class ServerEntityUpdater {
@@ -36,7 +37,7 @@ public class ServerEntityUpdater {
     public void sendPlayerPositions(ServerWrapper server) {
         entityManager.getPlayerEntities().forEach(player -> {
             PositionPacket packet = new PositionPacket(player.getId(), player.getX(), player.getY(),
-                    player.getRotation());
+                    player.getRotation(), HelpMethods.getDirectionToByte(player.getDirection()));
             server.sendToAllUDP(packet);
         });
     }
@@ -66,6 +67,10 @@ public class ServerEntityUpdater {
                     } else if (currentTile == WorldGenerator.GRASS
                             && currentTime - lastSoundTime > MOVEMENT_SOUND_COOLDOWN) {
                         ServerAudioManager.getInstance().play(AudioClip.WALKING_GRASS, player, 1000, Optional.of(0.5));
+                        playerSoundCooldown.put(player.getId(), currentTime);
+                    } else if ((currentTile == WorldGenerator.DRY_SAND || currentTile == WorldGenerator.WET_SAND)
+                            && currentTime - lastSoundTime > MOVEMENT_SOUND_COOLDOWN) {
+                        ServerAudioManager.getInstance().play(AudioClip.WALKING_SAND, player, 1000, Optional.of(0.5));
                         playerSoundCooldown.put(player.getId(), currentTime);
                     }
                 }

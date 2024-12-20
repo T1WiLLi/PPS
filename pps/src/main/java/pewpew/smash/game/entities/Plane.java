@@ -10,8 +10,6 @@ import pewpew.smash.engine.controls.Direction;
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.game.utils.ResourcesLoader;
 
-// Plane will be use for both Airdrop events and Player spawn at the start of the game :)
-// TODO: ADD PLANE TRAIL EFFECTS
 public class Plane extends MovableEntity {
 
     private BufferedImage sprite;

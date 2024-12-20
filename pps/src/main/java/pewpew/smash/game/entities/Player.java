@@ -3,6 +3,7 @@ package pewpew.smash.game.entities;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,9 @@ import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.MouseInput;
 import pewpew.smash.engine.entities.MovableEntity;
 import pewpew.smash.game.Camera;
+import pewpew.smash.game.Animation.PlayerAnimation;
+import pewpew.smash.game.Animation.PlayerAnimationManager;
+import pewpew.smash.game.Animation.PlayerAnimationState;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.model.PlayerState;
 import pewpew.smash.game.objects.Fist;
@@ -23,6 +27,7 @@ import pewpew.smash.game.objects.special.Scope;
 import pewpew.smash.game.post_processing.EffectType;
 import pewpew.smash.game.post_processing.PostProcessingManager;
 import pewpew.smash.game.utils.FontFactory;
+import pewpew.smash.game.utils.HelpMethods;
 
 @ToString(callSuper = true)
 @Getter
@@ -41,6 +46,9 @@ public class Player extends MovableEntity {
 
     private boolean canDoAction = true;
 
+    private PlayerAnimationManager animationManager;
+    private BufferedImage currentSprite;
+
     public Player(int id) {
         setDimensions(40, 40);
         teleport(100, 100);
@@ -56,6 +64,8 @@ public class Player extends MovableEntity {
 
         // Apply player scope to camera
         Camera.getInstance().setZoom(this.inventory.getScope().getZoomValue());
+
+        this.animationManager = new PlayerAnimationManager(10);
     }
 
     public Player(int id, String username) {
@@ -74,6 +84,11 @@ public class Player extends MovableEntity {
                 Camera.getInstance().setZoom(this.inventory.getScope().getZoomValue());
             }
         }
+
+        PlayerAnimationState currentState = HelpMethods.getCurrentState(this);
+        PlayerAnimation currentAnimation = HelpMethods.getCurrentAnimation(this);
+
+        animationManager.updateAnimation(currentState, currentAnimation);
     }
 
     @Override
@@ -86,17 +101,26 @@ public class Player extends MovableEntity {
 
     @Override
     public void render(Canvas canvas) {
-        canvas.renderCircle(x, y, width, new Color(168, 168, 168));
-        canvas.renderCircle(x + 2, y + 2, width - 4, new Color(229, 194, 152));
-
-        if (this.equippedWeapon != null) {
-            this.equippedWeapon.render(canvas);
-        }
-
         FontFactory.DEFAULT_FONT.applyFont(canvas);
         String displayUsername = (id == User.getInstance().getLocalID().get()) ? "You" : "";
         canvas.renderString(displayUsername, x - width / 2, y - height / 2, Color.WHITE);
         FontFactory.resetFont(canvas);
+
+        int widthOffset = 0;
+        int heightOffset = 0;
+
+        if (this.equippedWeapon instanceof MeleeWeapon meleeWeapon) {
+            if (meleeWeapon.isAttacking()) {
+                widthOffset = 25;
+                heightOffset = 25;
+            }
+        }
+
+        canvas.rotate(rotation, (x + getWidth() / 2), (y + getHeight() / 2));
+        canvas.renderImage(animationManager.getFrame(), (x - getWidth() / 2) + 10, (y - getHeight() / 2),
+                width * 2 + widthOffset,
+                height * 2 + heightOffset);
+        canvas.resetRotation();
     }
 
     @Override

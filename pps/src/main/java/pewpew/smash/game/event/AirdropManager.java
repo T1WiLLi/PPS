@@ -19,7 +19,7 @@ public class AirdropManager {
 
     private static final long FIRST_EVENT_DELAY = 180_000L; // 3 minutes
     private static final long MIN_TIME_BETWEEN_EVENTS = 30_000L; // 30 seconds
-    private static final double EVENT_TRIGGER_CHANCE = 1;
+    private static final double EVENT_TRIGGER_CHANCE = 0.5;
 
     private boolean firstEventTriggered = false;
     private long lastAirdropTime = 0;

@@ -12,4 +12,5 @@ public class PositionPacket extends BasePacket {
     private int x;
     private int y;
     private float r; // Rotation degree (0-360)
+    private byte d; // Direction (0-8) 0 being Direction.NONE
 }

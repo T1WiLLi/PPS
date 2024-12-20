@@ -80,7 +80,7 @@ public class WorldGenerator {
     }
 
     private void applyIslandMask(double[][] heightMap) {
-        double islandShapeIntensity = 0.9;
+        double islandShapeIntensity = 0.875;
         double falloffExponent = 1.8;
 
         for (int x = 0; x < worldWidth; x++) {
