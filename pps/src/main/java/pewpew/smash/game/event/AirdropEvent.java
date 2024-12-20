@@ -43,54 +43,31 @@ public class AirdropEvent {
     private void determineDropLocation() {
         Random random = new Random();
 
+        float planeCenterX = plane.getX() + plane.getWidth() / 2f;
+        float planeCenterY = plane.getY() + plane.getHeight() / 2f;
+
+        float endX = planeCenterX;
+        float endY = planeCenterY;
+
         int worldWidth = WorldGenerator.getWorldWidth();
         int worldHeight = WorldGenerator.getWorldHeight();
-
-        int startX = plane.getX();
-        int startY = plane.getY();
-        int planeWidth = plane.getWidth();
-        int planeHeight = plane.getHeight();
-
-        int centerStartX = startX + planeWidth / 2;
-        int centerStartY = startY + planeHeight / 2;
-
-        double mapPos = 0.3 + (0.4 * random.nextDouble());
-
-        int endX = startX;
-        int endY = startY;
 
         switch (plane.getDirection()) {
             case UP -> endY = 0;
             case DOWN -> endY = worldHeight;
             case LEFT -> endX = 0;
             case RIGHT -> endX = worldWidth;
-            case UP_LEFT -> {
-                endX = 0;
-                endY = 0;
-            }
-            case UP_RIGHT -> {
-                endX = worldWidth;
-                endY = 0;
-            }
-            case DOWN_LEFT -> {
-                endX = 0;
-                endY = worldHeight;
-            }
-            case DOWN_RIGHT -> {
-                endX = worldWidth;
-                endY = worldHeight;
-            }
             case NONE -> throw new UnsupportedOperationException("Unimplemented case: " + plane.getDirection());
+            default -> throw new IllegalArgumentException("Unexpected value: " + plane.getDirection());
         }
 
-        int centerEndX = endX + planeWidth / 2;
-        int centerEndY = endY + planeHeight / 2;
+        double mapPos = 0.3 + (0.4 * random.nextDouble());
+        this.dropX = (int) (planeCenterX + (endX - planeCenterX) * mapPos);
+        this.dropY = (int) (planeCenterY + (endY - planeCenterY) * mapPos);
 
-        this.dropX = (int) (centerStartX + (centerEndX - centerStartX) * mapPos);
-        this.dropY = (int) (centerStartY + (centerEndY - centerStartY) * mapPos);
-
-        System.out.println("DropX : " + dropX + ", DropY: " + dropY);
-        System.out.println("Plane X : " + plane.getX() + ", PlaneY: " + plane.getY());
+        System.out.println("DropX: " + dropX + ", DropY: " + dropY);
+        System.out.println("Plane Center Start: (" + planeCenterX + ", " + planeCenterY + ")");
+        System.out.println("Plane End: (" + endX + ", " + endY + ")");
     }
 
     private List<Item> createLoot(int x, int y) {
