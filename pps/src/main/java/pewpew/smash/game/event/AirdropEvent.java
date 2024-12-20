@@ -64,23 +64,8 @@ public class AirdropEvent {
             case DOWN -> endY = worldHeight;
             case LEFT -> endX = 0;
             case RIGHT -> endX = worldWidth;
-            case UP_LEFT -> {
-                endX = 0;
-                endY = 0;
-            }
-            case UP_RIGHT -> {
-                endX = worldWidth;
-                endY = 0;
-            }
-            case DOWN_LEFT -> {
-                endX = 0;
-                endY = worldHeight;
-            }
-            case DOWN_RIGHT -> {
-                endX = worldWidth;
-                endY = worldHeight;
-            }
             case NONE -> throw new UnsupportedOperationException("Unimplemented case: " + plane.getDirection());
+            default -> throw new IllegalArgumentException("Unexpected value: " + plane.getDirection());
         }
 
         int centerEndX = endX + planeWidth / 2;

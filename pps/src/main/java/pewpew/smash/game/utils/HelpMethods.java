@@ -125,8 +125,7 @@ public class HelpMethods {
         int x = 0, y = 0;
         Direction direction = null;
 
-        int path = random.nextInt(8);
-        path = 0;
+        int path = random.nextInt(4);
 
         switch (path) {
             case 0:
@@ -148,26 +147,6 @@ public class HelpMethods {
                 x = centerX - plane.getWidth() / 2;
                 y = worldHeight;
                 direction = Direction.UP;
-                break;
-            case 4:
-                x = -plane.getWidth();
-                y = -plane.getHeight();
-                direction = Direction.DOWN_RIGHT;
-                break;
-            case 5:
-                x = worldWidth;
-                y = worldHeight;
-                direction = Direction.UP_LEFT;
-                break;
-            case 6:
-                x = worldWidth;
-                y = -plane.getHeight();
-                direction = Direction.DOWN_LEFT;
-                break;
-            case 7:
-                x = -plane.getWidth();
-                y = worldHeight;
-                direction = Direction.UP_RIGHT;
                 break;
         }
 
