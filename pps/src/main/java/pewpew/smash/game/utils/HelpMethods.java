@@ -138,7 +138,6 @@ public class HelpMethods {
         Direction direction = null;
 
         int path = random.nextInt(4);
-        path = 5;
 
         switch (path) {
             case 0:
