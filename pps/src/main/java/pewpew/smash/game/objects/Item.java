@@ -1,5 +1,6 @@
 package pewpew.smash.game.objects;
 
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import lombok.Getter;
@@ -30,6 +31,9 @@ public abstract class Item {
 
     private Player owner;
 
+    @Getter
+    private Rectangle hitbox;
+
     // Render when using the actual item in the game world
     public abstract void render(Canvas canvas);
 
@@ -39,6 +43,7 @@ public abstract class Item {
         this.description = description;
         this.preview = preview;
         setDimensions(42, 42);
+        this.hitbox = new Rectangle(x, y, width, height);
     }
 
     public void preview(Canvas canvas) {

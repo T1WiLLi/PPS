@@ -1,7 +1,6 @@
 package pewpew.smash.game.network.client;
 
 import java.awt.Color;
-
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.game.Camera;
 import pewpew.smash.game.entities.Player;
@@ -16,10 +15,8 @@ public class ClientItemRenderer {
     private static final int PICKUP_RADIUS = 100;
 
     public void render(Canvas canvas, Camera camera, Player localPlayer) {
-        ViewUtils.ViewBounds viewBounds = ViewUtils.getCurrentBounds();
-
         ItemManager.getInstance(false).getItems().forEach(item -> {
-            if (isInView(item.getX(), item.getY(), viewBounds)) {
+            if (ViewUtils.isInView(item.getX(), item.getY())) {
                 canvas.translate(-camera.getX(), -camera.getY());
                 item.preview(canvas);
                 if (isPlayerNearItem(localPlayer, item)) {
@@ -53,10 +50,5 @@ public class ClientItemRenderer {
                 SettingsManager.getInstance().getSettings().getKey().getMisc().get("use").toLowerCase(),
                 item.getX(), item.getY() + item.getWidth() + 10, Color.YELLOW);
         FontFactory.resetFont(canvas);
-    }
-
-    private boolean isInView(int x, int y, ViewUtils.ViewBounds bounds) {
-        return x >= bounds.minX() && x <= bounds.maxX() &&
-                y >= bounds.minY() && y <= bounds.maxY();
     }
 }

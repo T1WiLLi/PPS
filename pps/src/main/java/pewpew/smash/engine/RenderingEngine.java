@@ -67,10 +67,7 @@ public class RenderingEngine {
                     panelGraphics.drawImage(buffer, 0, 0, panel.getWidth(), panel.getHeight(), null);
                     Toolkit.getDefaultToolkit().sync();
                 } finally {
-                    if (panelGraphics != null) {
-                        panelGraphics.dispose();
-                    }
-                    bufferGraphics.setTransform(defaultTransform);
+                    panelGraphics.dispose();
                 }
             }
         } while (buffer.contentsLost());
@@ -130,12 +127,12 @@ public class RenderingEngine {
                     panel.repaint();
                     updateBuffer();
                     resizing = false;
+                    resizeTimer.stop();
                 });
                 resizeTimer.setRepeats(false);
                 resizeTimer.start();
             }
         });
-
         updateScale();
     }
 
@@ -144,16 +141,6 @@ public class RenderingEngine {
     }
 
     private void createVolatileImage() {
-        if (buffer != null) {
-            buffer.flush();
-            buffer = null;
-        }
-
-        if (bufferGraphics != null) {
-            bufferGraphics.dispose();
-            bufferGraphics = null;
-        }
-
         GraphicsConfiguration gc = panel.getGraphicsConfiguration();
         int width = panel.getWidth();
         int height = panel.getHeight();

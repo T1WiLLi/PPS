@@ -8,8 +8,8 @@ import java.awt.Color;
 
 public class WorldGenerator {
     public static final int TILE_SIZE = 5;
-    private static final int worldWidth = 1200;
-    private static final int worldHeight = 1200;
+    private static final int worldWidth = 2000;
+    private static final int worldHeight = 2000;
     private byte[][] world;
     private final long seed;
 

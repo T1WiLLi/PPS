@@ -50,7 +50,7 @@ public class ServerHandler extends Handler implements Runnable {
         this.executor = Executors.newSingleThreadExecutor();
         this.entityManager = new EntityManager();
         this.itemUpdater = new ServerItemUpdater();
-        this.worldManager = new ServerWorldManager(server, entityManager, 25, 40);
+        this.worldManager = new ServerWorldManager(server, entityManager, 80, 132);
         this.entityUpdater = new ServerEntityUpdater(entityManager, worldManager.getWorldData());
         this.collisionManager = new ServerCollisionManager(server, entityManager, worldManager.getWorldData());
         this.serverTime = ServerTime.getInstance();
@@ -199,6 +199,7 @@ public class ServerHandler extends Handler implements Runnable {
             if (winner != null) {
                 this.postGameManager.triggerPostGame(winner, new ArrayList<>(entityManager.getAllPlayers()));
                 gameStarted = false;
+                Thread.currentThread().interrupt();
             }
         }
     }

@@ -5,10 +5,12 @@ import pewpew.smash.engine.entities.StaticEntity;
 import pewpew.smash.game.Camera;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
-import pewpew.smash.game.utils.ViewUtils;
 import pewpew.smash.game.world.entities.Bush;
 
+import java.awt.geom.Rectangle2D;
+
 public class ClientEntityRenderer {
+    private static final double FOV_BUFFER = 0.1;
     private final EntityManager entityManager;
 
     public ClientEntityRenderer(EntityManager entityManager) {
@@ -16,44 +18,57 @@ public class ClientEntityRenderer {
     }
 
     public void render(Canvas canvas, Camera camera) {
-        // Cache view bounds
-        ViewUtils.ViewBounds viewBounds = ViewUtils.getCurrentBounds();
+        Rectangle2D screenBounds = calculateScreenBounds(camera);
 
-        renderBulletEntities(canvas, camera, viewBounds);
-        renderPlayers(canvas, camera, viewBounds);
-        renderStaticEntities(canvas, camera, viewBounds);
-        renderMovableEntities(canvas, camera, viewBounds);
+        renderStaticEntities(canvas, camera, screenBounds);
+        renderMovableEntities(canvas, camera, screenBounds);
+        renderPlayers(canvas, camera, screenBounds);
+        renderBullets(canvas, camera, screenBounds);
     }
 
-    private void renderPlayers(Canvas canvas, Camera camera, ViewUtils.ViewBounds viewBounds) {
+    private Rectangle2D calculateScreenBounds(Camera camera) {
+        float screenWidth = camera.getViewportWidth();
+        float screenHeight = camera.getViewportHeight();
+
+        double bufferX = screenWidth * FOV_BUFFER;
+        double bufferY = screenHeight * FOV_BUFFER;
+
+        return new Rectangle2D.Double(
+                camera.getX() - bufferX,
+                camera.getY() - bufferY,
+                screenWidth + 2 * bufferX,
+                screenHeight + 2 * bufferY);
+    }
+
+    private void renderStaticEntities(Canvas canvas, Camera camera, Rectangle2D screenBounds) {
+        entityManager.getStaticEntities().forEach(entity -> {
+            if (entity.getHitbox().intersects(screenBounds)) {
+                renderEntity(canvas, camera, entity);
+            }
+        });
+    }
+
+    private void renderMovableEntities(Canvas canvas, Camera camera, Rectangle2D screenBounds) {
+        entityManager.getMovableEntities().forEach(entity -> {
+            if (entity.getHitbox().intersects(screenBounds)) {
+                renderEntity(canvas, camera, entity);
+            }
+        });
+    }
+
+    private void renderPlayers(Canvas canvas, Camera camera, Rectangle2D screenBounds) {
         entityManager.getPlayerEntities().forEach(player -> {
-            if (isInView(player.getX(), player.getY(), viewBounds)) {
+            if (player.getHitbox().intersects(screenBounds)) {
                 renderEntity(canvas, camera, player);
             }
         });
     }
 
-    private void renderStaticEntities(Canvas canvas, Camera camera, ViewUtils.ViewBounds viewBounds) {
-        entityManager.getStaticEntities().forEach(entity -> {
-            if (isInView(entity.getX(), entity.getY(), viewBounds)) {
-                renderEntity(canvas, camera, entity);
-            }
-        });
-    }
-
-    private void renderMovableEntities(Canvas canvas, Camera camera, ViewUtils.ViewBounds viewBounds) {
-        entityManager.getMovableEntities().forEach(entity -> {
-            if (isInView(entity.getX(), entity.getY(), viewBounds)) {
-                renderEntity(canvas, camera, entity);
-            }
-        });
-    }
-
-    private void renderBulletEntities(Canvas canvas, Camera camera, ViewUtils.ViewBounds viewBounds) {
-        entityManager.getBulletEntities().forEach(entity -> {
-            if (isInView((int) entity.getX(), (int) entity.getY(), viewBounds)) {
+    private void renderBullets(Canvas canvas, Camera camera, Rectangle2D screenBounds) {
+        entityManager.getBulletEntities().forEach(bullet -> {
+            if (bullet.getHitbox().intersects(screenBounds)) {
                 canvas.translate(-camera.getX(), -camera.getY());
-                entity.render(canvas);
+                bullet.render(canvas);
                 canvas.translate(camera.getX(), camera.getY());
             }
         });
@@ -67,10 +82,5 @@ public class ClientEntityRenderer {
         canvas.translate(-camera.getX(), -camera.getY());
         entity.render(canvas);
         canvas.translate(camera.getX(), camera.getY());
-    }
-
-    private boolean isInView(int x, int y, ViewUtils.ViewBounds bounds) {
-        return x >= bounds.minX() && x <= bounds.maxX() &&
-                y >= bounds.minY() && y <= bounds.maxY();
     }
 }

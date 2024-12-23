@@ -8,14 +8,14 @@ public class ViewUtils {
     private static final int SCREEN_DEFAULT_HEIGHT = 600;
 
     private static ViewBounds cachedBounds;
-    private static double lastScaleX = -1;
-    private static double lastScaleY = -1;
-    private static double lastZoom = -1;
-    private static int lastCameraX = -1;
-    private static int lastCameraY = -1;
+    private static double lastCameraX;
+    private static double lastCameraY;
+    private static double lastZoom;
+    private static double lastScaleX;
+    private static double lastScaleY;
 
     public static boolean isInView(int x, int y) {
-        ViewBounds bounds = getCurrentBounds();
+        ViewBounds bounds = getCachedBounds();
 
         double scaleX = ScaleUtils.getScaleX();
         double scaleY = ScaleUtils.getScaleY();
@@ -27,32 +27,42 @@ public class ViewUtils {
                 scaledY >= bounds.minY && scaledY <= bounds.maxY;
     }
 
-    public static ViewBounds getCurrentBounds() {
-        double scaleX = ScaleUtils.getScaleX();
-        double scaleY = ScaleUtils.getScaleY();
-        double zoom = Camera.getZoom();
-        int cameraX = (int) Camera.getInstance().getX();
-        int cameraY = (int) Camera.getInstance().getY();
+    private static ViewBounds getCachedBounds() {
+        double currentCameraX = Camera.getInstance().getX();
+        double currentCameraY = Camera.getInstance().getY();
+        double currentZoom = Camera.getZoom();
+        double currentScaleX = ScaleUtils.getScaleX();
+        double currentScaleY = ScaleUtils.getScaleY();
 
-        if (cachedBounds == null || scaleX != lastScaleX || scaleY != lastScaleY || zoom != lastZoom
-                || cameraX != lastCameraX || cameraY != lastCameraY) {
-            double bufferX = (SCREEN_DEFAULT_WIDTH / zoom) * FOV_BUFFER;
-            double bufferY = (SCREEN_DEFAULT_HEIGHT / zoom) * FOV_BUFFER;
+        if (cachedBounds == null ||
+                currentCameraX != lastCameraX ||
+                currentCameraY != lastCameraY ||
+                currentZoom != lastZoom ||
+                currentScaleX != lastScaleX ||
+                currentScaleY != lastScaleY) {
 
-            cachedBounds = new ViewBounds(
-                    cameraX / scaleX - bufferX,
-                    cameraX / scaleX + (SCREEN_DEFAULT_WIDTH / zoom) + bufferX,
-                    cameraY / scaleY - bufferY,
-                    cameraY / scaleY + (SCREEN_DEFAULT_HEIGHT / zoom) + bufferY);
+            cachedBounds = calculateBounds(currentCameraX, currentCameraY, currentZoom, currentScaleX, currentScaleY);
 
-            lastScaleX = scaleX;
-            lastScaleY = scaleY;
-            lastZoom = zoom;
-            lastCameraX = cameraX;
-            lastCameraY = cameraY;
+            lastCameraX = currentCameraX;
+            lastCameraY = currentCameraY;
+            lastZoom = currentZoom;
+            lastScaleX = currentScaleX;
+            lastScaleY = currentScaleY;
         }
 
         return cachedBounds;
+    }
+
+    private static ViewBounds calculateBounds(double cameraX, double cameraY, double zoom, double scaleX,
+            double scaleY) {
+        double bufferX = (SCREEN_DEFAULT_WIDTH / zoom) * FOV_BUFFER;
+        double bufferY = (SCREEN_DEFAULT_HEIGHT / zoom) * FOV_BUFFER;
+
+        return new ViewBounds(
+                cameraX / scaleX - bufferX,
+                cameraX / scaleX + (SCREEN_DEFAULT_WIDTH / zoom) + bufferX,
+                cameraY / scaleY - bufferY,
+                cameraY / scaleY + (SCREEN_DEFAULT_HEIGHT / zoom) + bufferY);
     }
 
     public static record ViewBounds(double minX, double maxX, double minY, double maxY) {

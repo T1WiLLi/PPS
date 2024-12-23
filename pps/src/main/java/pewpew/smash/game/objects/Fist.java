@@ -1,9 +1,9 @@
 package pewpew.smash.game.objects;
 
-import java.awt.Shape;
 import java.awt.image.BufferedImage;
 
 import java.awt.Color;
+import java.awt.Rectangle;
 
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.MouseInput;
@@ -71,7 +71,7 @@ public class Fist extends MeleeWeapon {
     }
 
     @Override
-    public Shape getHitbox() {
+    public Rectangle getHitbox() {
         return null;
     }
 
