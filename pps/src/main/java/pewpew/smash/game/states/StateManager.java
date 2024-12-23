@@ -8,7 +8,7 @@ import pewpew.smash.game.GameManager;
 
 public class StateManager {
 
-    private static StateManager instance;
+    private volatile static StateManager instance;
 
     private State currentState;
 

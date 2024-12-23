@@ -2,7 +2,11 @@ package pewpew.smash.game;
 
 import java.awt.image.BufferedImage;
 import java.awt.Color;
-
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import pewpew.smash.engine.Canvas;
@@ -32,22 +36,47 @@ public class Launcher {
 
         Loader loader = new Loader(200, 250, 400, 50);
 
-        Thread loadingThread = new Thread(() -> preloadResources());
-        loadingThread.start();
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        CompletableFuture<Void> resourceLoadingTask = preloadResourcesAsync(executor);
 
-        showLoadingScreen(renderingEngine, loader);
+        showLoadingScreen(renderingEngine, loader, resourceLoadingTask);
+
+        executor.shutdown();
     }
 
-    private static void showLoadingScreen(RenderingEngine renderingEngine, Loader loader) {
-        while (loadingProgress.get() < TOTAL_RESOURCES) {
-            loader.setProgress((loadingProgress.get() * 100) / TOTAL_RESOURCES);
+    private static CompletableFuture<Void> preloadResourcesAsync(ExecutorService executor) {
+        return CompletableFuture.runAsync(() -> {
+            loadSettings();
+        }, executor).thenRunAsync(() -> {
+            loadAudio();
+        }, executor).thenRunAsync(() -> {
+            loadStates();
+        }, executor).thenRunAsync(() -> {
+            loadGameModes();
+        }, executor).thenRunAsync(() -> {
+            loadOverlays();
+        }, executor).thenRunAsync(() -> {
+            loadItemPreview();
+        }, executor).thenRunAsync(() -> {
+            loadPlayerSprites();
+        }, executor);
+    }
 
+    private static void showLoadingScreen(RenderingEngine renderingEngine, Loader loader,
+            CompletableFuture<Void> resourceLoadingTask) {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        scheduler.scheduleAtFixedRate(() -> {
+            loader.setProgress((loadingProgress.get() * 100) / TOTAL_RESOURCES);
             renderLoadingScreen(renderingEngine, loader);
-        }
+        }, 0, 100, TimeUnit.MILLISECONDS);
+
+        resourceLoadingTask.join();
 
         loader.setProgress(100);
         renderLoadingScreen(renderingEngine, loader);
-        sleep(500);
+
+        scheduler.shutdown();
     }
 
     private static void renderLoadingScreen(RenderingEngine renderingEngine, Loader loader) {
@@ -57,7 +86,6 @@ public class Launcher {
         loader.render(canvas);
         FontFactory.resetFont(canvas);
         renderingEngine.renderCanvasOnScreen();
-        sleep(16);
     }
 
     private static void renderLoadingTitle(Canvas canvas) {
@@ -72,16 +100,6 @@ public class Launcher {
 
     private static void renderBackground(Canvas canvas) {
         canvas.renderImage(background, 0, 0, Constants.DEFAULT_SCREEN_WIDTH, Constants.DEFAULT_SCREEN_HEIGHT);
-    }
-
-    private static void preloadResources() {
-        loadSettings();
-        loadAudio();
-        loadStates();
-        loadGameModes();
-        loadOverlays();
-        loadItemPreview();
-        loadPlayerSprites();
     }
 
     private static void loadSettings() {
@@ -123,15 +141,6 @@ public class Launcher {
     private static void incrementLoadingProgress() {
         for (int i = 0; i < 10; i++) {
             loadingProgress.incrementAndGet();
-            sleep(10);
-        }
-    }
-
-    private static void sleep(int milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 

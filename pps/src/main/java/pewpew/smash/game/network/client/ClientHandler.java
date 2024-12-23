@@ -20,7 +20,6 @@ import pewpew.smash.game.network.User;
 import pewpew.smash.game.network.manager.EntityManager;
 import pewpew.smash.game.network.packets.*;
 import pewpew.smash.game.network.processor.PacketProcessor;
-import pewpew.smash.game.network.processor.clientProcessor.ClientBulletRemovePacketProcessor;
 
 public class ClientHandler extends Handler {
 
@@ -114,7 +113,6 @@ public class ClientHandler extends Handler {
         try {
             isIntentionalDisconnect = true;
             this.client.stop();
-            ((ClientBulletRemovePacketProcessor) this.packetProcessors.get(BulletRemovePacket.class)).shutdown();
         } catch (IOException e) {
             e.printStackTrace();
         }

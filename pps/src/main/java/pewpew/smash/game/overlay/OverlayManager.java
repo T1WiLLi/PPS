@@ -8,7 +8,7 @@ import pewpew.smash.engine.Canvas;
 
 public class OverlayManager {
 
-    private static OverlayManager instance;
+    private static volatile OverlayManager instance;
     private Deque<Overlay> overlays;
 
     public synchronized static OverlayManager getInstance() {

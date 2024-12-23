@@ -12,6 +12,7 @@ import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.ui.Button;
 import pewpew.smash.game.ui.TextField;
+import pewpew.smash.game.utils.FontFactory;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class ConnectionOverlay extends Overlay {
@@ -88,7 +89,7 @@ public class ConnectionOverlay extends Overlay {
             canvas.renderRectangleBorder(270, 500, 265, 50, 2, Color.BLACK);
             canvas.setFont(new Font("Impact", Font.TRUETYPE_FONT, 18));
             canvas.renderString(errorMessage, 280, 533, Color.RED);
-            canvas.resetFont();
+            FontFactory.resetFont(canvas);
         }
     }
 

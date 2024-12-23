@@ -1,13 +1,17 @@
 package pewpew.smash.game.Animation;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class PlayerAnimationManager {
+    // Cache for animations (unbounded, but optimized for reuse)
     private static final Map<String, BufferedImage[]> animations = new HashMap<>();
+
     private BufferedImage[] currentAnimation;
     private int currentIndex;
     private int frameTimer;
@@ -24,20 +28,15 @@ public class PlayerAnimationManager {
 
     public static void preloadAllAnimations() {
         for (PlayerAnimationState state : PlayerAnimationState.values()) {
-            String statePath = ResourcesLoader.PLAYER_SPRITE + "/" + state.name().toLowerCase();
-
             for (PlayerAnimation animation : PlayerAnimation.values()) {
-                String animationPath = statePath + "/" + animation.name().toLowerCase();
+                String animationPath = ResourcesLoader.PLAYER_SPRITE + "/" + state.name().toLowerCase() + "/"
+                        + animation.name().toLowerCase();
 
                 if (state == PlayerAnimationState.KNIFE && animation == PlayerAnimation.SHOOT) {
-                    animationPath = statePath + "/meleeattack";
+                    animationPath = ResourcesLoader.PLAYER_SPRITE + "/" + state.name().toLowerCase() + "/meleeattack";
                 }
 
-                try {
-                    loadAnimationFrames(animationPath, state, animation);
-                } catch (Exception e) {
-                    System.err.println("Failed to load animation: " + animationPath);
-                }
+                loadAnimationFrames(animationPath, state, animation);
             }
         }
     }
@@ -61,39 +60,67 @@ public class PlayerAnimationManager {
 
     private static void loadAnimationFrames(String animationPath, PlayerAnimationState state,
             PlayerAnimation animation) {
-        String animationKey = state.name().toLowerCase() + "_" + animation.name().toLowerCase();
-        animations.putIfAbsent(animationKey, new BufferedImage[0]);
+        String animationKey = getAnimationKey(state, animation);
 
+        if (animations.containsKey(animationKey)) {
+            return;
+        }
+
+        List<BufferedImage> frameList = new ArrayList<>();
         int index = 0;
+
         while (true) {
             String frameName = "survivor-" + animation.name().toLowerCase() + "_" + state.name().toLowerCase() + "_"
                     + index;
             BufferedImage frame = ResourcesLoader.getImage(animationPath, frameName);
 
             if (frame == null) {
-                break;
+                break; // No more frames to load
             }
 
-            BufferedImage[] frames = animations.get(animationKey);
-            BufferedImage[] newFrames = new BufferedImage[frames.length + 1];
-            System.arraycopy(frames, 0, newFrames, 0, frames.length);
-            newFrames[frames.length] = frame;
-            animations.put(animationKey, newFrames);
-
+            frameList.add(frame);
             index++;
         }
+
+        animations.put(animationKey, frameList.toArray(new BufferedImage[0]));
     }
 
     private void setCurrentAnimation(PlayerAnimationState state, PlayerAnimation animation) {
-        String key = state.name().toLowerCase() + "_" + animation.name().toLowerCase();
+        String key = getAnimationKey(state, animation);
 
         if (state == PlayerAnimationState.KNIFE && animation == PlayerAnimation.SHOOT) {
             key = state.name().toLowerCase() + "_meleeattack";
         }
 
-        currentAnimation = animations.getOrDefault(key, new BufferedImage[0]);
+        currentAnimation = animations.computeIfAbsent(key, k -> loadAnimationFramesLazy(state, animation));
         currentIndex = 0;
         frameTimer = 0;
+    }
+
+    private static String getAnimationKey(PlayerAnimationState state, PlayerAnimation animation) {
+        return state.name().toLowerCase() + "_" + animation.name().toLowerCase();
+    }
+
+    private static BufferedImage[] loadAnimationFramesLazy(PlayerAnimationState state, PlayerAnimation animation) {
+        String animationPath = ResourcesLoader.PLAYER_SPRITE + "/" + state.name().toLowerCase() + "/"
+                + animation.name().toLowerCase();
+        List<BufferedImage> frameList = new ArrayList<>();
+        int index = 0;
+
+        while (true) {
+            String frameName = "survivor-" + animation.name().toLowerCase() + "_" + state.name().toLowerCase() + "_"
+                    + index;
+            BufferedImage frame = ResourcesLoader.getImage(animationPath, frameName);
+
+            if (frame == null) {
+                break; // No more frames to load
+            }
+
+            frameList.add(frame);
+            index++;
+        }
+
+        return frameList.toArray(new BufferedImage[0]);
     }
 
     private void update() {

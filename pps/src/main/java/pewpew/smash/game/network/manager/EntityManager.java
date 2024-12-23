@@ -2,7 +2,6 @@ package pewpew.smash.game.network.manager;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 import pewpew.smash.engine.entities.MovableEntity;
@@ -17,12 +16,7 @@ public class EntityManager {
     private final Map<Integer, StaticEntity> staticEntitiesMap;
     private final Map<Integer, Player> playerEntitiesMap;
     private final Map<Integer, Bullet> bulletEntitiesMap;
-
     private final Map<Integer, Player> deadPlayersMap;
-
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private final ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-    private final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
 
     public EntityManager() {
         this.movableEntitiesMap = new ConcurrentHashMap<>();
@@ -115,116 +109,73 @@ public class EntityManager {
     }
 
     public List<StaticEntity> getAllEntities() {
-        readLock.lock();
-        try {
-            List<StaticEntity> allEntities = new ArrayList<>();
-            allEntities.addAll(staticEntitiesMap.values());
-            allEntities.addAll(movableEntitiesMap.values());
-            allEntities.addAll(playerEntitiesMap.values());
-            return allEntities;
-        } finally {
-            readLock.unlock();
-        }
+        List<StaticEntity> allEntities = new ArrayList<>();
+        allEntities.addAll(staticEntitiesMap.values());
+        allEntities.addAll(movableEntitiesMap.values());
+        allEntities.addAll(playerEntitiesMap.values());
+        return allEntities;
     }
 
     public void clearAllEntities() {
-        writeLock.lock();
-        try {
-            staticEntitiesMap.clear();
-            movableEntitiesMap.clear();
-            playerEntitiesMap.clear();
-            deadPlayersMap.clear();
-        } finally {
-            writeLock.unlock();
-        }
+        staticEntitiesMap.clear();
+        movableEntitiesMap.clear();
+        playerEntitiesMap.clear();
+        deadPlayersMap.clear();
     }
 
     public List<MovableEntity> getMovableEntities() {
-        readLock.lock();
-        try {
-            return new ArrayList<>(movableEntitiesMap.values());
-        } finally {
-            readLock.unlock();
-        }
+        return new ArrayList<>(movableEntitiesMap.values());
     }
 
     public List<StaticEntity> getStaticEntities() {
-        readLock.lock();
-        try {
-            return new ArrayList<>(staticEntitiesMap.values());
-        } finally {
-            readLock.unlock();
-        }
+        return new ArrayList<>(staticEntitiesMap.values());
     }
 
     public List<Player> getPlayerEntities() {
-        readLock.lock();
-        try {
-            return new ArrayList<>(playerEntitiesMap.values());
-        } finally {
-            readLock.unlock();
-        }
+        return new ArrayList<>(playerEntitiesMap.values());
     }
 
     public List<Bullet> getBulletEntities() {
-        readLock.lock();
-        try {
-            return new ArrayList<>(bulletEntitiesMap.values());
-        } finally {
-            readLock.unlock();
-        }
+        return new ArrayList<>(bulletEntitiesMap.values());
     }
 
     public List<WorldStaticEntity> getWorldStaticEntities() {
-        readLock.lock();
-        try {
-            return staticEntitiesMap.values().stream()
-                    .filter(entity -> entity instanceof WorldStaticEntity)
-                    .map(entity -> (WorldStaticEntity) entity)
-                    .collect(Collectors.toList());
-        } finally {
-            readLock.unlock();
-        }
+        return staticEntitiesMap.values().stream()
+                .sequential()
+                .filter(entity -> entity instanceof WorldStaticEntity)
+                .map(entity -> (WorldStaticEntity) entity)
+                .collect(Collectors.toList());
     }
 
     public List<WorldBreakableStaticEntity> gettWorldBreakableStaticEntities() {
-        readLock.lock();
-        try {
-            return staticEntitiesMap.values().stream()
-                    .filter(entity -> entity instanceof WorldBreakableStaticEntity)
-                    .map(entity -> (WorldBreakableStaticEntity) entity)
-                    .collect(Collectors.toList());
-        } finally {
-            readLock.unlock();
-        }
+        return staticEntitiesMap.values().stream()
+                .sequential()
+                .filter(entity -> entity instanceof WorldBreakableStaticEntity)
+                .map(entity -> (WorldBreakableStaticEntity) entity)
+                .collect(Collectors.toList());
     }
 
     public List<Player> getAllPlayers() {
-        readLock.lock();
-        try {
-            List<Player> allPlayers = new ArrayList<>(playerEntitiesMap.values());
-            allPlayers.addAll(deadPlayersMap.values());
-            return allPlayers;
-        } finally {
-            readLock.unlock();
-        }
+        List<Player> allPlayers = new ArrayList<>(playerEntitiesMap.values());
+        allPlayers.addAll(deadPlayersMap.values());
+        return allPlayers;
     }
 
     public int getNextID(Class<?> type) {
         return switch (type.getSimpleName()) {
-            case "Player" -> playerEntitiesMap.values().stream()
+            case "Player" -> playerEntitiesMap.values().stream().sequential()
                     .max(Comparator.comparingInt(Player::getId))
                     .map(player -> player.getId() + 1)
                     .orElse(0);
-            case "MovableEntity" -> movableEntitiesMap.values().stream()
+            case "MovableEntity" -> movableEntitiesMap.values().stream().sequential()
                     .max(Comparator.comparingInt(MovableEntity::getId))
                     .map(entity -> entity.getId() + 1)
                     .orElse(0);
-            case "StaticEntity" -> staticEntitiesMap.values().stream()
+            case "StaticEntity" -> staticEntitiesMap.values().stream().sequential()
                     .max(Comparator.comparingInt(StaticEntity::getId))
                     .map(entity -> entity.getId() + 1)
                     .orElse(0);
-            case "Bullet" -> bulletEntitiesMap.values().stream()
+            case "Bullet" -> bulletEntitiesMap.values().stream().sequential()
                     .max(Comparator.comparingInt(Bullet::getId))
                     .map(bullet -> bullet.getId() + 1)
                     .orElse(0);

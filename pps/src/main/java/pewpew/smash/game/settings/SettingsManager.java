@@ -12,7 +12,7 @@ import pewpew.smash.game.input.GamePad;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class SettingsManager {
-    private static SettingsManager instance;
+    private static volatile SettingsManager instance;
     private SettingsConfig settings;
 
     public static SettingsManager getInstance() {

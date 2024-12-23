@@ -1,19 +1,27 @@
 package pewpew.smash.game.network.server;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
+import pewpew.smash.game.audio.AudioClip;
 import pewpew.smash.game.event.AirdropManager;
 import pewpew.smash.game.event.StormManager;
 import pewpew.smash.game.gamemode.GameModeType;
 import pewpew.smash.game.network.manager.EntityManager;
+import pewpew.smash.game.network.model.PlayerState;
+import pewpew.smash.game.network.packets.BroadcastMessagePacket;
+import pewpew.smash.game.network.packets.PlayerDeathPacket;
+import pewpew.smash.game.network.packets.PlayerStatePacket;
 import pewpew.smash.game.network.packets.StormEventCreationPacket;
+import pewpew.smash.game.utils.HelpMethods;
 
 public class ServerEventManager {
 
     private final GameModeType gameModeType;
     private StormManager stormManager;
     private AirdropManager airdropManager;
+    private Map<Integer, Long> lastDamageTime;
 
     private byte[][] world;
 
@@ -31,21 +39,17 @@ public class ServerEventManager {
     }
 
     public void initEvents(ServerWrapper server) {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                switch (gameModeType) {
-                    case SANDBOX -> {
-                        airdropManager = new AirdropManager();
-                    }
-                    case BATTLE_ROYALE -> {
-                        airdropManager = new AirdropManager();
-                        initializeStorm(server);
-                    }
-                    case ARENA -> System.out.println("Arena mode events are not implemented.");
-                }
+        switch (gameModeType) {
+            case SANDBOX -> {
+                airdropManager = new AirdropManager();
             }
-        }, 100);
+            case BATTLE_ROYALE -> {
+                this.lastDamageTime = new HashMap<>();
+                airdropManager = new AirdropManager();
+                initializeStorm(server);
+            }
+            case ARENA -> System.out.println("Arena mode events are not implemented.");
+        }
     }
 
     private void initializeStorm(ServerWrapper server) {
@@ -71,9 +75,42 @@ public class ServerEventManager {
         if (airdropManager != null) {
             airdropManager.update(server, entityManager, world);
         }
+
+        checkForStormDamage(server, entityManager);
     }
 
     private void updateEventArena() {
         // No event logic for Arena mode
+    }
+
+    private void checkForStormDamage(ServerWrapper server, EntityManager entityManager) {
+        long currentTime = System.currentTimeMillis();
+        entityManager.getPlayerEntities().forEach(player -> {
+            if (stormManager.isPlayerInStorm(player)) {
+                long lastDamage = lastDamageTime.getOrDefault(player.getId(), 0L);
+                if (currentTime - lastDamage >= 1000) {
+                    player.setHealth(player.getHealth() - stormManager.getStormEvent().getHitDamage());
+                    PlayerState newState = new PlayerState(player.getId(), player.getHealth());
+                    PlayerStatePacket packet = new PlayerStatePacket(newState);
+                    server.sendToUDP(player.getId(), packet);
+
+                    lastDamageTime.put(player.getId(), currentTime);
+
+                    if (player.getHealth() <= 0) {
+                        entityManager.removePlayerEntity(player.getId());
+                        String deathMessage = String.format("%s was killed by the storm!", player.getUsername());
+                        BroadcastMessagePacket messagePacket = new BroadcastMessagePacket(deathMessage);
+                        server.sendToAllTCP(messagePacket);
+
+                        HelpMethods.dropInventoryOfDeadPlayer(player.getInventory(), server);
+
+                        PlayerDeathPacket deathPacket = new PlayerDeathPacket(player.getId(),
+                                entityManager.getRandomAlivePlayerID());
+                        server.sendToAllTCP(deathPacket);
+                        ServerAudioManager.getInstance().play(AudioClip.PLAYER_DEATH, player, 1500, Optional.empty());
+                    }
+                }
+            }
+        });
     }
 }

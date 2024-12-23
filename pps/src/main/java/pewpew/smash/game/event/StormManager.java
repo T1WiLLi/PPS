@@ -1,5 +1,6 @@
 package pewpew.smash.game.event;
 
+import pewpew.smash.game.entities.Player;
 import pewpew.smash.game.network.packets.StormStatePacket;
 import pewpew.smash.game.network.server.ServerWrapper;
 import pewpew.smash.game.network.server.ServerTime;
@@ -25,6 +26,10 @@ public class StormManager {
 
         stormEvent.update();
         broadcastStormState(server);
+    }
+
+    public boolean isPlayerInStorm(Player player) {
+        return !stormEvent.isInside(player);
     }
 
     private void transitionToNextStage() {

@@ -11,6 +11,7 @@ import lombok.Getter;
 import pewpew.smash.engine.Canvas;
 import pewpew.smash.engine.controls.MouseController;
 import pewpew.smash.game.input.KeyHandler;
+import pewpew.smash.game.utils.FontFactory;
 import pewpew.smash.game.utils.HelpMethods;
 
 public class TextField extends UiElement {
@@ -83,7 +84,7 @@ public class TextField extends UiElement {
         canvas.setFont(font);
         textOffset = calculateTextOffset();
         clipAndRenderText(canvas);
-        canvas.resetFont();
+        FontFactory.resetFont(canvas);
     }
 
     private void clipAndRenderText(Canvas canvas) {

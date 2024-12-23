@@ -2,7 +2,6 @@ package pewpew.smash.game.states;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Polygon;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
@@ -16,6 +15,7 @@ import pewpew.smash.game.constants.Constants;
 import pewpew.smash.game.network.User;
 import pewpew.smash.game.overlay.*;
 import pewpew.smash.game.ui.Button;
+import pewpew.smash.game.utils.FontFactory;
 import pewpew.smash.game.utils.ResourcesLoader;
 
 public class Menu implements State {
@@ -121,13 +121,11 @@ public class Menu implements State {
     private void renderBanner(Canvas canvas) {
         int bannerWidth = 200;
         int bannerHeight = 50;
-        int triangleWidth = 40;
 
         int x = 800 - bannerWidth - 20;
         int y = 20;
 
         renderBannerBackground(canvas, x, y, bannerWidth, bannerHeight);
-        renderBannerTriangles(canvas, x, y, bannerWidth, bannerHeight, triangleWidth);
         renderBannerContent(canvas, x, y, bannerWidth, bannerHeight);
     }
 
@@ -136,27 +134,11 @@ public class Menu implements State {
         canvas.renderRectangle(x, y, bannerWidth, bannerHeight, new Color(128, 128, 0));
     }
 
-    private void renderBannerTriangles(Canvas canvas, int x, int y, int bannerWidth, int bannerHeight,
-            int triangleWidth) {
-        Polygon triangle = new Polygon();
-        triangle.addPoint(x, y);
-        triangle.addPoint(x, y + bannerHeight);
-        triangle.addPoint(x - triangleWidth, y + bannerHeight / 2);
-
-        Polygon triangle2 = new Polygon();
-        triangle2.addPoint(x - 3, y - 3);
-        triangle2.addPoint(x - 3, y + bannerHeight + 3);
-        triangle2.addPoint(x - triangleWidth - 3, y + bannerHeight / 2);
-
-        canvas.renderPolygon(triangle2, Color.WHITE);
-        canvas.renderPolygon(triangle, new Color(128, 128, 0));
-    }
-
     private void renderBannerContent(Canvas canvas, int x, int y, int bannerWidth, int bannerHeight) {
         canvas.setFont(new Font("Impact", Font.PLAIN, 22));
         canvas.renderImage(User.getInstance().getRank().getImage(), x, y + bannerHeight / 2 - 25, 50, 50);
         canvas.renderString(User.getInstance().getUsername(), x + 60, y + bannerHeight / 2 + 7, Color.WHITE);
-        canvas.resetFont();
+        FontFactory.resetFont(canvas);
     }
 
     private void updateConnectOrAccountButton() {

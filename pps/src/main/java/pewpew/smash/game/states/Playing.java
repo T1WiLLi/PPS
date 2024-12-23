@@ -53,6 +53,7 @@ public class Playing implements State {
     @Override
     public void handleKeyPress(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            GameModeManager.getInstance().getCurrentGameMode().reset();
             GameManager.getInstance().conclude();
         }
         this.gamePad.keyPressed(e);

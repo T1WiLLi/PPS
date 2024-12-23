@@ -76,8 +76,7 @@ public class ServerHandler extends Handler implements Runnable {
 
     @Override
     public void run() {
-        this.eventManager.initEvents(this.server);
-
+        boolean eventInit = false;
         while (!Thread.currentThread().isInterrupted()) {
             if (lobbyManager.isLobbyActive()) {
                 lobbyManager.updateLobby();
@@ -86,6 +85,10 @@ public class ServerHandler extends Handler implements Runnable {
                     postLobbyGameInit();
                 }
 
+                if (!eventInit) {
+                    eventManager.initEvents(server);
+                    eventInit = true;
+                }
                 if (serverTime.shouldUpdate()) {
                     update();
                     sendStateUpdate();

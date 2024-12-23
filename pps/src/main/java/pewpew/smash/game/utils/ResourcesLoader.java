@@ -1,26 +1,26 @@
 package pewpew.smash.game.utils;
 
-import java.util.concurrent.ConcurrentHashMap;
-
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-
 import pewpew.smash.game.audio.AudioData;
 
 public class ResourcesLoader {
 
-    private static final ConcurrentHashMap<String, BufferedImage> imageCache = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<String, AudioData> audioCache = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<String, byte[]> miscCache = new ConcurrentHashMap<>();
+    private static final int MAX_CACHE_SIZE = 25;
+
+    private static final Map<String, BufferedImage> imageCache = createLRUCache(MAX_CACHE_SIZE);
+    private static final Map<String, AudioData> audioCache = createLRUCache(MAX_CACHE_SIZE);
+    private static final Map<String, byte[]> miscCache = createLRUCache(MAX_CACHE_SIZE);
 
     private static final String BASE_PATH = "/pewpew/smash/";
     // Image
@@ -51,25 +51,16 @@ public class ResourcesLoader {
             return cachedImage;
         }
 
-        InputStream is = ResourcesLoader.class.getResourceAsStream(path);
-        if (is != null) {
-            try {
+        try (InputStream is = ResourcesLoader.class.getResourceAsStream(path)) {
+            if (is != null) {
                 BufferedImage image = ImageIO.read(is);
                 imageCache.put(path, image);
                 return image;
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (is != null) {
-                        is.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            } else {
+                System.out.println("Image not found : " + path);
             }
-        } else {
-            System.out.println("Image not found : " + path);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -82,18 +73,17 @@ public class ResourcesLoader {
             return cachedAudio;
         }
 
-        try (InputStream is = ResourcesLoader.class.getResourceAsStream(path)) {
-            if (is != null) {
-                try (BufferedInputStream bis = new BufferedInputStream(is)) {
-                    AudioInputStream audioStream = AudioSystem.getAudioInputStream(bis);
-                    AudioFormat format = audioStream.getFormat();
-                    byte[] audioData = audioStream.readAllBytes();
-                    audioStream.close();
+        try (InputStream is = ResourcesLoader.class.getResourceAsStream(path);
+                BufferedInputStream bis = new BufferedInputStream(is);
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(bis)) {
 
-                    AudioData newAudioData = new AudioData(format, audioData);
-                    audioCache.put(path, newAudioData);
-                    return newAudioData;
-                }
+            if (is != null) {
+                AudioFormat format = audioStream.getFormat();
+                byte[] audioData = audioStream.readAllBytes();
+
+                AudioData newAudioData = new AudioData(format, audioData);
+                audioCache.put(path, newAudioData);
+                return newAudioData;
             } else {
                 System.err.println("Audio file not found: " + path);
                 return null;
@@ -109,7 +99,7 @@ public class ResourcesLoader {
 
         byte[] cachedData = miscCache.get(path);
         if (cachedData != null) {
-            return new java.io.ByteArrayInputStream(cachedData);
+            return new ByteArrayInputStream(cachedData);
         }
 
         try (InputStream is = ResourcesLoader.class.getResourceAsStream(path)) {
@@ -123,5 +113,14 @@ public class ResourcesLoader {
         } catch (IOException e) {
             throw new FileNotFoundException("Failed to read resource: " + path);
         }
+    }
+
+    private static <K, V> Map<K, V> createLRUCache(final int maxSize) {
+        return new LinkedHashMap<K, V>(maxSize, 0.75f, true) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+                return size() > maxSize;
+            }
+        };
     }
 }

@@ -12,9 +12,11 @@ import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class Canvas {
+    @Setter
     private Graphics2D graphics2D;
     private AffineTransform originalTransform;
     private AffineTransform currentTransform;
@@ -165,30 +167,10 @@ public class Canvas {
         graphics2D.setFont(font);
     }
 
-    public void resetFont() {
-        graphics2D.setFont(GameFont.DEFAULT_FONT.getFont());
-    }
-
     // Private Utility Methods
     private void setGraphicsProperties(Color color, int strokeWidth) {
         graphics2D.setColor(color);
         graphics2D.setStroke(new BasicStroke(strokeWidth));
     }
 
-    // GameFont Enum
-    public enum GameFont {
-        DEFAULT_FONT(new Font("Segoe UI", Font.BOLD, 12)),
-        SMALL_FONT(new Font("Verdana", Font.PLAIN, 8)),
-        LARGE_FONT(new Font("Georgia", Font.BOLD, 24));
-
-        private final Font font;
-
-        GameFont(Font font) {
-            this.font = font;
-        }
-
-        public Font getFont() {
-            return font;
-        }
-    }
 }

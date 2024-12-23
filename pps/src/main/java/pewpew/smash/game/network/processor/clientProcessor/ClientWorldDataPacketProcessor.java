@@ -1,5 +1,6 @@
 package pewpew.smash.game.network.processor.clientProcessor;
 
+import java.util.concurrent.CompletableFuture;
 import com.esotericsoftware.kryonet.Connection;
 
 import pewpew.smash.game.network.client.ClientWrapper;
@@ -18,9 +19,9 @@ public class ClientWorldDataPacketProcessor extends ClientProcessor implements P
 
     @Override
     public void handle(Connection connection, WorldDataPacket packet) {
-        new Thread(() -> {
+        CompletableFuture.runAsync(() -> {
             WorldGenerator worldGenerator = new WorldGenerator(packet.getSeed());
             WorldClientIntegration.getInstance().buildImage(worldGenerator.getWorldData());
-        }).start(); // This is a blocking operation, so we need a separate thread :D
+        });
     }
 }

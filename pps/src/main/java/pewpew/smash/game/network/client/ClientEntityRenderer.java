@@ -16,39 +16,42 @@ public class ClientEntityRenderer {
     }
 
     public void render(Canvas canvas, Camera camera) {
-        renderBulletEntities(canvas, camera);
-        renderPlayers(canvas, camera);
-        renderStaticEntities(canvas, camera);
-        renderMovableEntities(canvas, camera);
+        // Cache view bounds
+        ViewUtils.ViewBounds viewBounds = ViewUtils.getCurrentBounds();
+
+        renderBulletEntities(canvas, camera, viewBounds);
+        renderPlayers(canvas, camera, viewBounds);
+        renderStaticEntities(canvas, camera, viewBounds);
+        renderMovableEntities(canvas, camera, viewBounds);
     }
 
-    private void renderPlayers(Canvas canvas, Camera camera) {
+    private void renderPlayers(Canvas canvas, Camera camera, ViewUtils.ViewBounds viewBounds) {
         entityManager.getPlayerEntities().forEach(player -> {
-            if (ViewUtils.isInView(player.getX(), player.getY())) {
+            if (isInView(player.getX(), player.getY(), viewBounds)) {
                 renderEntity(canvas, camera, player);
             }
         });
     }
 
-    private void renderStaticEntities(Canvas canvas, Camera camera) {
+    private void renderStaticEntities(Canvas canvas, Camera camera, ViewUtils.ViewBounds viewBounds) {
         entityManager.getStaticEntities().forEach(entity -> {
-            if (ViewUtils.isInView(entity.getX(), entity.getY())) {
+            if (isInView(entity.getX(), entity.getY(), viewBounds)) {
                 renderEntity(canvas, camera, entity);
             }
         });
     }
 
-    private void renderMovableEntities(Canvas canvas, Camera camera) {
+    private void renderMovableEntities(Canvas canvas, Camera camera, ViewUtils.ViewBounds viewBounds) {
         entityManager.getMovableEntities().forEach(entity -> {
-            if (ViewUtils.isInView(entity.getX(), entity.getY())) {
+            if (isInView(entity.getX(), entity.getY(), viewBounds)) {
                 renderEntity(canvas, camera, entity);
             }
         });
     }
 
-    private void renderBulletEntities(Canvas canvas, Camera camera) {
+    private void renderBulletEntities(Canvas canvas, Camera camera, ViewUtils.ViewBounds viewBounds) {
         entityManager.getBulletEntities().forEach(entity -> {
-            if (ViewUtils.isInView((int) entity.getX(), (int) entity.getY())) {
+            if (isInView((int) entity.getX(), (int) entity.getY(), viewBounds)) {
                 canvas.translate(-camera.getX(), -camera.getY());
                 entity.render(canvas);
                 canvas.translate(camera.getX(), camera.getY());
@@ -64,5 +67,10 @@ public class ClientEntityRenderer {
         canvas.translate(-camera.getX(), -camera.getY());
         entity.render(canvas);
         canvas.translate(camera.getX(), camera.getY());
+    }
+
+    private boolean isInView(int x, int y, ViewUtils.ViewBounds bounds) {
+        return x >= bounds.minX() && x <= bounds.maxX() &&
+                y >= bounds.minY() && y <= bounds.maxY();
     }
 }

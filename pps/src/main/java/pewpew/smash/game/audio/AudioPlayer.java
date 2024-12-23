@@ -3,6 +3,7 @@ package pewpew.smash.game.audio;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.sound.sampled.*;
 
 import pewpew.smash.game.config.SettingsConfig.AudioSettings;
@@ -90,6 +91,15 @@ public class AudioPlayer {
             float adjustedVolume = adjustVolume(volume, type);
             AudioTrack track = new AudioTrack(id, clip, adjustedVolume, loop, type);
 
+            clip.addLineListener(event -> {
+                if (event.getType() == LineEvent.Type.STOP) {
+                    if (!loop) {
+                        clip.close();
+                        activeTracks.remove(id);
+                    }
+                }
+            });
+
             if (type == SoundType.MUSIC) {
                 if (currentMusicTrack != null) {
                     currentMusicTrack.stop();
@@ -125,6 +135,15 @@ public class AudioPlayer {
 
             int id = generateId();
             AudioTrack track = new AudioTrack(id, audioClip, (float) volume, loop, SoundType.SFX);
+
+            audioClip.addLineListener(event -> {
+                if (event.getType() == LineEvent.Type.STOP) {
+                    if (!loop) {
+                        audioClip.close();
+                        activeTracks.remove(id);
+                    }
+                }
+            });
 
             activeTracks.put(id, track);
             track.play();

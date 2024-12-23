@@ -1,5 +1,8 @@
 package pewpew.smash.game.network;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import java.io.IOException;
@@ -12,6 +15,8 @@ import pewpew.smash.game.network.server.ServerHandler;
 import pewpew.smash.game.network.upnp.UPnPPortManager;
 
 public class NetworkManager {
+    private final ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor();
+
     private ClientHandler client;
     private ServerHandler server;
     private final AtomicBoolean isHost;
@@ -39,10 +44,10 @@ public class NetworkManager {
             client = new ClientHandler("127.0.0.1", port);
 
             if (!host.equals("127.0.0.1")) {
-                new Thread(() -> {
-                    UPnPPortManager.getInstance().openPort(port, port); // Open the port.
+                backgroundExecutor.submit(() -> {
+                    UPnPPortManager.getInstance().openPort(port, port);
                     System.out.println("Port opened!");
-                }).start();
+                });
             }
         } else {
             client = new ClientHandler(host, port);
@@ -86,17 +91,30 @@ public class NetworkManager {
 
             if (server != null) {
                 server.stop();
-                new Thread(() -> {
+                backgroundExecutor.submit(() -> {
+                    System.out.println("Trying to close the server!");
                     UPnPPortManager.getInstance().closeAllPorts();
-                }).start();
+                });
             }
         } finally {
             server = null;
             client = null;
+            shutdownExecutors();
         }
     }
 
     public boolean isHost() {
         return isHost.get();
+    }
+
+    private void shutdownExecutors() {
+        backgroundExecutor.shutdown();
+        try {
+            if (!backgroundExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
+                backgroundExecutor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            backgroundExecutor.shutdownNow();
+        }
     }
 }

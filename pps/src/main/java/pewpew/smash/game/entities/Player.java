@@ -55,14 +55,13 @@ public class Player extends MovableEntity {
         setSpeed(2f);
         this.rotation = 0f;
         this.id = id;
-        this.health = 50;
+        this.health = 100;
 
         this.inventory = new Inventory(this);
         this.fists = (Fist) ItemFactory.createItem(WeaponType.FIST);
         this.fists.pickup(this);
         this.equippedWeapon = this.fists;
 
-        // Apply player scope to camera
         Camera.getInstance().setZoom(this.inventory.getScope().getZoomValue());
 
         this.animationManager = new PlayerAnimationManager(10);
