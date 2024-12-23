@@ -89,6 +89,7 @@ public class ServerEventManager {
             if (stormManager.isPlayerInStorm(player)) {
                 long lastDamage = lastDamageTime.getOrDefault(player.getId(), 0L);
                 if (currentTime - lastDamage >= 1000) {
+                    ServerAudioManager.getInstance().play(AudioClip.PLAYER_DAMAGE, player, 1000, Optional.of(0.5));
                     player.setHealth(player.getHealth() - stormManager.getStormEvent().getHitDamage());
                     PlayerState newState = new PlayerState(player.getId(), player.getHealth());
                     PlayerStatePacket packet = new PlayerStatePacket(newState);
