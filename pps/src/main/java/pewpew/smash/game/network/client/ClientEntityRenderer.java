@@ -20,9 +20,9 @@ public class ClientEntityRenderer {
     public void render(Canvas canvas, Camera camera) {
         Rectangle2D screenBounds = calculateScreenBounds(camera);
 
+        renderPlayers(canvas, camera, screenBounds);
         renderStaticEntities(canvas, camera, screenBounds);
         renderMovableEntities(canvas, camera, screenBounds);
-        renderPlayers(canvas, camera, screenBounds);
         renderBullets(canvas, camera, screenBounds);
     }
 
